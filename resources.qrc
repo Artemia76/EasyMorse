@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fonts/morse.ttf</file>
+        <file>gfx/Morse_128x128.png</file>
+    </qresource>
+</RCC>

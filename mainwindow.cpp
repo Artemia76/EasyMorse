@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QFontDatabase>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,6 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     const QAudioDeviceInfo &defaultDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
     ui->m_deviceBox->addItem(defaultDeviceInfo.deviceName(), qVariantFromValue(defaultDeviceInfo));
+    if (QFontDatabase::addApplicationFont(":/fonts/morse.ttf")==-1)
+        ui->m_LogZone->appendPlainText("Failed to load font");
+    QFont Morse("morse",12, QFont::Normal);
+    for (int i = 0; i < ui->m_TableGlossaire->rowCount(); i++)
+    {
+        ui->m_TableGlossaire->item(i,0)->setFont(Morse);
+    }
     for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
     {
         if (deviceInfo != defaultDeviceInfo)
@@ -91,12 +100,12 @@ void MainWindow::toggleSuspendResume()
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    ui->plainTextEdit->appendPlainText("keyPressEvent occured");
+    //ui->plainTextEdit->appendPlainText("keyPressEvent occured");
     if (event->key() == Qt::Key_Alt) m_audioOutput->resume();
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
-    ui->plainTextEdit->appendPlainText("keyReleaseEvent occured");
+    //ui->plainTextEdit->appendPlainText("keyReleaseEvent occured");
     if (event->key() == Qt::Key_Alt) m_audioOutput->suspend();
 }
