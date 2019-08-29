@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "generateur.h"
+#include "morse.h"
 #include <QTimer>
 
 QT_BEGIN_NAMESPACE
@@ -22,9 +23,11 @@ protected:
     void keyReleaseEvent(QKeyEvent* event);
 private slots:
     void on_actionQuitter_triggered();
-    void toggleSuspendResume();
     void volumeChanged(int value);
     void deviceChanged(int index);
+    void handleStateChanged(QAudio::State newState);
+
+    void on_m_pbSend_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -32,5 +35,7 @@ private:
 
     QScopedPointer<Generateur> m_generator;
     QScopedPointer<QAudioOutput> m_audioOutput;
+    morse m_Morse;
+    bool m_playing_phrase;
 };
 #endif // MAINWINDOW_H

@@ -18,11 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     generateur.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    morse.cpp
 
 HEADERS += \
     generateur.h \
-    mainwindow.h
+    mainwindow.h \
+    morse.h
 
 FORMS += \
     mainwindow.ui

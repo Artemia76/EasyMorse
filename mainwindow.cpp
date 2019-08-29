@@ -24,9 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
             ui->m_deviceBox->addItem(deviceInfo.deviceName(), qVariantFromValue(deviceInfo));
     }
     connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::deviceChanged);
-    connect(ui->m_suspendResumeButton, &QPushButton::clicked, this, &MainWindow::toggleSuspendResume);
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::volumeChanged);
     initializeAudio(QAudioDeviceInfo::defaultOutputDevice());
+    connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
+    m_playing_phrase=false;
 }
 
 MainWindow::~MainWindow()
@@ -42,23 +43,16 @@ void MainWindow::on_actionQuitter_triggered()
 
 void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
 {
-    QAudioFormat format;
-    format.setSampleRate(44100);
-    format.setChannelCount(1);
-    format.setSampleSize(16);
-    format.setCodec("audio/pcm");
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::SignedInt);
+    m_generator.reset(new Generateur());
+    QAudioFormat format = m_generator->getFormat();
 
     if (!deviceInfo.isFormatSupported(format)) {
         qWarning() << "Default format not supported - trying to use nearest";
         format = deviceInfo.nearestFormat(format);
     }
 
-    const int durationSeconds = 1;
-    const int toneSampleRateHz = 880;
-    m_generator.reset(new Generateur(format, durationSeconds * 1000000, toneSampleRateHz));
-    m_audioOutput.reset(new QAudioOutput(deviceInfo, format));
+    m_generator->generateData(1000000, true);
+    m_audioOutput.reset(new QAudioOutput(deviceInfo,format));
     m_generator->start();
 
     qreal initialVolume = QAudio::convertVolume(m_audioOutput->volume(),
@@ -85,27 +79,62 @@ void MainWindow::deviceChanged(int index)
     initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDeviceInfo>());
 }
 
-void MainWindow::toggleSuspendResume()
-{
-    if (m_audioOutput->state() == QAudio::SuspendedState || m_audioOutput->state() == QAudio::StoppedState) {
-        m_audioOutput->resume();
-        ui->m_suspendResumeButton->setText(tr("Suspend recording"));
-    } else if (m_audioOutput->state() == QAudio::ActiveState) {
-        m_audioOutput->suspend();
-        ui->m_suspendResumeButton->setText(tr("Resume playback"));
-    } else if (m_audioOutput->state() == QAudio::IdleState) {
-        // no-op
-    }
-}
-
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     //ui->plainTextEdit->appendPlainText("keyPressEvent occured");
-    if (event->key() == Qt::Key_Alt) m_audioOutput->resume();
+    if ((event->key() == Qt::Key_Alt))
+    {
+        if (m_playing_phrase) return;
+        m_audioOutput->resume();
+    }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
     //ui->plainTextEdit->appendPlainText("keyReleaseEvent occured");
-    if (event->key() == Qt::Key_Alt) m_audioOutput->suspend();
+    if (event->key() == Qt::Key_Alt)
+    {
+        if (m_playing_phrase) return;
+        m_audioOutput->suspend();
+    }
+}
+
+void MainWindow::handleStateChanged(QAudio::State newState)
+{
+  //ui->m_LogZone->appendPlainText("Audio State changed");
+  switch (newState) {
+      case QAudio::IdleState:
+          // Finished playing (no more data)
+          m_audioOutput->stop();
+          ui->m_LogZone->appendPlainText("End of playing sound");
+          m_Morse.data()->stop();
+          m_playing_phrase=false;
+          m_audioOutput->start(m_generator.data());
+          m_audioOutput->suspend();
+          break;
+
+      case QAudio::StoppedState:
+          // Stopped for other reasons
+          if (m_audioOutput->error() != QAudio::NoError)
+          {
+              // Error handling
+          }
+          break;
+
+      default:
+          // ... other cases as appropriate
+          break;
+  }
+}
+
+void MainWindow::on_m_pbSend_clicked()
+{
+    if (!m_playing_phrase)
+    {
+        QString Message = ui->m_leMessage->text();
+        if (Message.isEmpty()) return;
+        m_Morse.code(Message);
+        m_audioOutput->start(m_Morse.data());
+        m_playing_phrase=true;
+    }
 }
