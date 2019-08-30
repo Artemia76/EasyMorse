@@ -214,11 +214,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 
 void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
 {
-    //ui->m_LogZone->appendPlainText("Audio State changed");
     switch (pNewState)
     {
         case QAudio::IdleState:
         {
+            m_log->log(tr("Audio now in idle state"),Qt::magenta,LEVEL_VERBOSE);
             if (m_playing_phrase)
                 on_m_pbSend_clicked();
             break;
@@ -228,8 +228,22 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
             // Stopped for other reasons
             if (m_audioOutput->error() != QAudio::NoError)
             {
-                // Error handling
+                m_log->log(tr("Error occured on audio device"),Qt::magenta,LEVEL_VERBOSE);
             }
+            else
+            {
+                m_log->log(tr("Audio now in stopped state"),Qt::magenta,LEVEL_VERBOSE);
+            }
+            break;
+        }
+        case QAudio::SuspendedState:
+        {
+            m_log->log(tr("Audio now in suspended state"),Qt::magenta,LEVEL_VERBOSE);
+            break;
+        }
+        case QAudio::ActiveState:
+        {
+            m_log->log(tr("Audio now in active state"),Qt::magenta,LEVEL_VERBOSE);
             break;
         }
         default:
@@ -244,8 +258,8 @@ void MainWindow::on_m_pbSend_clicked()
 {
     if (!m_playing_phrase)
     {
-        PlayMorseMessage(ui->m_leMessage->text());
-        ui->m_pbSend->setText(tr("Stop"));
+        if (PlayMorseMessage(ui->m_leMessage->text()))
+            ui->m_pbSend->setText(tr("Stop"));
     }
     else
     {
@@ -254,28 +268,34 @@ void MainWindow::on_m_pbSend_clicked()
     }
 }
 
-void MainWindow::PlayMorseMessage(const QString& pMessage)
+bool MainWindow::PlayMorseMessage(const QString& pMessage)
 {
     if (!m_playing_phrase)
     {
-        if (pMessage.isEmpty()) return;
+        if (pMessage.isEmpty()) return false;
         m_morse.code(pMessage);
-        m_audioOutput->start(m_morse.data());
+        if (m_audioOutput->state()!=QAudio::ActiveState) m_audioOutput->start(m_morse.data());
         m_playing_phrase=true;
         ui->m_deviceBox->setDisabled(true);
         ui->m_frequencySlider->setDisabled(true);
         ui->m_volumeSlider->setDisabled(true);
         ui->m_MorseSpeed->setDisabled(true);
+        return true;
     }
+    return false;
 }
 
 void MainWindow::StopMorseMessage()
 {
-    if (m_playing_phrase)
+    if (m_playing_phrase && (m_audioOutput->state()!=QAudio::ActiveState))
     {
         // Finished playing (no more data)
         m_audioOutput->stop();
         m_morse.data()->stop();
+        m_generator->stop();
+        m_generator->setFrequency(m_frequency);
+        m_generator->generateData(1000000,true);
+        m_generator->start();
         m_audioOutput->start(m_generator.data());
         m_audioOutput->suspend();
         m_playing_phrase=false;

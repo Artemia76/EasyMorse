@@ -160,6 +160,7 @@ void CGenerator::clear()
 
 qint64 CGenerator::readData(char *data, qint64 len)
 {
+    if (!isOpen()) return -1;
     qint64 total = 0;
     size_t BuffSize = m_buffer.size();
     if (!m_buffer.isEmpty())
@@ -176,13 +177,17 @@ qint64 CGenerator::readData(char *data, qint64 len)
         }
         else
         {
-            const qint64 chunk = qMin((m_buffer.size() - m_pos), len - total);
-            if (chunk<=0)
+            const qint64 chunk = qMin((m_buffer.size() - m_pos), len);
+            if (chunk>0)
             {
+                memcpy(data, m_buffer.constData() + m_pos, static_cast<size_t>(chunk));
+            }
+            m_pos = (m_pos + chunk);
+            if (chunk < len)
+            {
+                memset(data+chunk, 0,len-chunk);
                 return -1;
             }
-            memcpy(data, m_buffer.constData() + m_pos, static_cast<size_t>(chunk));
-            m_pos = (m_pos + chunk);
             total = chunk;
         }
     }
@@ -197,7 +202,18 @@ qint64 CGenerator::writeData(const char *data, qint64 len)
     return 0;
 }
 
+qint64 CGenerator::pos() const
+{
+    return m_pos;
+}
+
 qint64 CGenerator::bytesAvailable() const
 {
     return m_buffer.size() + QIODevice::bytesAvailable();
+}
+
+bool CGenerator::atEnd() const
+{
+    if ((!m_loop) && (m_pos >= m_buffer.size())) return true;
+    else return false;
 }

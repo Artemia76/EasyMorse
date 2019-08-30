@@ -47,7 +47,7 @@ class MainWindow : public QMainWindow
 public:
             MainWindow(QWidget *parent = nullptr);
             ~MainWindow();
-    void    PlayMorseMessage(const QString& pMessage);
+    bool    PlayMorseMessage(const QString& pMessage);
     void    StopMorseMessage();
 
 protected:

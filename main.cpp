@@ -36,7 +36,7 @@
 int main(int argc, char *argv[])
 {
     QSettings::setDefaultFormat(QSettings::NativeFormat);
-    QCoreApplication::setOrganizationName("Artemia");
+    QCoreApplication::setOrganizationName("EasyMorse");
     QCoreApplication::setOrganizationDomain("");
     QCoreApplication::setApplicationName("EasyMorse");
     QString locale = QLocale::system().name();
