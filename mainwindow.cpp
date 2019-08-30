@@ -312,7 +312,7 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
 
 void MainWindow::StopMorseMessage()
 {
-    if (m_playing_phrase && (m_audioOutput->state()!=QAudio::ActiveState))
+    if (m_playing_phrase)
     {
         // Finished playing (no more data)
         m_audioOutput->stop();
