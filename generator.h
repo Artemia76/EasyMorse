@@ -21,48 +21,47 @@
 ****************************************************************************/
 
 /****************************************************************************
-* morse.h is part of EasyMorse project
-*
-* This class is used to code and decode morse signal
-* **************************************************************************/
+** generator.h is part of EasyMorse project
+**
+** This class provide way to synthesize wave
+** form signal to compose morse tone
+****************************************************************************/
 
-#ifndef MORSE_H
-#define MORSE_H
+#ifndef GENERATEUR_H
+#define GENERATEUR_H
 
+#include <QAudioOutput>
+#include <QByteArray>
+#include <QIODevice>
 #include <QObject>
 #include <QMap>
 
-#include "generator.h"
-
-class CMorse : public QObject
+class CGenerator : public QIODevice
 {
-    Q_OBJECT
 public:
-    explicit CMorse(QObject *parent = nullptr );
-    enum Code
-    {
-        American,
-        Continental,
-        International
-    };
-    Q_ENUM(Code)
+    CGenerator();
+    CGenerator(int pFrequency);
 
-    void initMorseMap (Code pCode=International);
-    void code(const QString& pMessage);
-    CGenerator* data();
+    void start();
+    void stop();
 
-    void setFrequency(int pFrequency){m_frequency=pFrequency;}
-    void setSpeed(int pSpeed){m_dotDuration=pSpeed*1000;}
-
+    qint64 readData(char *data, qint64 maxlen) override;
+    qint64 writeData(const char *data, qint64 len) override;
+    qint64 bytesAvailable() const override;
+    void setFormat(const QAudioFormat &pFormat);
+    QAudioFormat getFormat();
+    void setFrequency(int pFreq);
+    int getFrequency();
+    void setLoop(bool pLoop);
+    void generateData(qint64 durationUs=1000000,bool pErase=false, bool pSilent=false);
+    void clear();
 private:
-    int m_frequency;
-
-    QMap <QString, QString> m_MorseMapping;
-    qint64 m_dotDuration;
-    QScopedPointer<CGenerator> m_generator;
-signals:
-
-public slots:
+    qint64 m_pos = 0;
+    bool m_loop;
+    QByteArray m_buffer;
+    QAudioFormat m_Format;
+    int m_Freq;
+    void init();
 };
 
-#endif // MORSE_H
+#endif // GENERATEUR_H

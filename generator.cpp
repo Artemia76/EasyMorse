@@ -1,4 +1,33 @@
-#include "generateur.h"
+/****************************************************************************
+**
+** Copyright (C) 2019 Gianni Peschiutta
+** Contact: https://bitbucket.org/Artemia/easymorse/src/master/
+**
+** FFS2Play is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 3 of the License, or
+** (at your option) any later version.
+**
+** FFS2Play is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** The license is as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL3
+** included in the packaging of this software. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+****************************************************************************/
+
+/****************************************************************************
+** generator.cpp is part of EasyMorse project
+**
+** This class provide way to synthesize wave
+** form signal to compose morse tone
+****************************************************************************/
+
+#include "generator.h"
 
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
@@ -7,57 +36,75 @@
 #include <qmath.h>
 #include <qendian.h>
 
-Generateur::Generateur()
+CGenerator::CGenerator()
 {
-    m_Format.setSampleRate(44100);
+
+    m_Freq = 900;
+    init();
+}
+
+CGenerator::CGenerator(int pFrequency)
+{
+    m_Freq = pFrequency;
+    init();
+}
+
+void CGenerator::init()
+{
+    m_Format.setSampleRate(22050);
     m_Format.setChannelCount(1);
-    m_Format.setSampleSize(16);
+    m_Format.setSampleSize(8);
     m_Format.setCodec("audio/pcm");
     m_Format.setByteOrder(QAudioFormat::LittleEndian);
     m_Format.setSampleType(QAudioFormat::SignedInt);
-    m_Freq = 880;
     m_loop = true;
+    m_buffer.clear();
+    m_buffer.resize(0);
 }
 
-void Generateur::start()
+void CGenerator::start()
 {
     open(QIODevice::ReadOnly);
 }
 
-void Generateur::stop()
+void CGenerator::stop()
 {
     m_pos = 0;
     close();
 }
-void Generateur::setFormat(const QAudioFormat &pFormat)
+void CGenerator::setFormat(const QAudioFormat &pFormat)
 {
     if (pFormat.isValid())
         m_Format = pFormat;
 }
 
-QAudioFormat Generateur::getFormat()
+QAudioFormat CGenerator::getFormat()
 {
     return m_Format;
 }
 
-void Generateur::setFrequency(int pFreq)
+void CGenerator::setFrequency(int pFreq)
 {
     m_Freq = pFreq;
 }
 
-int Generateur::getFrequency()
+int CGenerator::getFrequency()
 {
     return m_Freq;
 }
-void Generateur::setLoop(bool pLoop)
+void CGenerator::setLoop(bool pLoop)
 {
     m_loop = pLoop;
 }
 
-void Generateur::generateData(qint64 durationUs, bool pErase, bool pSilent)
+void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
 {
-    if (isOpen()) return;
-    if (pErase) m_buffer.clear();
+    if (pErase)
+    {
+        m_buffer.clear();
+        m_buffer.resize(0);
+        m_pos=0;
+    }
     const int channelBytes = m_Format.sampleSize() / 8;
     const int sampleBytes = m_Format.channelCount() * channelBytes;
     qint64 length = (m_Format.sampleRate() * m_Format.channelCount() * (m_Format.sampleSize() / 8))
@@ -104,15 +151,17 @@ void Generateur::generateData(qint64 durationUs, bool pErase, bool pSilent)
     }
 }
 
-void Generateur::clear()
+void CGenerator::clear()
 {
-    if (isOpen()) return;
+    if (isOpen()) stop();
     m_buffer.clear();
+    m_buffer.resize(0);
 }
 
-qint64 Generateur::readData(char *data, qint64 len)
+qint64 CGenerator::readData(char *data, qint64 len)
 {
     qint64 total = 0;
+    size_t BuffSize = m_buffer.size();
     if (!m_buffer.isEmpty())
     {
         if (m_loop)
@@ -120,7 +169,7 @@ qint64 Generateur::readData(char *data, qint64 len)
             while (len - total > 0)
             {
                 const qint64 chunk = qMin((m_buffer.size() - m_pos), len - total);
-                memcpy(data + total, m_buffer.constData() + m_pos, chunk);
+                memcpy(data + total, m_buffer.constData() + m_pos, static_cast<size_t>(chunk));
                 m_pos = (m_pos + chunk) % m_buffer.size();
                 total += chunk;
             }
@@ -132,7 +181,7 @@ qint64 Generateur::readData(char *data, qint64 len)
             {
                 return -1;
             }
-            memcpy(data, m_buffer.constData() + m_pos, chunk);
+            memcpy(data, m_buffer.constData() + m_pos, static_cast<size_t>(chunk));
             m_pos = (m_pos + chunk);
             total = chunk;
         }
@@ -140,7 +189,7 @@ qint64 Generateur::readData(char *data, qint64 len)
     return total;
 }
 
-qint64 Generateur::writeData(const char *data, qint64 len)
+qint64 CGenerator::writeData(const char *data, qint64 len)
 {
     Q_UNUSED(data)
     Q_UNUSED(len)
@@ -148,7 +197,7 @@ qint64 Generateur::writeData(const char *data, qint64 len)
     return 0;
 }
 
-qint64 Generateur::bytesAvailable() const
+qint64 CGenerator::bytesAvailable() const
 {
     return m_buffer.size() + QIODevice::bytesAvailable();
 }
