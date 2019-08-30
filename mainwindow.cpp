@@ -55,6 +55,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_volume = m_settings.value("SoundLevel", 1.0).toReal();
     m_speed = m_settings.value("MorseSpeed", 100).toInt();
     m_morse.setSpeed(m_speed);
+    m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
+    m_morse.setNoiseCorrelation(m_noiseCorrelation);
+    m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
+    m_morse.setNoiseFilter(m_noiseFilter);
     m_settings.endGroup();
 
     m_log = CLogger::instance();
@@ -94,8 +98,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)),Qt::QueuedConnection);
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
-    connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrenquencyChanged);
+    connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
     connect(ui->m_MorseSpeed, &QSlider::valueChanged, this, &MainWindow::onSpeedChanged);
+    connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
+    connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
 }
 
 MainWindow::~MainWindow()
@@ -119,6 +125,8 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("SoundFreq",m_frequency);
     m_settings.setValue("SoundLevel", m_volume);
     m_settings.setValue("MorseSpeed", m_speed);
+    m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
+    m_settings.setValue("NoiseFilter",m_noiseFilter);
     m_settings.endGroup();
 }
 
@@ -144,6 +152,8 @@ void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
     ui->m_volumeSlider->setValue(qRound(slidervolume * 100));
     ui->m_frequencySlider->setValue(m_frequency);
     ui->m_MorseSpeed->setValue(m_speed);
+    ui->m_NoiseCorr->setValue(qRound(m_noiseCorrelation*100));
+    ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
     m_audioOutput->start(m_generator.data());
     m_audioOutput->suspend();
 }
@@ -161,7 +171,7 @@ void MainWindow::onVolumeChanged(int value)
     }
 }
 
-void MainWindow::onFrenquencyChanged(int value)
+void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
     m_generator->stop();
@@ -189,6 +199,19 @@ void MainWindow::onDeviceChanged(int index)
     m_audioOutput->disconnect(this);
     initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDeviceInfo>());
 }
+
+void MainWindow::onNoiseCorChanged(int index)
+{
+    m_noiseCorrelation = static_cast<qreal>(index / 100.0);
+    m_morse.setNoiseCorrelation(m_noiseCorrelation);
+}
+
+void MainWindow::onNoiseFilterChanged(int index)
+{
+    m_noiseFilter = index;
+    m_morse.setNoiseFilter(m_noiseFilter);
+}
+
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
@@ -280,6 +303,8 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
         ui->m_frequencySlider->setDisabled(true);
         ui->m_volumeSlider->setDisabled(true);
         ui->m_MorseSpeed->setDisabled(true);
+        ui->m_NoiseCorr->setDisabled(true);
+        ui->m_NoiseFilterSlider->setDisabled(true);
         return true;
     }
     return false;
@@ -303,6 +328,8 @@ void MainWindow::StopMorseMessage()
         ui->m_frequencySlider->setDisabled(false);
         ui->m_volumeSlider->setDisabled(false);
         ui->m_MorseSpeed->setDisabled(false);
+        ui->m_NoiseCorr->setDisabled(false);
+        ui->m_NoiseFilterSlider->setDisabled(false);
     }
 }
 

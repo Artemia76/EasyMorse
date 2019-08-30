@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <qmath.h>
 #include <qendian.h>
+#include <math.h>
 
 CGenerator::CGenerator()
 {
@@ -60,6 +61,9 @@ void CGenerator::init()
     m_loop = true;
     m_buffer.clear();
     m_buffer.resize(0);
+    m_noise_correlation=0.0;
+    m_LastSample=0.0;
+    m_Lowfilter_T=0;
 }
 
 void CGenerator::start()
@@ -97,6 +101,21 @@ void CGenerator::setLoop(bool pLoop)
     m_loop = pLoop;
 }
 
+void CGenerator::setNoiseCorrelation(qreal pNoiseCorrelation)
+{
+    if ((pNoiseCorrelation>=0.0) && (pNoiseCorrelation<=1.0))
+    {
+        m_noise_correlation = pNoiseCorrelation;
+    }
+}
+void CGenerator::setNoiseFilter(int pNoiseFilter)
+{
+    if ((pNoiseFilter>=0) && (pNoiseFilter<=2000))
+    {
+        m_Lowfilter_T = pNoiseFilter;
+    }
+}
+
 void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
 {
     if (pErase)
@@ -115,29 +134,53 @@ void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
     m_buffer.resize(m_buffer.size() + static_cast<int>(length));
     unsigned char *ptr = reinterpret_cast<unsigned char *>(m_buffer.data()+offset);
     int sampleIndex = 0;
-
+    m_LastSample = 0.0;
+    qreal TimeStep = -1.0 * static_cast<qreal>(durationUs)/static_cast<qreal>(length);
     while (length) {
         // Produces value (-1..1)
-        qreal x = 0.0;
-        if (!pSilent) x = qSin(2 * M_PI * m_Freq * qreal(sampleIndex++ % m_Format.sampleRate()) / m_Format.sampleRate());
+        qreal w = 0.0; //Wave
+        qreal n = 0.0; //Noise
+        qreal m = 0.0; // Mixing
+        // Wave generator in function of Samplerate and frequency
+        if (!pSilent)
+        {
+            w = qSin(2 * M_PI * m_Freq * qreal(sampleIndex++ % m_Format.sampleRate()) / m_Format.sampleRate())
+                * (1.0-m_noise_correlation);
+        }
+        // Pure Noise generator
+        if ((m_noise_correlation > 0.0) && (m_noise_correlation <=1.0))
+        {
+            n = ((m_Rnd.generateDouble()*2.0)-1.0)*m_noise_correlation;
+        }
+        //Applying filter
+        if (m_Lowfilter_T > 0.0)
+        {
+            qreal Diff = n - m_LastSample;
+            qreal Filter = (1- exp(TimeStep/m_Lowfilter_T));
+            n = m_LastSample + (Diff * Filter);
+            m_LastSample = n;
+        }
+        //Compressor to back nois at 100% level
+
+        m = w+n;
         for (int i=0; i<m_Format.channelCount(); ++i) {
             if (m_Format.sampleSize() == 8) {
                 if (m_Format.sampleType() == QAudioFormat::UnSignedInt) {
-                    const quint8 value = static_cast<quint8>((1.0 + x) / 2 * 255);
+                    const quint8 value = static_cast<quint8>((1.0 + m) / 2 * 255);
                     *reinterpret_cast<quint8 *>(ptr) = value;
                 } else if (m_Format.sampleType() == QAudioFormat::SignedInt) {
-                    const qint8 value = static_cast<qint8>(x * 127);
+                    const qint8 value = static_cast<qint8>(m * 127);
                     *reinterpret_cast<qint8 *>(ptr) = value;
                 }
             } else if (m_Format.sampleSize() == 16) {
                 if (m_Format.sampleType() == QAudioFormat::UnSignedInt) {
-                    quint16 value = static_cast<quint16>((1.0 + x) / 2 * 65535);
+                    quint16 value = static_cast<quint16>((1.0 + m) / 2 * 65535);
                     if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
                         qToLittleEndian<quint16>(value, ptr);
                     else
                         qToBigEndian<quint16>(value, ptr);
                 } else if (m_Format.sampleType() == QAudioFormat::SignedInt) {
-                    qint16 value = static_cast<qint16>(x * 32767);
+                    qint16 value = static_cast<qint16>(m * 32767);
                     if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
                         qToLittleEndian<qint16>(value, ptr);
                     else
@@ -162,7 +205,6 @@ qint64 CGenerator::readData(char *data, qint64 len)
 {
     if (!isOpen()) return -1;
     qint64 total = 0;
-    size_t BuffSize = m_buffer.size();
     if (!m_buffer.isEmpty())
     {
         if (m_loop)
@@ -185,7 +227,7 @@ qint64 CGenerator::readData(char *data, qint64 len)
             m_pos = (m_pos + chunk);
             if (chunk < len)
             {
-                memset(data+chunk, 0,len-chunk);
+                memset(data+chunk, 0,static_cast<size_t>(len-chunk));
                 return -1;
             }
             total = chunk;

@@ -34,6 +34,8 @@ CMorse::CMorse(QObject *parent) : QObject(parent)
     m_generator->setLoop(false);
     m_dotDuration = 100000;
     m_frequency = m_generator->getFrequency();
+    m_noiseFilter=0;
+    m_noiseCorrelation=0.0;
     initMorseMap(International);
 }
 void CMorse::initMorseMap (Code pCode)
@@ -92,6 +94,8 @@ void CMorse::code(const QString& pMessage)
     m_generator->stop();
     m_generator->clear();
     m_generator->setFrequency(m_frequency);
+    m_generator->setNoiseCorrelation(m_noiseCorrelation);
+    m_generator->setNoiseFilter(m_noiseFilter);
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
@@ -109,7 +113,7 @@ void CMorse::code(const QString& pMessage)
             }
             if (*MorseChar=='S')
             {
-                m_generator->generateData(m_dotDuration*3, false, true );
+                m_generator->generateData(m_dotDuration*4, false, true );
             }
         }
         // End of char

@@ -62,10 +62,11 @@ private slots:
     void    clearLog();
     void    saveLog();
     void    on_m_pbSend_clicked();
-    void    onFrenquencyChanged(int value);
+    void    onFrequencyChanged(int value);
     void    onVolumeChanged(int value);
     void    onSpeedChanged(int value);
-
+    void    onNoiseCorChanged(int value);
+    void    onNoiseFilterChanged(int value);
 private:
     Ui::MainWindow*                 ui;
     QScopedPointer<CGenerator>      m_generator;
@@ -78,6 +79,8 @@ private:
     int                             m_maxLine;
     int                             m_frequency;
     qreal                           m_volume;
+    qreal                           m_noiseCorrelation;
+    int                             m_noiseFilter;
     int                             m_speed;
     void                            initializeAudio(const QAudioDeviceInfo &deviceInfo);
     void                            closeEvent(QCloseEvent* pEvent);

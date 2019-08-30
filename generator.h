@@ -31,6 +31,7 @@
 #define GENERATEUR_H
 
 #include <QAudioOutput>
+#include <QRandomGenerator>
 #include <QByteArray>
 #include <QIODevice>
 #include <QObject>
@@ -55,6 +56,8 @@ public:
     QAudioFormat getFormat();
     void setFrequency(int pFreq);
     int getFrequency();
+    void setNoiseCorrelation(qreal pNoiseCorrelation);
+    void setNoiseFilter(int pNoiseFilter);
     void setLoop(bool pLoop);
     void generateData(qint64 durationUs=1000000,bool pErase=false, bool pSilent=false);
     void clear();
@@ -64,6 +67,10 @@ private:
     QByteArray m_buffer;
     QAudioFormat m_Format;
     int m_Freq;
+    QRandomGenerator m_Rnd;
+    qreal   m_noise_correlation;
+    qreal   m_Lowfilter_T;
+    qreal   m_LastSample;
     void init();
 };
 
