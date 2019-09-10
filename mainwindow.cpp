@@ -114,6 +114,8 @@ MainWindow::~MainWindow()
 ///
 void MainWindow::closeEvent(QCloseEvent*)
 {
+    m_audioOutput->stop();
+    m_generator->stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());
