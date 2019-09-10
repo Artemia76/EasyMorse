@@ -55,9 +55,12 @@ public:
     void setSpeed(int pSpeed){m_dotDuration=pSpeed*1000;}
     void setNoiseCorrelation(qreal pNoiseCorrelation){m_noiseCorrelation=pNoiseCorrelation;}
     void setNoiseFilter(int pNoiseFilter){m_noiseFilter=pNoiseFilter;}
+    void setFarnsWorth(qreal pFW);
+    qreal getFarnsWorth();
 
 private:
     int m_frequency;
+    qreal m_farnsWorth;
     qreal m_noiseCorrelation;
     int m_noiseFilter;
     QMap <QString, QString> m_MorseMapping;

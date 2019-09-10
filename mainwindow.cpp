@@ -60,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
     m_morse.setNoiseFilter(m_noiseFilter);
     m_settings.endGroup();
+    m_settings.beginGroup("morse");
+    m_morse.setFarnsWorth(m_settings.value("FarnsWorth",1.0).toReal());
+    m_settings.endGroup();
 
     m_log = CLogger::instance();
     connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)),Qt::QueuedConnection);
@@ -102,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->m_MorseSpeed, &QSlider::valueChanged, this, &MainWindow::onSpeedChanged);
     connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
     connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
+    connect(ui->m_farnsWorthSlider, &QSlider::valueChanged, this, &MainWindow::onFarnsWorthChanged);
+    connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainWindow::applicationStateChanged);
 }
 
 MainWindow::~MainWindow()
@@ -130,6 +135,9 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
     m_settings.setValue("NoiseFilter",m_noiseFilter);
     m_settings.endGroup();
+    m_settings.beginGroup("morse");
+    m_settings.setValue("FarnsWorth",m_morse.getFarnsWorth());
+    m_settings.endGroup();
 }
 
 
@@ -156,6 +164,7 @@ void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
     ui->m_MorseSpeed->setValue(m_speed);
     ui->m_NoiseCorr->setValue(qRound(m_noiseCorrelation*100));
     ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
+    ui->m_farnsWorthSlider->setValue(qRound(m_morse.getFarnsWorth()*10));
     m_audioOutput->start(m_generator.data());
     m_audioOutput->suspend();
 }
@@ -202,6 +211,11 @@ void MainWindow::onDeviceChanged(int index)
     initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDeviceInfo>());
 }
 
+void MainWindow::onFarnsWorthChanged(int value)
+{
+    m_morse.setFarnsWorth(qreal(value/10));
+}
+
 void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
@@ -236,6 +250,17 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
         m_audioOutput->suspend();
     }
 }
+
+void MainWindow::applicationStateChanged(Qt::ApplicationState state)
+{
+    if (state==Qt::ApplicationHidden)
+    {
+        m_playing_key=false;
+    }
+    if (m_playing_phrase) return;
+    m_audioOutput->suspend();
+}
+
 
 void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
 {

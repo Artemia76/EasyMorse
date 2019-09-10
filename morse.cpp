@@ -36,6 +36,7 @@ CMorse::CMorse(QObject *parent) : QObject(parent)
     m_frequency = m_generator->getFrequency();
     m_noiseFilter=0;
     m_noiseCorrelation=0.0;
+    m_farnsWorth=1.0;
     initMorseMap(International);
 }
 void CMorse::initMorseMap (Code pCode)
@@ -96,6 +97,7 @@ void CMorse::code(const QString& pMessage)
     m_generator->setFrequency(m_frequency);
     m_generator->setNoiseCorrelation(m_noiseCorrelation);
     m_generator->setNoiseFilter(m_noiseFilter);
+    qint64 m_SilentDuration = qRound(m_dotDuration*m_farnsWorth);
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
@@ -103,21 +105,21 @@ void CMorse::code(const QString& pMessage)
         {
             if (*MorseChar=='P')
             {
-                m_generator->generateData(m_dotDuration );
-                m_generator->generateData(m_dotDuration, false, true );
+                m_generator->generateData(m_dotDuration ); //Make a dot
+                m_generator->generateData(m_SilentDuration, false, true ); // Silent between element
             }
             if (*MorseChar=='T')
             {
-                m_generator->generateData(m_dotDuration * 3);
-                m_generator->generateData(m_dotDuration, false, true );
+                m_generator->generateData(m_dotDuration * 3); // Make a dash
+                m_generator->generateData(m_SilentDuration, false, true ); // Silent between element
             }
             if (*MorseChar=='S')
             {
-                m_generator->generateData(m_dotDuration*4, false, true );
+                m_generator->generateData(m_SilentDuration*4, false, true ); // Silent between Word
             }
         }
         // End of char
-        m_generator->generateData(m_dotDuration*2, false, true );
+        m_generator->generateData(m_SilentDuration*2, false, true ); //Silent between Char
     }
     m_generator->start();
 }
@@ -125,4 +127,17 @@ void CMorse::code(const QString& pMessage)
 CGenerator* CMorse::data()
 {
     return m_generator.data();
+}
+
+void CMorse::setFarnsWorth(qreal pFW)
+{
+    if ((pFW >= 1.0) && (pFW <= 2.5))
+    {
+        m_farnsWorth=pFW;
+    }
+}
+
+qreal CMorse::getFarnsWorth()
+{
+    return m_farnsWorth;
 }

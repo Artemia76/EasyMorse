@@ -53,6 +53,7 @@ public:
 protected:
     void    keyPressEvent(QKeyEvent* event);
     void    keyReleaseEvent(QKeyEvent* event);
+    void    applicationStateChanged(Qt::ApplicationState state);
 
 private slots:
     void    onDeviceChanged(int index);
@@ -67,6 +68,7 @@ private slots:
     void    onSpeedChanged(int value);
     void    onNoiseCorChanged(int value);
     void    onNoiseFilterChanged(int value);
+    void    onFarnsWorthChanged(int value);
 private:
     Ui::MainWindow*                 ui;
     QScopedPointer<CGenerator>      m_generator;
