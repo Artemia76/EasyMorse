@@ -32,7 +32,7 @@ CMorse::CMorse(QObject *parent) : QObject(parent)
 {
     m_generator.reset(new CGenerator());
     m_generator->setLoop(false);
-    m_dotDuration = 100000;
+    m_WPM = 20;
     m_frequency = m_generator->getFrequency();
     m_noiseFilter=0;
     m_noiseCorrelation=0.0;
@@ -97,7 +97,25 @@ void CMorse::code(const QString& pMessage)
     m_generator->setFrequency(m_frequency);
     m_generator->setNoiseCorrelation(m_noiseCorrelation);
     m_generator->setNoiseFilter(m_noiseFilter);
-    qint64 m_SilentDuration = qRound(m_dotDuration*m_farnsWorth);
+    quint64 DotDuration;
+    quint64 DelayChar;
+    quint64 DelayWord;
+    DotDuration = qRound(60000/static_cast<double>(m_WPM*50))*1000;
+    DelayChar = DotDuration*2;
+    DelayWord =DotDuration*4;
+    if (m_farnsWorth)
+    {
+        int FarnsWorthWPM = 18;
+        if (m_WPM < FarnsWorthWPM)
+        {
+            DotDuration = qRound(60000/static_cast<double>(FarnsWorthWPM*50))*1000;
+            quint64 ta = ((FarnsWorthWPM * 60000000) - (37200000 * m_WPM)) / ( FarnsWorthWPM * m_WPM);
+            DelayChar = (3 * ta)/19;
+            DelayWord = (7 * ta)/19;
+        }
+    }
+
+    m_generator->generateData(DelayChar, false, true ); // Silent before start
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
@@ -105,22 +123,23 @@ void CMorse::code(const QString& pMessage)
         {
             if (*MorseChar=='P')
             {
-                m_generator->generateData(m_dotDuration ); //Make a dot
-                m_generator->generateData(m_SilentDuration, false, true ); // Silent between element
+                m_generator->generateData(DotDuration ); //Make a dot
+                m_generator->generateData(DotDuration, false, true ); // Silent between element
             }
             if (*MorseChar=='T')
             {
-                m_generator->generateData(m_dotDuration * 3); // Make a dash
-                m_generator->generateData(m_SilentDuration, false, true ); // Silent between element
+                m_generator->generateData(DotDuration * 3); // Make a dash
+                m_generator->generateData(DotDuration, false, true ); // Silent between element
             }
             if (*MorseChar=='S')
             {
-                m_generator->generateData(m_SilentDuration*4, false, true ); // Silent between Word
+                m_generator->generateData(DelayWord, false, true ); // Silent between Word
             }
         }
         // End of char
-        m_generator->generateData(m_SilentDuration*2, false, true ); //Silent between Char
+        m_generator->generateData(DelayChar, false, true ); //Silent between Char
     }
+    m_generator->generateData(DelayChar, false, true ); // Silent at end
     m_generator->start();
 }
 
@@ -129,15 +148,12 @@ CGenerator* CMorse::data()
     return m_generator.data();
 }
 
-void CMorse::setFarnsWorth(qreal pFW)
+void CMorse::setFarnsWorth(bool pFW)
 {
-    if ((pFW >= 1.0) && (pFW <= 2.5))
-    {
-        m_farnsWorth=pFW;
-    }
+    m_farnsWorth=pFW;
 }
 
-qreal CMorse::getFarnsWorth()
+bool CMorse::getFarnsWorth()
 {
     return m_farnsWorth;
 }

@@ -16,15 +16,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    analyze.cpp \
     clogger.cpp \
+    datetime.cpp \
     generator.cpp \
     main.cpp \
     mainwindow.cpp \
     morse.cpp
 
 HEADERS += \
+    analyze.h \
     call_once.h \
     clogger.h \
+    datetime.h \
     generator.h \
     mainwindow.h \
     morse.h \

@@ -47,25 +47,25 @@ public:
     };
     Q_ENUM(Code)
 
-    void initMorseMap (Code pCode=International);
-    void code(const QString& pMessage);
-    CGenerator* data();
+    void                        initMorseMap (Code pCode=International);
+    void                        code(const QString& pMessage);
+    CGenerator*                 data();
 
-    void setFrequency(int pFrequency){m_frequency=pFrequency;}
-    void setSpeed(int pSpeed){m_dotDuration=pSpeed*1000;}
-    void setNoiseCorrelation(qreal pNoiseCorrelation){m_noiseCorrelation=pNoiseCorrelation;}
-    void setNoiseFilter(int pNoiseFilter){m_noiseFilter=pNoiseFilter;}
-    void setFarnsWorth(qreal pFW);
-    qreal getFarnsWorth();
+    void                        setFrequency(int pFrequency){m_frequency=pFrequency;}
+    void                        setSpeed(int pSpeed){m_WPM=pSpeed;}
+    void                        setNoiseCorrelation(qreal pNoiseCorrelation){m_noiseCorrelation=pNoiseCorrelation;}
+    void                        setNoiseFilter(int pNoiseFilter){m_noiseFilter=pNoiseFilter;}
+    void                        setFarnsWorth(bool pFW);
+    bool                        getFarnsWorth();
 
 private:
-    int m_frequency;
-    qreal m_farnsWorth;
-    qreal m_noiseCorrelation;
-    int m_noiseFilter;
-    QMap <QString, QString> m_MorseMapping;
-    qint64 m_dotDuration;
-    QScopedPointer<CGenerator> m_generator;
+    int                         m_frequency;
+    bool                        m_farnsWorth;
+    qreal                       m_noiseCorrelation;
+    int                         m_noiseFilter;
+    QMap                        <QString, QString> m_MorseMapping;
+    quint32                     m_WPM;
+    QScopedPointer<CGenerator>  m_generator;
 signals:
 
 public slots:

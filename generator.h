@@ -37,6 +37,8 @@
 #include <QObject>
 #include <QMap>
 
+#include "clogger.h"
+
 class CGenerator : public QIODevice
 {
 public:
@@ -65,12 +67,13 @@ private:
     qint64 m_pos = 0;
     bool m_loop;
     QByteArray m_buffer;
-    QAudioFormat m_Format;
+static QAudioFormat m_Format;
     int m_Freq;
     QRandomGenerator m_Rnd;
     qreal   m_noise_correlation;
     qreal   m_Lowfilter_T;
     qreal   m_LastSample;
+    CLogger* m_log;
     void init();
 };
 

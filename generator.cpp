@@ -37,6 +37,8 @@
 #include <qendian.h>
 #include <math.h>
 
+QAudioFormat CGenerator::m_Format;
+
 CGenerator::CGenerator()
 {
 
@@ -52,12 +54,7 @@ CGenerator::CGenerator(int pFrequency)
 
 void CGenerator::init()
 {
-    m_Format.setSampleRate(22050);
-    m_Format.setChannelCount(1);
-    m_Format.setSampleSize(8);
-    m_Format.setCodec("audio/pcm");
-    m_Format.setByteOrder(QAudioFormat::LittleEndian);
-    m_Format.setSampleType(QAudioFormat::SignedInt);
+    m_log = CLogger::instance();
     m_loop = true;
     m_buffer.clear();
     m_buffer.resize(0);
@@ -79,12 +76,14 @@ void CGenerator::stop()
 void CGenerator::setFormat(const QAudioFormat &pFormat)
 {
     if (pFormat.isValid())
-        m_Format = pFormat;
+    {
+        CGenerator::m_Format = pFormat;
+    }
 }
 
 QAudioFormat CGenerator::getFormat()
 {
-    return m_Format;
+    return CGenerator::m_Format;
 }
 
 void CGenerator::setFrequency(int pFreq)
@@ -124,12 +123,11 @@ void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
         m_buffer.resize(0);
         m_pos=0;
     }
-    const int channelBytes = m_Format.sampleSize() / 8;
-    const int sampleBytes = m_Format.channelCount() * channelBytes;
-    qint64 length = (m_Format.sampleRate() * m_Format.channelCount() * (m_Format.sampleSize() / 8))
-                        * durationUs / 1000000;
-    Q_ASSERT(length % sampleBytes == 0);
-    Q_UNUSED(sampleBytes) // suppress warning in release builds
+    const int channelBytes = CGenerator::m_Format.sampleSize() / 8;
+    const int sampleBytes = CGenerator::m_Format.channelCount() * channelBytes;
+    const int sampleRate = CGenerator::m_Format.sampleRate();
+    quint64 length = (sampleRate * sampleBytes * durationUs) / 1000000;
+    length -= (length % sampleBytes);
     int offset = m_buffer.size();
     m_buffer.resize(m_buffer.size() + static_cast<int>(length));
     unsigned char *ptr = reinterpret_cast<unsigned char *>(m_buffer.data()+offset);

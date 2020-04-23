@@ -30,11 +30,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidgetItem>
 #include <QTimer>
 
 #include "generator.h"
 #include "morse.h"
 #include "clogger.h"
+#include "analyze.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -68,7 +70,9 @@ private slots:
     void    onSpeedChanged(int value);
     void    onNoiseCorChanged(int value);
     void    onNoiseFilterChanged(int value);
-    void    onFarnsWorthChanged(int value);
+    void    onFarnsWorthChanged(bool value);
+    void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
+
 private:
     Ui::MainWindow*                 ui;
     QScopedPointer<CGenerator>      m_generator;
@@ -77,6 +81,7 @@ private:
     bool                            m_playing_phrase;
     bool                            m_playing_key;
     CLogger*                        m_log;
+    CAnalyze*                       m_analyzer;
     QSettings                       m_settings;
     int                             m_maxLine;
     int                             m_frequency;
