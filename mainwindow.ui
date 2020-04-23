@@ -599,7 +599,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="m_labelSpeed">
+      <widget class="QLabel" name="m_labelWordSpeed">
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -607,12 +607,12 @@
         </size>
        </property>
        <property name="text">
-        <string>Play Speed = %1 WPM</string>
+        <string>Word Speed = %1 WPM</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="m_MorseSpeed">
+      <widget class="QSlider" name="m_WordSpeed">
        <property name="toolTip">
         <string notr="true"/>
        </property>
@@ -710,6 +710,32 @@
       <widget class="QCheckBox" name="m_UseFarnsWorth">
        <property name="text">
         <string>Use Farnsworth</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="m_labelCharSpeed">
+       <property name="text">
+        <string>Char Speed = %1 WPM</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="m_CharSpeed">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>18</number>
+       </property>
+       <property name="pageStep">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>18</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>

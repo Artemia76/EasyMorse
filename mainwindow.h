@@ -67,10 +67,11 @@ private slots:
     void    on_m_pbSend_clicked();
     void    onFrequencyChanged(int value);
     void    onVolumeChanged(int value);
-    void    onSpeedChanged(int value);
+    void    onWordSpeedChanged(int value);
     void    onNoiseCorChanged(int value);
     void    onNoiseFilterChanged(int value);
     void    onFarnsWorthChanged(bool value);
+    void    onCharSpeedChanged(int value);
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
@@ -88,7 +89,8 @@ private:
     qreal                           m_volume;
     qreal                           m_noiseCorrelation;
     int                             m_noiseFilter;
-    int                             m_speed;
+    int                             m_wordSpeed;
+    int                             m_charSpeed;
     void                            initializeAudio(const QAudioDeviceInfo &deviceInfo);
     void                            closeEvent(QCloseEvent* pEvent);
 };

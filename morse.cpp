@@ -32,7 +32,8 @@ CMorse::CMorse(QObject *parent) : QObject(parent)
 {
     m_generator.reset(new CGenerator());
     m_generator->setLoop(false);
-    m_WPM = 20;
+    m_wordSpeed = 12;
+    m_charSpeed = 18;
     m_frequency = m_generator->getFrequency();
     m_noiseFilter=0;
     m_noiseCorrelation=0.0;
@@ -100,16 +101,15 @@ void CMorse::code(const QString& pMessage)
     quint64 DotDuration;
     quint64 DelayChar;
     quint64 DelayWord;
-    DotDuration = qRound(60000/static_cast<double>(m_WPM*50))*1000;
+    DotDuration = qRound(60000/static_cast<double>(m_wordSpeed*50))*1000;
     DelayChar = DotDuration*2;
     DelayWord =DotDuration*4;
     if (m_farnsWorth)
     {
-        int FarnsWorthWPM = 18;
-        if (m_WPM < FarnsWorthWPM)
+        if (m_wordSpeed < m_charSpeed)
         {
-            DotDuration = qRound(60000/static_cast<double>(FarnsWorthWPM*50))*1000;
-            quint64 ta = ((FarnsWorthWPM * 60000000) - (37200000 * m_WPM)) / ( FarnsWorthWPM * m_WPM);
+            DotDuration = qRound(60000/static_cast<double>(m_charSpeed*50))*1000;
+            quint64 ta = ((m_charSpeed * 60000000) - (37200000 * m_wordSpeed)) / ( m_charSpeed * m_wordSpeed);
             DelayChar = (3 * ta)/19;
             DelayWord = (7 * ta)/19;
         }

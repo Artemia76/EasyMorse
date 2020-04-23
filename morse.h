@@ -52,7 +52,8 @@ public:
     CGenerator*                 data();
 
     void                        setFrequency(int pFrequency){m_frequency=pFrequency;}
-    void                        setSpeed(int pSpeed){m_WPM=pSpeed;}
+    void                        setWordSpeed(int pWordSpeed){m_wordSpeed=pWordSpeed;}
+    void                        setCharSpeed(int pCharSpeed){m_charSpeed=pCharSpeed;}
     void                        setNoiseCorrelation(qreal pNoiseCorrelation){m_noiseCorrelation=pNoiseCorrelation;}
     void                        setNoiseFilter(int pNoiseFilter){m_noiseFilter=pNoiseFilter;}
     void                        setFarnsWorth(bool pFW);
@@ -64,7 +65,8 @@ private:
     qreal                       m_noiseCorrelation;
     int                         m_noiseFilter;
     QMap                        <QString, QString> m_MorseMapping;
-    quint32                     m_WPM;
+    quint32                     m_wordSpeed;
+    quint32                     m_charSpeed;
     QScopedPointer<CGenerator>  m_generator;
 signals:
 
