@@ -76,8 +76,8 @@ private slots:
 
 private:
     Ui::MainWindow*                 ui;
-    QScopedPointer<CGenerator>      m_generator;
-    QScopedPointer<QAudioOutput>    m_audioOutput;
+    CGenerator                      m_generator;
+    QAudioOutput*                   m_audioOutput;
     CMorse                          m_morse;
     bool                            m_playing_phrase;
     bool                            m_playing_key;

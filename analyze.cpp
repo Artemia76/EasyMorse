@@ -57,7 +57,7 @@ bool CAnalyze::eventFilter(QObject * Object, QEvent *Event)
         {
             if (Object==&m_timer)
             {
-                on_timer();
+                on_update();
                 return true;
             }
             break;
@@ -101,7 +101,7 @@ void CAnalyze::keyReleaseEvent(QKeyEvent* event)
     }
 }
 
-void CAnalyze::on_timer()
+void CAnalyze::on_update()
 {
 #ifdef QT_DEBUG
     m_log->log(tr("Analyze Timer Update"),Qt::magenta,LEVEL_VERBOSE);

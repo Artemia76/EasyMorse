@@ -48,7 +48,7 @@ protected:
     bool    eventFilter(QObject *Object, QEvent *Event);
     void    keyPressEvent(QKeyEvent* event);
     void    keyReleaseEvent(QKeyEvent* event);
-    void    on_timer();
+    void    on_update();
 
 signals:
 

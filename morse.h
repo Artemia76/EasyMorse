@@ -67,7 +67,7 @@ private:
     QMap                        <QString, QString> m_MorseMapping;
     quint32                     m_wordSpeed;
     quint32                     m_charSpeed;
-    QScopedPointer<CGenerator>  m_generator;
+    CGenerator                  m_generator;
 signals:
 
 public slots:

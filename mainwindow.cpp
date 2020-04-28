@@ -96,9 +96,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Setting Log
     m_log = CLogger::instance();
-    connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)),Qt::QueuedConnection);
+    connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)));
 #ifdef QT_DEBUG
-    m_log->setDebugLevel(LEVEL_NORMAL);
+    m_log->setDebugLevel(LEVEL_VERBOSE);
     m_log->log(tr("Main Window started..."),Qt::magenta,LEVEL_NORMAL);
 #endif
 
@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->m_deviceBox->addItem(deviceInfo.deviceName(), QVariant::fromValue(deviceInfo));
     }
     connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::onDeviceChanged);
-
+    m_audioOutput=nullptr;
     //Audio Initialization
     initializeAudio(QAudioDeviceInfo::defaultOutputDevice());
     m_playing_phrase=false;
@@ -149,8 +149,8 @@ MainWindow::~MainWindow()
 ///
 void MainWindow::closeEvent(QCloseEvent*)
 {
-    m_audioOutput->stop();
-    m_generator->stop();
+    if (m_audioOutput != nullptr) m_audioOutput->stop();
+    m_generator.stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());
@@ -175,14 +175,21 @@ void MainWindow::closeEvent(QCloseEvent*)
 
 void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
 {
-    m_generator.reset(new CGenerator());
-    m_generator->setFormat(deviceInfo.preferredFormat());
-    m_generator->setFrequency(m_frequency);
+    if (m_audioOutput!=nullptr)
+    {
+        if (m_audioOutput->state()!=QAudio::State::IdleState) m_audioOutput->stop();
+        disconnect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
+        delete m_audioOutput;
+        m_audioOutput=nullptr;
+    }
+    //m_generator.reset(new CGenerator());
+    m_generator.setFormat(deviceInfo.preferredFormat());
+    m_generator.setFrequency(m_frequency);
     m_morse.setFrequency(m_frequency);
-    m_generator->generateData(1000000, true);
-    m_audioOutput.reset(new QAudioOutput(deviceInfo,deviceInfo.preferredFormat()));
-    connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)),Qt::QueuedConnection);
-    m_generator->start();
+    m_generator.generateData(1000000, true);
+    m_audioOutput=new QAudioOutput(deviceInfo,deviceInfo.preferredFormat(),this);
+    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
+    m_generator.start();
     m_audioOutput->setVolume(m_volume);
     qreal slidervolume = QAudio::convertVolume(m_volume,
         QAudio::LinearVolumeScale,
@@ -194,7 +201,7 @@ void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
     ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
     ui->m_UseFarnsWorth->setChecked(m_morse.getFarnsWorth());
     ui->m_CharSpeed->setValue(m_charSpeed);
-    m_audioOutput->start(m_generator.data());
+    m_audioOutput->start(&m_generator);
     m_audioOutput->suspend();
 }
 
@@ -210,15 +217,18 @@ void MainWindow::onVolumeChanged(int value)
 void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
-    m_generator->stop();
-    m_generator->setFrequency(m_frequency);
-    m_generator->generateData(1000000,true);
+    m_generator.stop();
+    m_generator.setFrequency(m_frequency);
+    m_generator.generateData(1000000,true);
     m_morse.setFrequency(m_frequency);
-    m_generator->start();
-    m_audioOutput->start(m_generator.data());
-    if (!m_playing_key)
+    m_generator.start();
+    if (m_audioOutput != nullptr)
     {
-        m_audioOutput->suspend();
+        m_audioOutput->start(&m_generator);
+        if (!m_playing_key)
+        {
+            m_audioOutput->suspend();
+        }
     }
     ui->m_labelFreq->setText(QString("Sound Freq=%1 Hz").arg(value));
 }
@@ -239,10 +249,7 @@ void MainWindow::onCharSpeedChanged(int value)
 
 void MainWindow::onDeviceChanged(int index)
 {
-    m_generator->stop();
-    m_audioOutput->disconnect();
-    disconnect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
-    m_audioOutput->stop();
+    m_generator.stop();
     initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDeviceInfo>());
 }
 
@@ -267,9 +274,11 @@ void MainWindow::onNoiseFilterChanged(int index)
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    //ui->plainTextEdit->appendPlainText("keyPressEvent occured");
     if ((event->key() == Qt::Key_Alt))
     {
+#ifdef QT_DEBUG
+        m_log->log("keyPressEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
+#endif
         if (m_playing_phrase) return;
         m_audioOutput->resume();
         m_playing_key=true;
@@ -278,9 +287,11 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
-    //ui->plainTextEdit->appendPlainText("keyReleaseEvent occured");
     if (event->key() == Qt::Key_Alt)
     {
+#ifdef QT_DEBUG
+        m_log->log("keyReleaseEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
+#endif
         m_playing_key=false;
         if (m_playing_phrase) return;
         m_audioOutput->suspend();
@@ -304,7 +315,9 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
     {
         case QAudio::IdleState:
         {
+#ifdef QT_DEBUG
             m_log->log(tr("Audio now in idle state"),Qt::magenta,LEVEL_VERBOSE);
+#endif
             if (m_playing_phrase)
                 on_m_pbSend_clicked();
             break;
@@ -314,27 +327,35 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
             // Stopped for other reasons
             if (m_audioOutput->error() != QAudio::NoError)
             {
-                m_log->log(tr("Error occured on audio device"),Qt::magenta,LEVEL_VERBOSE);
+                m_log->log(tr("Error occured on audio device"),Qt::red);
             }
             else
             {
+#ifdef QT_DEBUG
                 m_log->log(tr("Audio now in stopped state"),Qt::magenta,LEVEL_VERBOSE);
+#endif
             }
             break;
         }
         case QAudio::SuspendedState:
         {
+#ifdef QT_DEBUG
             m_log->log(tr("Audio now in suspended state"),Qt::magenta,LEVEL_VERBOSE);
+#endif
             break;
         }
         case QAudio::ActiveState:
         {
+#ifdef QT_DEBUG
             m_log->log(tr("Audio now in active state"),Qt::magenta,LEVEL_VERBOSE);
+#endif
             break;
         }
         default:
         {
-            // ... other cases as appropriate
+#ifdef QT_DEBUG
+            m_log->log(tr("Audio now in unknown state"),Qt::magenta,LEVEL_VERBOSE);
+#endif
             break;
         }
     }
@@ -360,7 +381,12 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
     {
         if (pMessage.isEmpty()) return false;
         m_morse.code(pMessage);
-        if (m_audioOutput->state()!=QAudio::ActiveState) m_audioOutput->start(m_morse.data());
+        if (m_audioOutput != nullptr)
+        {
+            if (m_audioOutput->state()==QAudio::SuspendedState) m_audioOutput->stop();
+            m_audioOutput->reset();
+            if (m_audioOutput->state()!=QAudio::ActiveState) m_audioOutput->start(m_morse.data());
+        }
         m_playing_phrase=true;
         ui->m_deviceBox->setDisabled(true);
         ui->m_frequencySlider->setDisabled(true);
@@ -381,12 +407,15 @@ void MainWindow::StopMorseMessage()
         // Finished playing (no more data)
         m_audioOutput->stop();
         m_morse.data()->stop();
-        m_generator->stop();
-        m_generator->setFrequency(m_frequency);
-        m_generator->generateData(1000000,true);
-        m_generator->start();
-        m_audioOutput->start(m_generator.data());
-        m_audioOutput->suspend();
+        m_generator.stop();
+        m_generator.setFrequency(m_frequency);
+        m_generator.generateData(1000000,true);
+        m_generator.start();
+        if (m_audioOutput != nullptr)
+        {
+            m_audioOutput->start(&m_generator);
+            m_audioOutput->suspend();
+        }
         m_playing_phrase=false;
         ui->m_deviceBox->setDisabled(false);
         ui->m_frequencySlider->setDisabled(false);

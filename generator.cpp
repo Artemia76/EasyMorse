@@ -221,14 +221,13 @@ qint64 CGenerator::readData(char *data, qint64 len)
             if (chunk>0)
             {
                 memcpy(data, m_buffer.constData() + m_pos, static_cast<size_t>(chunk));
+                total = chunk;
+                m_pos = (m_pos + chunk);
             }
-            m_pos = (m_pos + chunk);
-            if (chunk < len)
+            else
             {
-                memset(data+chunk, 0,static_cast<size_t>(len-chunk));
-                return -1;
+                total = 0;
             }
-            total = chunk;
         }
     }
     return total;
@@ -249,7 +248,14 @@ qint64 CGenerator::pos() const
 
 qint64 CGenerator::bytesAvailable() const
 {
-    return m_buffer.size() + QIODevice::bytesAvailable();
+    if (m_loop)
+    {
+        return m_buffer.size() + QIODevice::bytesAvailable();
+    }
+    else
+    {
+        return m_buffer.size()-m_pos;
+    }
 }
 
 bool CGenerator::atEnd() const
