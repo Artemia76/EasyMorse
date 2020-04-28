@@ -510,7 +510,7 @@
    <property name="minimumSize">
     <size>
      <width>157</width>
-     <height>420</height>
+     <height>442</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -536,6 +536,16 @@
      </item>
      <item>
       <widget class="QComboBox" name="m_deviceBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Serial Port</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="m_serialBox"/>
      </item>
      <item>
       <widget class="QLabel" name="m_labelFreq">

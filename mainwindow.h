@@ -32,7 +32,7 @@
 #include <QMainWindow>
 #include <QTableWidgetItem>
 #include <QTimer>
-
+#include <QtSerialPort>
 #include "generator.h"
 #include "morse.h"
 #include "clogger.h"
@@ -56,6 +56,8 @@ protected:
     void    keyPressEvent(QKeyEvent* event);
     void    keyReleaseEvent(QKeyEvent* event);
     void    applicationStateChanged(Qt::ApplicationState state);
+    void    keyerOn();
+    void    keyerOff();
 
 private slots:
     void    onDeviceChanged(int index);
@@ -73,6 +75,10 @@ private slots:
     void    onFarnsWorthChanged(bool value);
     void    onCharSpeedChanged(int value);
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
+    void    on_timer();
+
+signals:
+    void    Keyer(bool value);
 
 private:
     Ui::MainWindow*                 ui;
@@ -88,10 +94,15 @@ private:
     int                             m_frequency;
     qreal                           m_volume;
     qreal                           m_noiseCorrelation;
+    QSerialPort                     m_serial;
     int                             m_noiseFilter;
     int                             m_wordSpeed;
     int                             m_charSpeed;
+    QString                         m_serialPortName;
+    QTimer                          m_timer;
+    bool                            m_CTS;
     void                            initializeAudio(const QAudioDeviceInfo &deviceInfo);
+    void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);
 };
 #endif // MAINWINDOW_H

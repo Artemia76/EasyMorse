@@ -44,13 +44,9 @@ private:
 public:
     explicit                        CAnalyze(QObject *parent = nullptr);
                                     ~CAnalyze ();
-protected:
-    bool    eventFilter(QObject *Object, QEvent *Event);
-    void    keyPressEvent(QKeyEvent* event);
-    void    keyReleaseEvent(QKeyEvent* event);
-    void    on_update();
+public slots:
 
-signals:
+    void                            on_keyer(bool value);
 
 };
 

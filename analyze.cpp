@@ -32,14 +32,10 @@
 
 CAnalyze::CAnalyze(QObject *parent) : QObject(parent)
 {
-    m_keyPressed=false;
     m_log = CLogger::instance();
 #ifdef QT_DEBUG
     m_log->log(tr("Morse Analyser started..."),Qt::magenta,LEVEL_NORMAL);
 #endif
-    qApp->installEventFilter(this);
-    connect(&m_timer,SIGNAL(timeout()),this,SLOT(onUpdate()));
-    m_timer.start(5000);
 }
 
 CAnalyze::~CAnalyze()
@@ -49,61 +45,9 @@ CAnalyze::~CAnalyze()
 #endif
 }
 
-bool CAnalyze::eventFilter(QObject * Object, QEvent *Event)
-{
-    switch (Event->type())
-    {
-        case QEvent::Timer :
-        {
-            if (Object==&m_timer)
-            {
-                on_update();
-                return true;
-            }
-            break;
-        }
-        case QEvent::KeyPress:
-        {
-            keyPressEvent((QKeyEvent*)Event);
-            return false;
-        }
-        case QEvent::KeyRelease:
-        {
-            keyReleaseEvent((QKeyEvent*)Event);
-            return false;
-        }
-        default:
-        {
-        }
-    }
-    return false;
-}
-
-void CAnalyze::keyPressEvent(QKeyEvent* event)
-{
-    if ((event->key()==Qt::Key_Alt)&&(!m_keyPressed))
-    {
-#ifdef QT_DEBUG
-        m_log->log(tr("Morse Analyser key pressed"),Qt::magenta,LEVEL_VERBOSE);
-#endif
-        m_keyPressed=true;
-    }
-}
-
-void CAnalyze::keyReleaseEvent(QKeyEvent* event)
-{
-    if ((event->key()==Qt::Key_Alt)&&m_keyPressed)
-    {
-#ifdef QT_DEBUG
-        m_log->log(tr("Morse Analyser key released"),Qt::magenta,LEVEL_VERBOSE);
-#endif
-        m_keyPressed=false;
-    }
-}
-
-void CAnalyze::on_update()
+void CAnalyze::on_keyer(bool state)
 {
 #ifdef QT_DEBUG
-    m_log->log(tr("Analyze Timer Update"),Qt::magenta,LEVEL_VERBOSE);
+    m_log->log(QString(tr("Morse Analyser keyer value = %1 ...")).arg(state),Qt::magenta,LEVEL_NORMAL);
 #endif
 }

@@ -34,6 +34,7 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QFileDialog>
+#include <QSerialPortInfo>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -80,7 +81,6 @@ MainWindow::MainWindow(QWidget *parent)
     //Set FarnsWorth Option
     connect(ui->m_UseFarnsWorth, &QCheckBox::stateChanged, this, &MainWindow::onFarnsWorthChanged);
     m_morse.setFarnsWorth(m_settings.value("FarnsWorth",true).toBool());
-    m_settings.endGroup();
 
     //Set Word Speed
     connect(ui->m_WordSpeed, &QSlider::valueChanged, this, &MainWindow::onWordSpeedChanged);
@@ -93,6 +93,22 @@ MainWindow::MainWindow(QWidget *parent)
     m_charSpeed = m_settings.value("CharSpeed", 18).toInt();
     m_morse.setCharSpeed(m_charSpeed);
     ui->m_labelCharSpeed->setText(QString("Char Speed = %1 WPM").arg(m_charSpeed));
+    m_settings.endGroup();
+
+    m_settings.beginGroup("serial");
+    m_serialPortName = m_settings.value("PortName",
+#ifdef Q_OS_LINUX
+    "tty0"
+#else
+#ifdef Q_OS_WIN
+    "COM1"
+#endif
+#endif
+    ).toString();
+    m_settings.endGroup();
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
+    m_timer.setSingleShot(false);
+    m_timer.start(10);
 
     // Setting Log
     m_log = CLogger::instance();
@@ -130,13 +146,26 @@ MainWindow::MainWindow(QWidget *parent)
         if (deviceInfo != defaultDeviceInfo)
             ui->m_deviceBox->addItem(deviceInfo.deviceName(), QVariant::fromValue(deviceInfo));
     }
+
+    // Iterat available serial ports
+    for (auto& serialPort : QSerialPortInfo::availablePorts())
+    {
+        ui->m_serialBox->addItem(serialPort.portName());
+    }
+    ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
+
+    initializeSerial(m_serialPortName);
+
     connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::onDeviceChanged);
+    m_CTS=false;
+
     m_audioOutput=nullptr;
     //Audio Initialization
     initializeAudio(QAudioDeviceInfo::defaultOutputDevice());
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
+    connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -169,6 +198,9 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("WordSpeed", m_wordSpeed);
     m_settings.setValue("FarnsWorth",m_morse.getFarnsWorth());
     m_settings.setValue("CharSpeed", m_wordSpeed);
+    m_settings.endGroup();
+    m_settings.beginGroup("serial");
+    m_settings.setValue("PortName", ui->m_serialBox->currentText());
     m_settings.endGroup();
 }
 
@@ -203,6 +235,27 @@ void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
     ui->m_CharSpeed->setValue(m_charSpeed);
     m_audioOutput->start(&m_generator);
     m_audioOutput->suspend();
+}
+
+void MainWindow::initializeSerial(const QString &pSerialPortName)
+{
+    QSerialPortInfo portInfo;
+    for (auto& serialPort : QSerialPortInfo::availablePorts())
+    {
+        if (serialPort.portName()==pSerialPortName)
+        {
+            portInfo = serialPort;
+        }
+    }
+    if (!portInfo.isNull())
+    {
+        if (m_serial.isOpen()) m_serial.close();
+        m_serial.setPort(portInfo);
+        m_serial.setFlowControl(QSerialPort::HardwareControl);
+        m_serial.open(QIODevice::ReadWrite);
+        m_serial.setDataTerminalReady(true);
+    }
+
 }
 
 void MainWindow::onVolumeChanged(int value)
@@ -271,7 +324,6 @@ void MainWindow::onNoiseFilterChanged(int index)
     m_morse.setNoiseFilter(m_noiseFilter);
 }
 
-
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     if ((event->key() == Qt::Key_Alt))
@@ -279,9 +331,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 #ifdef QT_DEBUG
         m_log->log("keyPressEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
 #endif
-        if (m_playing_phrase) return;
-        m_audioOutput->resume();
-        m_playing_key=true;
+        keyerOn();
     }
 }
 
@@ -292,9 +342,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 #ifdef QT_DEBUG
         m_log->log("keyReleaseEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
 #endif
-        m_playing_key=false;
-        if (m_playing_phrase) return;
-        m_audioOutput->suspend();
+        keyerOff();
     }
 }
 
@@ -497,4 +545,45 @@ void MainWindow::saveLog()
 void MainWindow::on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item)
 {
     PlayMorseMessage(item->text());
+}
+
+void MainWindow::on_timer()
+{
+    if (m_serial.isOpen())
+    {
+        QSerialPort::PinoutSignals state = m_serial.pinoutSignals();
+        bool CTS = (state & QSerialPort::ClearToSendSignal) != 0;
+        if (m_playing_phrase) return;
+        if (CTS && (!m_CTS) && (!m_playing_key))
+        {
+            keyerOn();
+        }
+        if ((!CTS) && (m_CTS) && (m_playing_key))
+        {
+            keyerOff();
+        }
+        m_CTS=CTS;
+    }
+}
+
+void MainWindow::keyerOn()
+{
+    if (m_playing_phrase) return;
+    if (!m_playing_key)
+    {
+        m_audioOutput->resume();
+        m_playing_key=true;
+        emit(Keyer(true));
+    }
+}
+
+void MainWindow::keyerOff()
+{
+    if (m_playing_phrase) return;
+    if (m_playing_key)
+    {
+        m_audioOutput->suspend();
+        m_playing_key=false;
+        emit(Keyer(false));
+    }
 }
