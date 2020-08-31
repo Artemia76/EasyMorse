@@ -197,7 +197,7 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.beginGroup("morse");
     m_settings.setValue("WordSpeed", m_wordSpeed);
     m_settings.setValue("FarnsWorth",m_morse.getFarnsWorth());
-    m_settings.setValue("CharSpeed", m_wordSpeed);
+    m_settings.setValue("CharSpeed", m_charSpeed);
     m_settings.endGroup();
     m_settings.beginGroup("serial");
     m_settings.setValue("PortName", ui->m_serialBox->currentText());
