@@ -101,6 +101,7 @@ private:
     QString                         m_serialPortName;
     QTimer                          m_timer;
     bool                            m_CTS;
+    bool                            m_DSR;
     void                            initializeAudio(const QAudioDeviceInfo &deviceInfo);
     void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);

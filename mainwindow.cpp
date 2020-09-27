@@ -553,16 +553,17 @@ void MainWindow::on_timer()
     {
         QSerialPort::PinoutSignals state = m_serial.pinoutSignals();
         bool CTS = (state & QSerialPort::ClearToSendSignal) != 0;
+        bool DSR = (state & QSerialPort::DataSetReadySignal) != 0;
         if (m_playing_phrase) return;
-        if (CTS && (!m_CTS) && (!m_playing_key))
+        if (DSR && (!m_DSR) && (!m_playing_key))
         {
             keyerOn();
         }
-        if ((!CTS) && (m_CTS) && (m_playing_key))
+        if ((!DSR) && (m_DSR) && (m_playing_key))
         {
             keyerOff();
         }
-        m_CTS=CTS;
+        m_DSR=DSR;
     }
 }
 
