@@ -102,9 +102,16 @@ MainWindow::MainWindow(QWidget *parent)
 #else
 #ifdef Q_OS_WIN
     "COM1"
+#else
+#ifdef Q_OS_MAC
+    "tty0"
+#endif
 #endif
 #endif
     ).toString();
+    m_settings.endGroup();
+    m_settings.beginGroup("audio");
+    m_audioDeviceName = m_settings.value("DeviceName","").toString();
     m_settings.endGroup();
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
     m_timer.setSingleShot(false);
@@ -126,8 +133,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->m_LogZone->setMaximumBlockCount(m_maxLine);
     m_log->log(tr("Welcome to EasyMorse"),Qt::blue);
 
-    const QAudioDeviceInfo &defaultDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
-    ui->m_deviceBox->addItem(defaultDeviceInfo.deviceName(), QVariant::fromValue(defaultDeviceInfo));
+    //const QAudioDeviceInfo &defaultDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
+    //ui->m_deviceBox->addItem(defaultDeviceInfo.deviceName(), QVariant::fromValue(defaultDeviceInfo));
 
     if (QFontDatabase::addApplicationFont(":/fonts/morse.ttf")==-1)
         ui->m_LogZone->appendPlainText("Failed to load font");
@@ -143,9 +150,9 @@ MainWindow::MainWindow(QWidget *parent)
     // Iterate available sound devices
     for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
     {
-        if (deviceInfo != defaultDeviceInfo)
             ui->m_deviceBox->addItem(deviceInfo.deviceName(), QVariant::fromValue(deviceInfo));
     }
+    ui->m_deviceBox->setCurrentIndex(ui->m_deviceBox->findText(m_audioDeviceName));
 
     // Iterat available serial ports
     for (auto& serialPort : QSerialPortInfo::availablePorts())
@@ -161,7 +168,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_audioOutput=nullptr;
     //Audio Initialization
-    initializeAudio(QAudioDeviceInfo::defaultOutputDevice());
+    initializeAudio(m_audioDeviceName);
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
@@ -202,10 +209,13 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.beginGroup("serial");
     m_settings.setValue("PortName", ui->m_serialBox->currentText());
     m_settings.endGroup();
+    m_settings.beginGroup("audio");
+    m_settings.setValue("DeviceName", ui->m_deviceBox->currentText());
+    m_settings.endGroup();
 }
 
 
-void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
+void MainWindow::initializeAudio(const QString &pDeviceName)
 {
     if (m_audioOutput!=nullptr)
     {
@@ -214,12 +224,25 @@ void MainWindow::initializeAudio(const QAudioDeviceInfo &deviceInfo)
         delete m_audioOutput;
         m_audioOutput=nullptr;
     }
+    QAudioDeviceInfo device;
+    if (pDeviceName!="")
+    {
+        for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+        {
+                if (deviceInfo.deviceName()==pDeviceName)
+                    device= deviceInfo;
+        }
+    }
+    else
+    {
+        device=QAudioDeviceInfo::defaultOutputDevice();
+    }
     //m_generator.reset(new CGenerator());
-    m_generator.setFormat(deviceInfo.preferredFormat());
+    m_generator.setFormat(device.preferredFormat());
     m_generator.setFrequency(m_frequency);
     m_morse.setFrequency(m_frequency);
     m_generator.generateData(1000000, true);
-    m_audioOutput=new QAudioOutput(deviceInfo,deviceInfo.preferredFormat(),this);
+    m_audioOutput=new QAudioOutput(device,device.preferredFormat(),this);
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
     m_generator.start();
     m_audioOutput->setVolume(m_volume);
@@ -251,9 +274,11 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
     {
         if (m_serial.isOpen()) m_serial.close();
         m_serial.setPort(portInfo);
-        m_serial.setFlowControl(QSerialPort::HardwareControl);
-        m_serial.open(QIODevice::ReadWrite);
+        m_serial.setFlowControl(QSerialPort::NoFlowControl);
+        if (!m_serial.open(QIODevice::ReadWrite))
+            m_log->log(tr("Failed to open Serial port..."),Qt::red,LEVEL_NORMAL);
         m_serial.setDataTerminalReady(true);
+        m_serial.setRequestToSend(false);
     }
 
 }
@@ -303,7 +328,7 @@ void MainWindow::onCharSpeedChanged(int value)
 void MainWindow::onDeviceChanged(int index)
 {
     m_generator.stop();
-    initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDeviceInfo>());
+    initializeAudio(ui->m_deviceBox->currentText() );
 }
 
 void MainWindow::onFarnsWorthChanged(bool value)
@@ -587,4 +612,9 @@ void MainWindow::keyerOff()
         m_playing_key=false;
         emit(Keyer(false));
     }
+}
+
+void MainWindow::on_m_serialBox_currentIndexChanged(int)
+{
+    initializeSerial(ui->m_serialBox->currentText() );
 }

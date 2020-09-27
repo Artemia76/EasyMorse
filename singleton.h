@@ -54,9 +54,9 @@ private:
 template <class T>
 T* Singleton<T>::instance(CreateInstanceFunction create)
 {
-    Singleton::create.store((T*)create);
+    Singleton::create.storeRelaxed((T*)create);
     qCallOnce(init, flag);
-    return (T*)tptr.load();
+    return (T*)tptr.loadRelaxed();
 }
 
 template <class T>
@@ -65,8 +65,8 @@ void Singleton<T>::init()
     static Singleton singleton;
     if (singleton.inited)
     {
-        CreateInstanceFunction createFunction = (CreateInstanceFunction)Singleton::create.load();
-        tptr.store(createFunction());
+        CreateInstanceFunction createFunction = (CreateInstanceFunction)Singleton::create.loadRelaxed();
+        tptr.storeRelaxed(createFunction());
     }
 }
 
@@ -84,7 +84,7 @@ Singleton<T>::~Singleton()
     {
         delete createdTptr;
     }
-    create.store(nullptr);
+    create.storeRelaxed(nullptr);
 }
 
 template<class T> QBasicAtomicPointer<void> Singleton<T>::create = Q_BASIC_ATOMIC_INITIALIZER(nullptr);

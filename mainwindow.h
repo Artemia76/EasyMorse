@@ -77,6 +77,8 @@ private slots:
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
     void    on_timer();
 
+    void on_m_serialBox_currentIndexChanged(int index);
+
 signals:
     void    Keyer(bool value);
 
@@ -99,10 +101,11 @@ private:
     int                             m_wordSpeed;
     int                             m_charSpeed;
     QString                         m_serialPortName;
+    QString                         m_audioDeviceName;
     QTimer                          m_timer;
     bool                            m_CTS;
     bool                            m_DSR;
-    void                            initializeAudio(const QAudioDeviceInfo &deviceInfo);
+    void                            initializeAudio(const QString &pDeviceName);
     void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);
 };

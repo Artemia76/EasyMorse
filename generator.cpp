@@ -77,13 +77,13 @@ void CGenerator::setFormat(const QAudioFormat &pFormat)
 {
     if (pFormat.isValid())
     {
-        CGenerator::m_Format = pFormat;
+        m_Format = pFormat;
     }
 }
 
 QAudioFormat CGenerator::getFormat()
 {
-    return CGenerator::m_Format;
+    return m_Format;
 }
 
 void CGenerator::setFrequency(int pFreq)
@@ -123,9 +123,9 @@ void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
         m_buffer.resize(0);
         m_pos=0;
     }
-    const int channelBytes = CGenerator::m_Format.sampleSize() / 8;
-    const int sampleBytes = CGenerator::m_Format.channelCount() * channelBytes;
-    const int sampleRate = CGenerator::m_Format.sampleRate();
+    const int channelBytes = m_Format.sampleSize() / 8;
+    const int sampleBytes = m_Format.channelCount() * channelBytes;
+    const int sampleRate = m_Format.sampleRate();
     quint64 length = (sampleRate * sampleBytes * durationUs) / 1000000;
     length -= (length % sampleBytes);
     int offset = m_buffer.size();
@@ -161,28 +161,57 @@ void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
         //Compressor to back nois at 100% level
 
         m = w+n;
-        for (int i=0; i<m_Format.channelCount(); ++i) {
-            if (m_Format.sampleSize() == 8) {
-                if (m_Format.sampleType() == QAudioFormat::UnSignedInt) {
+        for (int i=0; i<m_Format.channelCount(); ++i)
+        {
+            if (m_Format.sampleSize() == 8)
+            {
+                if (m_Format.sampleType() == QAudioFormat::UnSignedInt)
+                {
                     const quint8 value = static_cast<quint8>((1.0 + m) / 2 * 255);
                     *reinterpret_cast<quint8 *>(ptr) = value;
-                } else if (m_Format.sampleType() == QAudioFormat::SignedInt) {
+                }
+                else if (m_Format.sampleType() == QAudioFormat::SignedInt)
+                {
                     const qint8 value = static_cast<qint8>(m * 127);
                     *reinterpret_cast<qint8 *>(ptr) = value;
                 }
-            } else if (m_Format.sampleSize() == 16) {
-                if (m_Format.sampleType() == QAudioFormat::UnSignedInt) {
+            }
+            else if (m_Format.sampleSize() == 16)
+            {
+                if (m_Format.sampleType() == QAudioFormat::UnSignedInt)
+                {
                     quint16 value = static_cast<quint16>((1.0 + m) / 2 * 65535);
                     if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
                         qToLittleEndian<quint16>(value, ptr);
                     else
                         qToBigEndian<quint16>(value, ptr);
-                } else if (m_Format.sampleType() == QAudioFormat::SignedInt) {
+                }
+                else if (m_Format.sampleType() == QAudioFormat::SignedInt)
+                {
                     qint16 value = static_cast<qint16>(m * 32767);
                     if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
                         qToLittleEndian<qint16>(value, ptr);
                     else
                         qToBigEndian<qint16>(value, ptr);
+                }
+            }
+            else if (m_Format.sampleSize() == 24)
+            {
+                if (m_Format.sampleType() == QAudioFormat::UnSignedInt)
+                {
+                    quint32 value = static_cast<quint32>((1.0 + m) / 2 * 16777215);
+                    if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
+                        qToLittleEndian<quint32>(value, ptr);
+                    else
+                        qToBigEndian<quint32>(value, ptr);
+                }
+                else if (m_Format.sampleType() == QAudioFormat::SignedInt)
+                {
+                    qint32 value = static_cast<qint32>(m * 8388607);
+                    if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
+                        qToLittleEndian<qint32>(value, ptr);
+                    else
+                        qToBigEndian<qint32>(value, ptr);
                 }
             }
 

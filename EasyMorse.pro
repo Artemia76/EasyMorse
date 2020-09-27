@@ -70,9 +70,9 @@ isEmpty(GIT_PATH) {
 }
 
 # Application Version
-VERSION_MAJOR = 2
-VERSION_MINOR = 2
-VERSION_BUILD = 1
+VERSION_MAJOR = 1
+VERSION_MINOR = 0
+VERSION_BUILD = 0
 DEFINES += APP_NAME=\\\"$${TARGET}\\\"
 DEFINES += APP_MAJOR=$$VERSION_MAJOR
 DEFINES += APP_MINOR=$$VERSION_MINOR
@@ -139,3 +139,30 @@ RESOURCES += \
 ICON = EasyMorse.icns
 
 win32 : RC_FILE = EasyMorse.rc
+
+# Mac specific deploy target
+macx {
+    DEPLOY_DIR=\"$$PWD/../deploy\"
+    message(-----------------------------------)
+    message(DEPLOY_DIR: $$DEPLOY_DIR)
+    message(-----------------------------------)
+    deploy.commands += rm -Rfv $$DEPLOY_DIR/* &&
+    !exists($$DEPLOY_DIR) : deploy.commands += mkdir -p $$DEPLOY_DIR &&
+    deploy.commands += mkdir -p $$OUT_PWD/EasyMorse.app/Contents/PlugIns &&
+    deploy.commands += cp -fv $$[QT_INSTALL_TRANSLATIONS]/qt_??.qm  $$OUT_PWD/EasyMorse.app/Contents/Resources &&
+    deploy.commands += cp -fv $$[QT_INSTALL_TRANSLATIONS]/qt_??_??.qm  $$OUT_PWD/EasyMorse.app/Contents/Resources &&
+    deploy.commands += cp -fv $$[QT_INSTALL_TRANSLATIONS]/qtbase*.qm  $$OUT_PWD/EasyMorse.app/Contents/Resources &&
+    deploy.commands += $$[QT_INSTALL_PREFIX]/bin/macdeployqt EasyMorse.app -always-overwrite -dmg &&
+    deploy.commands += cp -fv $$OUT_PWD/EasyMorse.dmg $$DEPLOY_DIR/EasyMorse_$${VERSION_MAJOR}_$${VERSION_MINOR}_$${VERSION_BUILD}_mac.dmg
+}
+
+# =====================================================================
+# Additional targets
+
+# Need to copy data when compiling
+all.depends = copydata
+
+# Deploy needs compiling before
+deploy.depends = all
+
+QMAKE_EXTRA_TARGETS += deploy copydata all
