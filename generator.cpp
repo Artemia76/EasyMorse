@@ -214,7 +214,25 @@ void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
                         qToBigEndian<qint32>(value, ptr);
                 }
             }
-
+            else if (m_Format.sampleSize() == 32)
+            {
+                if (m_Format.sampleType() == QAudioFormat::UnSignedInt)
+                {
+                    quint32 value = static_cast<quint32>((1.0 + m) / 2 * 4294967295);
+                    if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
+                        qToLittleEndian<quint32>(value, ptr);
+                    else
+                        qToBigEndian<quint32>(value, ptr);
+                }
+                else if (m_Format.sampleType() == QAudioFormat::SignedInt)
+                {
+                    qint32 value = static_cast<qint32>(m * 2147483647);
+                    if (m_Format.byteOrder() == QAudioFormat::LittleEndian)
+                        qToLittleEndian<qint32>(value, ptr);
+                    else
+                        qToBigEndian<qint32>(value, ptr);
+                }
+            }
             ptr += channelBytes;
             length -= channelBytes;
         }
