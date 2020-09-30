@@ -115,6 +115,7 @@ SOURCES += \
     morse.cpp
 
 HEADERS += \
+    EasyMorse.rc \
     analyze.h \
     call_once.h \
     clogger.h \
