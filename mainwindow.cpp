@@ -243,7 +243,7 @@ void MainWindow::initializeAudio(const QString &pDeviceName)
     m_morse.setFrequency(m_frequency);
     m_generator.generateData(1000000, true);
     m_audioOutput=new QAudioOutput(device,device.preferredFormat(),this);
-    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
+    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)),Qt::QueuedConnection);
     m_generator.start();
     m_audioOutput->setVolume(m_volume);
     qreal slidervolume = QAudio::convertVolume(m_volume,
