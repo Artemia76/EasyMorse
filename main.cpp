@@ -26,7 +26,7 @@
  * This is the entry point of easymorse application
  * **************************************************************************/
 
-#include "mainwindow.h"
+#include "gui/mainwindow.h"
 
 #include <QApplication>
 #include <QSettings>

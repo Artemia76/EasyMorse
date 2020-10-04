@@ -106,28 +106,27 @@ message(-----------------------------------)
 # Files
 
 SOURCES += \
-    analyze.cpp \
-    clogger.cpp \
-    datetime.cpp \
-    generator.cpp \
     main.cpp \
-    mainwindow.cpp \
-    morse.cpp
+    gui/mainwindow.cpp \
+    morse/analyze.cpp \
+    morse/morse.cpp \
+    sound/generator.cpp \
+    tools/clogger.cpp \
+    tools/datetime.cpp
 
 HEADERS += \
-    EasyMorse.rc \
-    analyze.h \
-    call_once.h \
-    clogger.h \
-    datetime.h \
-    generator.h \
-    mainwindow.h \
-    morse.h \
-    singleton.h \
-    version.h
+    gui/mainwindow.h \
+    morse/analyze.h \
+    morse/morse.h \
+    sound/generator.h \
+    tools/call_once.h \
+    tools/clogger.h \
+    tools/datetime.h \
+    tools/singleton.h \
+    tools/version.h
 
 FORMS += \
-    mainwindow.ui
+    gui/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
