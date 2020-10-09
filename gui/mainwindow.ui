@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>543</height>
+    <height>569</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,7 +20,7 @@
    <string>Easy Morse</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../resources.qrc">
     <normaloff>:/gfx/Morse_128x128.png</normaloff>:/gfx/Morse_128x128.png</iconset>
   </property>
   <property name="dockNestingEnabled">
@@ -74,7 +74,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -82,8 +82,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionafOptions"/>
+   <addaction name="afAbout"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
+  <widget class="QDockWidget" name="dockGlossary">
    <property name="windowTitle">
     <string>Glossary</string>
    </property>
@@ -765,9 +767,33 @@
     </layout>
    </widget>
   </widget>
+  <action name="actionafOptions">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/gfx/Outils.png</normaloff>:/gfx/Outils.png</iconset>
+   </property>
+   <property name="text">
+    <string>afOptions</string>
+   </property>
+   <property name="toolTip">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="afAbout">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/gfx/help.png</normaloff>:/gfx/help.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="toolTip">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

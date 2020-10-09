@@ -325,7 +325,7 @@ void MainWindow::onCharSpeedChanged(int value)
     ui->m_labelCharSpeed->setText(QString("Char Speed = %1 WPM").arg(m_charSpeed));
 }
 
-void MainWindow::onDeviceChanged(int index)
+void MainWindow::onDeviceChanged(int /*index*/)
 {
     m_generator.stop();
     initializeAudio(ui->m_deviceBox->currentText() );

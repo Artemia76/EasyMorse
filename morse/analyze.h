@@ -21,33 +21,34 @@
 ****************************************************************************/
 
 /****************************************************************************
-** analyze.cpp is part of EasyMorse project
+** analyze.h is part of EasyMorse project
 **
 ** This template provide safe thread calls for singletons
 ****************************************************************************/
 
-#include <QApplication>
-#include "analyze.h"
+#ifndef ANALYZE_H
+#define ANALYZE_H
 
+#include <QWidget>
+#include <QTimer>
+#include <QKeyEvent>
 
-CAnalyze::CAnalyze(QObject *parent) : QObject(parent)
+#include "tools/clogger.h"
+
+class CAnalyze : public QObject
 {
-    m_log = CLogger::instance();
-#ifdef QT_DEBUG
-    m_log->log(tr("Morse Analyser started..."),Qt::magenta,LEVEL_NORMAL);
-#endif
-}
+    Q_OBJECT
+private:
+    CLogger*                        m_log;
+    bool                            m_keyPressed;
+    QTimer                          m_timer;
+public:
+    explicit                        CAnalyze(QObject *parent = nullptr);
+                                    ~CAnalyze ();
+public slots:
 
-CAnalyze::~CAnalyze()
-{
-#ifdef QT_DEBUG
-    m_log->log(tr("Morse Analyser destroyed..."),Qt::magenta,LEVEL_NORMAL);
-#endif
-}
+    void                            on_keyer(bool value);
 
-void CAnalyze::on_keyer(bool state)
-{
-#ifdef QT_DEBUG
-    m_log->log(QString(tr("Morse Analyser keyer value = %1 ...")).arg(state),Qt::magenta,LEVEL_NORMAL);
-#endif
-}
+};
+
+#endif // ANALYZE_H

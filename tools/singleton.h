@@ -30,7 +30,8 @@
 #define SINGLETON_H
 #include <QtGlobal>
 #include <QScopedPointer>
-#include "call_once.h"
+
+#include "tools/call_once.h"
 
 template <class T>
 class Singleton

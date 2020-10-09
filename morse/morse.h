@@ -32,7 +32,7 @@
 #include <QObject>
 #include <QMap>
 
-#include "generator.h"
+#include "sound/generator.h"
 
 class CMorse : public QObject
 {

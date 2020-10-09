@@ -33,10 +33,10 @@
 #include <QTableWidgetItem>
 #include <QTimer>
 #include <QtSerialPort>
-#include "generator.h"
-#include "morse.h"
-#include "clogger.h"
-#include "analyze.h"
+#include "sound/generator.h"
+#include "morse/morse.h"
+#include "tools/clogger.h"
+#include "morse/analyze.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

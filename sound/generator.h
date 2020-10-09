@@ -37,7 +37,7 @@
 #include <QObject>
 #include <QMap>
 
-#include "clogger.h"
+#include "tools/clogger.h"
 
 class CGenerator : public QIODevice
 {
