@@ -114,7 +114,7 @@ void CMorse::code(const QString& pMessage)
         }
     }
 
-    m_generator.generateData(DelayChar, false, true ); // Silent before start
+    m_generator.generateData(DelayChar, true, true ); // Silent before start
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
@@ -139,6 +139,10 @@ void CMorse::code(const QString& pMessage)
         m_generator.generateData(DelayChar, false, true ); //Silent between Char
     }
     m_generator.generateData(DelayChar, false, true ); // Silent at end
+    m_generator.AntiClick();
+    m_generator.NoiseBlank();
+    m_generator.LPF();
+    m_generator.Sampler();
     m_generator.start();
 }
 
@@ -155,4 +159,12 @@ void CMorse::setFarnsWorth(bool pFW)
 bool CMorse::getFarnsWorth()
 {
     return m_farnsWorth;
+}
+
+void CMorse::setFormat(const QAudioFormat &pFormat)
+{
+    if (pFormat.isValid())
+    {
+        m_Format = pFormat;
+    }
 }

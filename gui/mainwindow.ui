@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>569</height>
+    <height>572</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -512,7 +512,7 @@
    <property name="minimumSize">
     <size>
      <width>157</width>
-     <height>442</height>
+     <height>450</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -562,13 +562,13 @@
         <number>200</number>
        </property>
        <property name="maximum">
-        <number>3000</number>
+        <number>1200</number>
        </property>
        <property name="singleStep">
         <number>100</number>
        </property>
        <property name="pageStep">
-        <number>500</number>
+        <number>200</number>
        </property>
        <property name="value">
         <number>600</number>
@@ -632,7 +632,7 @@
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>30</number>
        </property>
        <property name="singleStep">
         <number>1</number>
@@ -641,10 +641,10 @@
         <number>5</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>20</number>
        </property>
        <property name="sliderPosition">
-        <number>10</number>
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -660,7 +660,7 @@
      <item>
       <widget class="QLabel" name="m_labelNoiseMixing">
        <property name="text">
-        <string>Noise Mixing = %1 %</string>
+        <string>Noise Mixing = %1</string>
        </property>
       </widget>
      </item>
@@ -686,20 +686,20 @@
      <item>
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Noise Filter</string>
+        <string> Low Pass Filter = %1</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QSlider" name="m_NoiseFilterSlider">
        <property name="maximum">
-        <number>500</number>
+        <number>100</number>
        </property>
        <property name="singleStep">
-        <number>25</number>
+        <number>5</number>
        </property>
        <property name="pageStep">
-        <number>25</number>
+        <number>10</number>
        </property>
        <property name="value">
         <number>0</number>
@@ -738,13 +738,13 @@
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>18</number>
+        <number>30</number>
        </property>
        <property name="pageStep">
         <number>5</number>
        </property>
        <property name="value">
-        <number>18</number>
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

@@ -62,17 +62,24 @@ public:
     void setNoiseFilter(int pNoiseFilter);
     void setLoop(bool pLoop);
     void generateData(qint64 durationUs=1000000,bool pErase=false, bool pSilent=false);
+    void LPF();
+    void AntiClick();
+    void NoiseBlank();
+    void Sampler();
     void clear();
 private:
     qint64 m_pos = 0;
     bool m_loop;
-    QByteArray m_buffer;
+    QByteArray m_sample;
+    QVector<qreal> m_signal;
 static QAudioFormat m_Format;
     int m_Freq;
     QRandomGenerator m_Rnd;
     qreal   m_noise_correlation;
     qreal   m_Lowfilter_T;
     qreal   m_LastSample;
+    qreal   m_Amplitude;
+    qint64  m_FadeTime; // Anti Clic For loud speaker
     CLogger* m_log;
     void init();
 };
