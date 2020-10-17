@@ -36,6 +36,8 @@
 #include <QFileDialog>
 #include <QSerialPortInfo>
 
+#include <tools/version.h>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -57,23 +59,24 @@ MainWindow::MainWindow(QWidget *parent)
     //Set Sound Frequency
     connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
     m_frequency = m_settings.value("SoundFreq",900).toInt();
-    ui->m_labelFreq->setText(QString("Sound Freq=%1 Hz").arg(m_frequency));
+    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_frequency));
 
     //Set Sound Volume
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
     m_volume = m_settings.value("SoundLevel", 1.0).toReal();
-    ui->m_labelSoundLevel->setText(QString("Sound Level = %1 %").arg(m_volume*100));
+    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume*100));
 
     //Set NoiseCorrelation
     connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
     m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
     m_morse.setNoiseCorrelation(m_noiseCorrelation);
-    ui->m_labelNoiseMixing->setText(QString("Noise Mixing = %1 %").arg(m_noiseCorrelation*100));
+    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(m_noiseCorrelation*100));
 
     //Set noise Filter
     connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
     m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
     m_morse.setNoiseFilter(m_noiseFilter);
+    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(m_noiseFilter));
 
     m_settings.endGroup();
     m_settings.beginGroup("morse");
@@ -86,13 +89,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->m_WordSpeed, &QSlider::valueChanged, this, &MainWindow::onWordSpeedChanged);
     m_wordSpeed = m_settings.value("WordSpeed", 12).toInt();
     m_morse.setWordSpeed(m_wordSpeed);
-    ui->m_labelWordSpeed->setText(QString("Word Speed = %1 WPM").arg(m_wordSpeed));
+    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
 
     //Set Char Speed
     connect(ui->m_CharSpeed, &QSlider::valueChanged, this, &MainWindow::onCharSpeedChanged);
     m_charSpeed = m_settings.value("CharSpeed", 18).toInt();
     m_morse.setCharSpeed(m_charSpeed);
-    ui->m_labelCharSpeed->setText(QString("Char Speed = %1 WPM").arg(m_charSpeed));
+    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
     m_settings.endGroup();
 
     m_settings.beginGroup("serial");
@@ -122,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)));
 #ifdef QT_DEBUG
     m_log->setDebugLevel(LEVEL_VERBOSE);
-    m_log->log(tr("Main Window started..."),Qt::magenta,LEVEL_NORMAL);
+    m_log->log("Main Window started...",Qt::magenta,LEVEL_NORMAL);
 #endif
 
     // LogZone Initialize
@@ -137,7 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->m_deviceBox->addItem(defaultDeviceInfo.deviceName(), QVariant::fromValue(defaultDeviceInfo));
 
     if (QFontDatabase::addApplicationFont(":/fonts/morse.ttf")==-1)
-        ui->m_LogZone->appendPlainText("Failed to load font");
+        ui->m_LogZone->appendPlainText(tr("Failed to load font"));
 
     //Format glossary with morse font
     QFont Morse("morse",12, QFont::Normal);
@@ -173,6 +176,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
     connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
+    setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 }
 
 MainWindow::~MainWindow()
@@ -293,7 +297,7 @@ void MainWindow::onVolumeChanged(int value)
         QAudio::LogarithmicVolumeScale,
         QAudio::LinearVolumeScale);
     m_audioOutput->setVolume(m_volume);
-    ui->m_labelSoundLevel->setText(QString("Sound Level = %1 %").arg(value));
+    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
 }
 
 void MainWindow::onFrequencyChanged(int value)
@@ -315,21 +319,21 @@ void MainWindow::onFrequencyChanged(int value)
             m_audioOutput->suspend();
         }
     }
-    ui->m_labelFreq->setText(QString("Sound Freq=%1 Hz").arg(value));
+    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
 }
 
 void MainWindow::onWordSpeedChanged(int value)
 {
     m_wordSpeed = value;
     m_morse.setWordSpeed(m_wordSpeed);
-    ui->m_labelWordSpeed->setText(QString("Word Speed = %1 WPM").arg(m_wordSpeed));
+    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
 }
 
 void MainWindow::onCharSpeedChanged(int value)
 {
     m_charSpeed = value;
     m_morse.setCharSpeed(m_charSpeed);
-    ui->m_labelCharSpeed->setText(QString("Char Speed = %1 WPM").arg(m_charSpeed));
+    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
 }
 
 void MainWindow::onDeviceChanged(int /*index*/)
@@ -347,13 +351,14 @@ void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
     m_morse.setNoiseCorrelation(m_noiseCorrelation);
-    ui->m_labelNoiseMixing->setText(QString("Noise Mixing = %1 %").arg(index));
+    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
 }
 
 void MainWindow::onNoiseFilterChanged(int index)
 {
     m_noiseFilter = index;
     m_morse.setNoiseFilter(m_noiseFilter);
+    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(index));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -396,7 +401,7 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
         case QAudio::IdleState:
         {
 #ifdef QT_DEBUG
-            m_log->log(tr("Audio now in idle state"),Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in idle state",Qt::magenta,LEVEL_VERBOSE);
 #endif
             if (m_playing_phrase)
                 on_m_pbSend_clicked();
@@ -412,7 +417,7 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
             else
             {
 #ifdef QT_DEBUG
-                m_log->log(tr("Audio now in stopped state"),Qt::magenta,LEVEL_VERBOSE);
+                m_log->log("Audio now in stopped state",Qt::magenta,LEVEL_VERBOSE);
 #endif
             }
             break;
@@ -420,21 +425,21 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
         case QAudio::SuspendedState:
         {
 #ifdef QT_DEBUG
-            m_log->log(tr("Audio now in suspended state"),Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in suspended state",Qt::magenta,LEVEL_VERBOSE);
 #endif
             break;
         }
         case QAudio::ActiveState:
         {
 #ifdef QT_DEBUG
-            m_log->log(tr("Audio now in active state"),Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in active state",Qt::magenta,LEVEL_VERBOSE);
 #endif
             break;
         }
         default:
         {
 #ifdef QT_DEBUG
-            m_log->log(tr("Audio now in unknown state"),Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in unknown state",Qt::magenta,LEVEL_VERBOSE);
 #endif
             break;
         }

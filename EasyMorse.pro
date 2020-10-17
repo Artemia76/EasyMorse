@@ -1,8 +1,39 @@
+#****************************************************************************
+#
+# Copyright (C) 2020 Gianni Peschiutta (F4IKZ)
+# Contact: neophile76@hotmail.fr
+#
+# EasyMorse is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# EasyMorse is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# The license is as published by the Free Software
+# Foundation and appearing in the file LICENSE.GPL3
+# included in the packaging of this software. Please review the following
+# information to ensure the GNU General Public License requirements will
+# be met: https://www.gnu.org/licenses/gpl-3.0.html.
+#****************************************************************************
+
+# Application Version
+VERSION_MAJOR = 1
+VERSION_MINOR = 0
+VERSION_BUILD = 1
+DEFINES += APP_NAME=\\\"$${TARGET}\\\"
+DEFINES += APP_MAJOR=$$VERSION_MAJOR
+DEFINES += APP_MINOR=$$VERSION_MINOR
+DEFINES += APP_BUILD=$$VERSION_BUILD
+
 QT       += core gui multimedia serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -14,6 +45,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+TRANSLATIONS= \
+    intl/easymorse_fr_FR.ts
 
 # =======================================================================
 # Copy ennvironment variables into qmake variables
@@ -68,15 +102,6 @@ isEmpty(GIT_PATH) {
 } else {
   GIT_REVISION='\\"$$system('$$GIT_PATH' rev-parse --short HEAD)\\"'
 }
-
-# Application Version
-VERSION_MAJOR = 1
-VERSION_MINOR = 0
-VERSION_BUILD = 0
-DEFINES += APP_NAME=\\\"$${TARGET}\\\"
-DEFINES += APP_MAJOR=$$VERSION_MAJOR
-DEFINES += APP_MINOR=$$VERSION_MINOR
-DEFINES += APP_BUILD=$$VERSION_BUILD
 
 QMAKE_EXTRA_TARGETS += versionTarget
 
@@ -139,6 +164,12 @@ RESOURCES += \
 ICON = EasyMorse.icns
 
 win32 : RC_FILE = EasyMorse.rc
+
+# Mac OS X - Copy help and Marble plugins and data
+macx {
+    copydata.commands += cp -vf $$PWD/intl/*.qm $$OUT_PWD/easymorse.app/Contents/Resources &&
+    copydata.commands += cp -vf $$PWD/fonts/*.ttf $$OUT_PWD/easymorse.app/Contents/Resources/fonts
+}
 
 # Mac specific deploy target
 macx {

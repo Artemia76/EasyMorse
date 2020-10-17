@@ -248,7 +248,6 @@ void CGenerator::LPF()
 {
         const int sampleRate = m_Format.sampleRate();
         qreal TimeStep = -100000.0 / static_cast<qreal>(sampleRate);
-        qreal LastSample = 0.0;
         //Applying filter
         if (m_Lowfilter_T > 0.0)
         {

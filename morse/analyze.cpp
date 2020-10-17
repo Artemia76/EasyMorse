@@ -35,20 +35,20 @@ CAnalyze::CAnalyze(QObject *parent) : QObject(parent)
 {
     m_log = CLogger::instance();
 #ifdef QT_DEBUG
-    m_log->log(tr("Morse Analyser started..."),Qt::magenta,LEVEL_NORMAL);
+    m_log->log("Morse Analyser started...",Qt::magenta,LEVEL_NORMAL);
 #endif
 }
 
 CAnalyze::~CAnalyze()
 {
 #ifdef QT_DEBUG
-    m_log->log(tr("Morse Analyser destroyed..."),Qt::magenta,LEVEL_NORMAL);
+    m_log->log("Morse Analyser destroyed...",Qt::magenta,LEVEL_NORMAL);
 #endif
 }
 
 void CAnalyze::on_keyer(bool state)
 {
 #ifdef QT_DEBUG
-    m_log->log(QString(tr("Morse Analyser keyer value = %1 ...")).arg(state),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("Morse Analyser keyer value = %1 ...").arg(state),Qt::magenta,LEVEL_NORMAL);
 #endif
 }
