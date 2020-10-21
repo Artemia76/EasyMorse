@@ -174,7 +174,7 @@ MainWindow::MainWindow(QWidget *parent)
     initializeAudio(m_audioDeviceName);
     m_playing_phrase=false;
     m_playing_key=false;
-    m_analyzer = new CAnalyze(this);
+    m_analyzer = new CAnalyze(this, &m_morse);
     connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 }

@@ -168,3 +168,26 @@ void CMorse::setFormat(const QAudioFormat &pFormat)
         m_Format = pFormat;
     }
 }
+
+QString CMorse::decodeMorse(QString pMessage)
+{
+    QString Message;
+    QString Symbol;
+    for (int i = 0; i < pMessage.length(); i++)
+    {
+        QChar Char = pMessage[i];
+        if ((Char != ' ') && (Char != '/'))
+        {
+            Symbol.append(Char);
+            if ((i+1)<pMessage.length()) continue;
+        }
+        Message.append(m_MorseMapping.key(Symbol));
+        Symbol.clear();
+        if (Char==' ')
+        {
+            Message.append(' ');
+            Symbol.clear();
+        }
+    }
+    return Message;
+}
