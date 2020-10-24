@@ -29,11 +29,19 @@ DEFINES += APP_MAJOR=$$VERSION_MAJOR
 DEFINES += APP_MINOR=$$VERSION_MINOR
 DEFINES += APP_BUILD=$$VERSION_BUILD
 
+QMAKE_EXTRA_TARGETS += versionTarget
+
+DEFINES += GIT_REVISION=$$GIT_REVISION
+
 QT       += core gui multimedia serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++14
+CONFIG -= debug_and_release debug_and_release_target
+
+TARGET = easymorse
+TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -103,10 +111,6 @@ isEmpty(GIT_PATH) {
   GIT_REVISION='\\"$$system('$$GIT_PATH' rev-parse --short HEAD)\\"'
 }
 
-QMAKE_EXTRA_TARGETS += versionTarget
-
-DEFINES += GIT_REVISION=$$GIT_REVISION
-
 # =======================================================================
 # Print values when running qmake
 !isEqual(QUIET, "true") {
@@ -165,10 +169,107 @@ ICON = EasyMorse.icns
 
 win32 : RC_FILE = EasyMorse.rc
 
+OTHER_FILES += \
+    README.md \
+    changelog.txt
+win32 {
+    OTHER_FILES += easymorse.iss
+}
+
+# =====================================================================
+# Local deployment commands for development
+unix:!macx {
+    copydata.commands += mkdir -p $$OUT_PWD/translations &&
+    copydata.commands += cp -avfu $$PWD/intl/*.qm $$OUT_PWD/translations
+}
+
 # Mac OS X - Copy help and Marble plugins and data
 macx {
     copydata.commands += cp -vf $$PWD/intl/*.qm $$OUT_PWD/easymorse.app/Contents/Resources &&
     copydata.commands += cp -vf $$PWD/fonts/*.ttf $$OUT_PWD/easymorse.app/Contents/Resources/fonts
+}
+
+#Windows - Copy Qt Style and translation
+win32 {
+    defineReplace(p){return ($$shell_quote($$shell_path($$1)))}
+    copydata.commands = xcopy /Y $$p($$PWD/intl/*.qm) $$p($$OUT_PWD/translations/)
+}
+
+# =====================================================================
+# Deployment commands
+
+#linux make install
+unix:!macx {
+    PREFIX = /usr
+    Binary.path = $${PREFIX}/bin
+    Binary.files = $$OUT_PWD/$${TARGET}
+    INSTALLS += Binary
+
+    Translation.path = $${PREFIX}/share/$${TARGET}/translations
+    Translation.files = $$PWD/translations/*.qm
+    INSTALLS += Translation
+
+    Icons.path = $${PREFIX}/share/icons/hicolor/72x72/apps
+    Icons.files = $$PWD/gfx/Morse_64x64.png
+    INSTALLS += Icons
+
+    Shortcut.path = $${PREFIX}/share/applications
+    Shortcut.files = $$PWD/*.desktop
+    INSTALLS += Shortcut
+}
+
+# Linux specific deploy target
+unix:!macx {
+    DEPLOY_DIR=\"$$DEPLOY_BASE/$$TARGET_NAME\"
+    DEPLOY_DIR_LIB=\"$$DEPLOY_BASE/$$TARGET_NAME/lib\"
+    message(-----------------------------------)
+    message(DEPLOY_DIR: $$DEPLOY_DIR)
+    message(-----------------------------------)
+    deploy.commands += rm -Rfv $$DEPLOY_DIR &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB/iconengines &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB/platformthemes &&
+    deploy.commands += mkdir -pv $$DEPLOY_DIR_LIB/printsupport &&
+    deploy.commands += cp -Rvf $$OUT_PWD/translations $$DEPLOY_DIR &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_TRANSLATIONS]/qt_??.qm  $$DEPLOY_DIR/translations &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_TRANSLATIONS]/qt_??_??.qm  $$DEPLOY_DIR/translations &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_TRANSLATIONS]/qtbase*.qm  $$DEPLOY_DIR/translations &&
+    deploy.commands += cp -vf $$PWD/desktop/qt.conf $$DEPLOY_DIR &&
+    deploy.commands += cp -vf $$PWD/changelog.txt $$DEPLOY_DIR &&
+    deploy.commands += cp -vf $$PWD/README.md $$DEPLOY_DIR &&
+    deploy.commands += cp -vf $$PWD/LICENSE.GPLv3 $$DEPLOY_DIR &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/iconengines/libqsvgicon.so*  $$DEPLOY_DIR_LIB/iconengines &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/imageformats/libqgif.so*  $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/imageformats/libqjpeg.so*  $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/imageformats/libqsvg.so*  $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/imageformats/libqwbmp.so*  $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/imageformats/libqwebp.so*  $$DEPLOY_DIR_LIB/imageformats &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqeglfs.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqlinuxfb.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqminimal.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqminimalegl.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqoffscreen.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platforms/libqxcb.so*  $$DEPLOY_DIR_LIB/platforms &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_PLUGINS]/platformthemes/libqgtk*.so*  $$DEPLOY_DIR_LIB/platformthemes &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libicudata.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libicui18n.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libicuuc.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Concurrent.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Core.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5DBus.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Gui.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Network.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Qml.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Quick.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Script.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Sql.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Svg.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Widgets.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5X11Extras.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5XcbQpa.so*  $$DEPLOY_DIR_LIB &&
+    deploy.commands += cp -vfa $$[QT_INSTALL_LIBS]/libQt5Xml.so* $$DEPLOY_DIR_LIB
 }
 
 # Mac specific deploy target
@@ -185,6 +286,25 @@ macx {
     deploy.commands += cp -fv $$[QT_INSTALL_TRANSLATIONS]/qtbase*.qm  $$OUT_PWD/EasyMorse.app/Contents/Resources &&
     deploy.commands += $$[QT_INSTALL_PREFIX]/bin/macdeployqt EasyMorse.app -always-overwrite -dmg &&
     deploy.commands += cp -fv $$OUT_PWD/EasyMorse.dmg $$DEPLOY_DIR/EasyMorse_$${VERSION_MAJOR}_$${VERSION_MINOR}_$${VERSION_BUILD}_mac.dmg
+}
+
+# Windows specific deploy target
+win32 {
+    defineReplace(p){return ($$shell_quote($$shell_path($$1)))}
+    RC_ICONS = Morse.ico
+    CONFIG(debug, debug|release) : DLL_SUFFIX=d
+    CONFIG(release, debug|release) : DLL_SUFFIX=
+    deploy.commands = ( rmdir /s /q $$p($$DEPLOY_BASE) || echo Directory already empty) &&
+    deploy.commands += mkdir $$p($$DEPLOY_BASE/$$TARGET_NAME/translations) &&
+    deploy.commands += xcopy /Y $$p($$OUT_PWD/ffs2play.exe) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$PWD/README.md) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$PWD/intl/*.qm) $$p($$DEPLOY_BASE/$$TARGET_NAME/translations) &&
+    deploy.commands += xcopy /Y $$p($$PWD/*.txt) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$PWD/LICENSE.GPLv3) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$PWD/easymorse.iss) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$PWD/gfx/Morse.ico) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += $$p($$[QT_INSTALL_BINS]/windeployqt) $$WINDEPLOY_FLAGS $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += compil32 /cc $$p($$DEPLOY_BASE/$$TARGET_NAME/easymorse.iss)
 }
 
 # =====================================================================
