@@ -47,12 +47,15 @@ private:
     CMorse*                         m_morse;
     bool                            m_keyPressed;
     QTimer                          m_timer;
-    quint32                         m_word_space_time;
-    QString                         m_last_String;
-    quint64                         m_dot_duration;
-    quint64                         m_dash_duration;
-    quint64                         m_symb_silent;
-    quint64                         m_char_silent;
+    QString                         m_lastString;
+    quint64                         m_dotDuration;
+    quint64                         m_dashDuration;
+    quint64                         m_symbSilentDuration;
+    quint64                         m_charSilentDuration;
+    quint64                         m_wordSilentDuration;
+    quint64                            m_lastTrigOn;
+    quint64                            m_lastTrigOff;
+    bool                            m_autoAdapt;
 
     void                            DecodeMorse();
 public:

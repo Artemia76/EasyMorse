@@ -39,10 +39,17 @@ CAnalyze::CAnalyze(QObject *parent, CMorse* pMorse)
 #ifdef QT_DEBUG
     m_log->log("Morse Analyser started...",Qt::magenta,LEVEL_NORMAL);
 #endif
-    m_word_space_time = 1000;
+    m_wordSilentDuration = 1000;
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
     m_timer.setSingleShot(true);
-    m_dash_duration=m_dot_duration=m_symb_silent=m_char_silent=0;
+    m_timer.start(m_wordSilentDuration);
+    m_lastTrigOff=0;
+    m_lastTrigOn=0;
+    m_dotDuration = 0;
+    m_dashDuration = 0;
+    m_symbSilentDuration = 0;
+    m_charSilentDuration =0;
+    m_autoAdapt=true;
 }
 
 CAnalyze::~CAnalyze()
@@ -52,30 +59,41 @@ CAnalyze::~CAnalyze()
 #endif
 }
 
+///
+/// \brief On_keyer is a slot called to record key
+/// \param state
+/// \details key state is recorded in buffer. The analyser timer is restarted based on inter word silent duration
+///
 void CAnalyze::on_keyer(bool state)
 {
 #ifdef QT_DEBUG
-    m_log->log(QString("Morse Analyser keyer value = %1 ...").arg(state),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("Morse Analyser keyer value = %1 ...").arg(state),Qt::magenta,LEVEL_VERBOSE);
 #endif
     QByteArray buff;
     QDataStream ds(&buff,QIODevice::WriteOnly);
     ds << static_cast<quint64>(toTimeStamp(Now()));
     ds << state;
     m_buffer.append(buff);
-    m_timer.start(m_word_space_time);
+    m_timer.start(m_wordSilentDuration);
 }
 
+///
+/// \brief CAnalyze::on_timer
+/// \details on_timer is triggered once word or sentence as been finished to analyse the morse code and send it over network and display
+///
 void CAnalyze::on_timer()
 {
-    quint64 LastTrigOn=0;
-    quint64 LastTrigOff=0;
+    if (m_buffer.length()==0)
+    {
+        m_timer.start(m_wordSilentDuration);
+        return;
+    }
     quint64 DotDuration=1000;
     quint64 DashDuration=0;
     quint64 SymbSilentDuration=1000;
-    quint64 CharSilentDuration=0;
     QDataStream ds(&m_buffer,QIODevice::ReadOnly);
 #ifdef QT_DEBUG
-    m_log->log(QString("Morse Analyser On Timer Triggered"),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("Morse Analyser On Timer Triggered"),Qt::magenta,LEVEL_VERBOSE);
 #endif
     while (!ds.atEnd())
     {
@@ -83,62 +101,87 @@ void CAnalyze::on_timer()
         bool State;
         ds >> TimeStamp;
         ds >> State;
-        m_log->log(QString("Time = %1 , Key = %2").arg(TimeStamp).arg(State),Qt::magenta,LEVEL_NORMAL);
-        if (!State && (LastTrigOff==0))
-            LastTrigOff = TimeStamp;
-        if (State && (LastTrigOn==0))
-            LastTrigOn = TimeStamp;
+#ifdef QT_DEBUG
+        m_log->log(QString("Time = %1 , Key = %2").arg(TimeStamp).arg(State),Qt::magenta,LEVEL_VERBOSE);
+#endif
+        if (!State && (m_lastTrigOff==0))
+            m_lastTrigOff = TimeStamp;
+        if (State && (m_lastTrigOn==0))
+            m_lastTrigOn = TimeStamp;
         //if this the end of dash or dot
-        if ((LastTrigOn < LastTrigOff) && (LastTrigOff!=0) && (LastTrigOn!=0))
+        if ((m_lastTrigOn < m_lastTrigOff) && (m_lastTrigOff!=0) && (m_lastTrigOn!=0))
         {
-            quint64 Duration = LastTrigOff-LastTrigOn;
-            if (Duration < DotDuration) DotDuration = Duration;
-            if (Duration > DashDuration) DashDuration = Duration;
-            LastTrigOn=0;
+            quint64 Duration = m_lastTrigOff-m_lastTrigOn;
+            //if auto adaptive is on, we analyse the dot, dash , symbol space and char space duration
+            if (m_autoAdapt)
+            {
+                if (Duration < DotDuration) DotDuration = Duration;
+                if (Duration > DashDuration) DashDuration = Duration;
+            }
+            m_lastTrigOn=0;
         }
         //if this is the end of a silent
-        else if ((LastTrigOff < LastTrigOn) && (LastTrigOff!=0) && (LastTrigOn!=0))
+        else if ((m_lastTrigOff < m_lastTrigOn) && (m_lastTrigOff!=0) && (m_lastTrigOn!=0))
         {
-            quint64 Duration = LastTrigOn-LastTrigOff;
-            if (Duration < SymbSilentDuration) SymbSilentDuration = Duration;
-            LastTrigOff=0;
+            quint64 Duration = m_lastTrigOn-m_lastTrigOff;
+            //if auto adaptive is on, we analyse the dot, dash , symbol space and char space duration
+            if (m_autoAdapt)
+            {
+                if (Duration < SymbSilentDuration) SymbSilentDuration = Duration;
+            }
+            m_lastTrigOff=0;
         }
     }
-    m_log->log("Stats:");
-    if (m_dot_duration) m_dot_duration = (m_dot_duration + DotDuration)/2;
-    else m_dot_duration = DotDuration;
-    if (m_dash_duration) m_dash_duration = (m_dash_duration + DashDuration)/2;
-    else m_dash_duration = DashDuration;
-    if (m_symb_silent)  m_symb_silent = (m_symb_silent + SymbSilentDuration)/2;
-    else m_symb_silent = SymbSilentDuration;
-    if (m_char_silent)  m_char_silent = (m_char_silent + (SymbSilentDuration*3))/2;
-    else m_char_silent = SymbSilentDuration*3;
-    m_log->log(QString("Dot duration in msec : %1").arg(m_dot_duration));
-    m_log->log(QString("Dash duration in msec : %1").arg(m_dash_duration));
-    m_log->log(QString("Symbol Silent duration in msec : %1").arg(m_symb_silent));
-    m_log->log(QString("Char Silent duration in msec : %1").arg(m_char_silent));
+    if (m_autoAdapt)
+    {
+        if (m_dotDuration) m_dotDuration = (m_dotDuration + DotDuration)/2;
+        else m_dotDuration = DotDuration;
+        if (m_dashDuration) m_dashDuration = (m_dashDuration + DashDuration)/2;
+        else m_dashDuration = DashDuration;
+        if (SymbSilentDuration)
+        {
+            m_symbSilentDuration = (m_symbSilentDuration + SymbSilentDuration)/2;
+            m_charSilentDuration = (m_charSilentDuration + (SymbSilentDuration*3))/2;
+        }
+        else
+        {
+            m_symbSilentDuration = m_dotDuration;
+            m_charSilentDuration = m_dotDuration*3;
+        }
+        if (m_charSilentDuration > m_dotDuration) m_wordSilentDuration = m_charSilentDuration*3;
+#ifdef QT_DEBUG
+        m_log->log("Auto adaptive analyzer is on :",Qt::magenta,LEVEL_NORMAL);
+        m_log->log(QString("Dot duration in msec : %1").arg(m_dotDuration),Qt::magenta,LEVEL_NORMAL);
+        m_log->log(QString("Dash duration in msec : %1").arg(m_dashDuration),Qt::magenta,LEVEL_NORMAL);
+        m_log->log(QString("Symbol Silent duration in msec : %1").arg(m_symbSilentDuration),Qt::magenta,LEVEL_NORMAL);
+        m_log->log(QString("Char Silent duration in msec : %1").arg(m_charSilentDuration),Qt::magenta,LEVEL_NORMAL);
+#endif
+    }
     DecodeMorse();
 
-    m_last_String.clear();
+    m_lastString.clear();
 
 
     m_buffer.clear();
     m_buffer.resize(0);
-
+    m_timer.start(m_wordSilentDuration);
 }
 
+///
+/// \brief CAnalyze::DecodeMorse
+///
 void CAnalyze::DecodeMorse()
 {
-    m_last_String.clear();
+    m_lastString.clear();
     quint64 LastTrigOn=0;
     quint64 LastTrigOff=0;
-    //Calculate Margin 10%
-    quint64 DotDash = m_dot_duration + ((m_dash_duration-m_dot_duration)/2);
-    quint64 SymbChar = m_symb_silent + ((m_char_silent-m_symb_silent)/2);
-    quint64 WordDuration = m_char_silent*3;
-    m_log->log(QString("DotDash Separation in msec : %1").arg(DotDash));
-    m_log->log(QString("SymbChar Silent Separation in msec : %1").arg(SymbChar));
-    m_log->log(QString("WordDuration Silent duration in msec : %1").arg(WordDuration));
+    quint64 DotDash = m_dotDuration + ((m_dashDuration-m_dotDuration)/2);
+    quint64 SymbChar = m_symbSilentDuration + ((m_charSilentDuration-m_symbSilentDuration)/2);
+#ifdef QT_DEBUG
+    m_log->log(QString("DotDash Separation in msec : %1").arg(DotDash),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("SymbChar Silent Separation in msec : %1").arg(SymbChar),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("WordDuration Silent duration in msec : %1").arg(m_wordSilentDuration),Qt::magenta,LEVEL_NORMAL);
+#endif
     QDataStream ds(&m_buffer,QIODevice::ReadOnly);
     while (!ds.atEnd())
     {
@@ -157,11 +200,11 @@ void CAnalyze::DecodeMorse()
             // Test if we have a dot
             if (Duration <= DotDash)
             {
-                m_last_String.append('P');
+                m_lastString.append('P');
             }
             else
             {
-                m_last_String.append('T');
+                m_lastString.append('T');
             }
             LastTrigOn=0;
         }
@@ -174,18 +217,20 @@ void CAnalyze::DecodeMorse()
                // Dash or Dot separation
             }
             // It's a char separation
-            else if ((Duration > SymbChar) && (Duration <WordDuration))
+            else if ((Duration > SymbChar) && (Duration <m_wordSilentDuration))
             {
-                m_last_String.append("/");
+                m_lastString.append("/");
             }
             else
             // It's a word separation
             {
-                m_last_String.append(" ");
+                m_lastString.append(" ");
             }
             LastTrigOff=0;
         }
     }
-    m_log->log("Message is : "+ m_last_String);
-    m_log->log(m_morse->decodeMorse(m_last_String));
+#ifdef QT_DEBUG
+    m_log->log("Message is : "+ m_lastString);
+#endif
+    m_log->log(m_morse->decodeMorse(m_lastString));
 }

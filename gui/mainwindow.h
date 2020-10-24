@@ -79,6 +79,8 @@ private slots:
 
     void on_m_serialBox_currentIndexChanged(int index);
 
+    void on_actionafOptions_triggered();
+
 signals:
     void    Keyer(bool value);
 

@@ -23,7 +23,7 @@
 # Application Version
 VERSION_MAJOR = 1
 VERSION_MINOR = 0
-VERSION_BUILD = 2
+VERSION_BUILD = 3
 DEFINES += APP_NAME=\\\"$${TARGET}\\\"
 DEFINES += APP_MAJOR=$$VERSION_MAJOR
 DEFINES += APP_MINOR=$$VERSION_MINOR
@@ -131,6 +131,7 @@ message(-----------------------------------)
 # Files
 
 SOURCES += \
+    gui/options.cpp \
     main.cpp \
     gui/mainwindow.cpp \
     morse/analyze.cpp \
@@ -141,6 +142,7 @@ SOURCES += \
 
 HEADERS += \
     gui/mainwindow.h \
+    gui/options.h \
     morse/analyze.h \
     morse/morse.h \
     sound/generator.h \
@@ -151,7 +153,8 @@ HEADERS += \
     tools/version.h
 
 FORMS += \
-    gui/mainwindow.ui
+    gui/mainwindow.ui \
+    gui/options.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
