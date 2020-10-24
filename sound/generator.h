@@ -36,6 +36,7 @@
 #include <QIODevice>
 #include <QObject>
 #include <QMap>
+#include <QVector>
 
 #include "tools/clogger.h"
 
