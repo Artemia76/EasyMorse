@@ -26,7 +26,7 @@
 * This class define the main window of the application
 * **************************************************************************/
 
-#include "mainwindow.h"
+#include <gui/mainwindow.h>
 #include "ui_mainwindow.h"
 
 #include <QDebug>
@@ -37,6 +37,7 @@
 #include <QSerialPortInfo>
 
 #include <tools/version.h>
+#include <gui/options.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -174,7 +175,7 @@ MainWindow::MainWindow(QWidget *parent)
     initializeAudio(m_audioDeviceName);
     m_playing_phrase=false;
     m_playing_key=false;
-    m_analyzer = new CAnalyze(this);
+    m_analyzer = new CAnalyze(this, &m_morse);
     connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 }
@@ -633,4 +634,10 @@ void MainWindow::keyerOff()
 void MainWindow::on_m_serialBox_currentIndexChanged(int)
 {
     initializeSerial(ui->m_serialBox->currentText() );
+}
+
+void MainWindow::on_actionafOptions_triggered()
+{
+    Options* DlgOptions= new Options(this);
+    DlgOptions->show();
 }

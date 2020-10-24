@@ -92,7 +92,7 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
+   <widget class="QWidget" name="vlGlossaire">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item alignment="Qt::AlignHCenter">
       <widget class="QTableWidget" name="m_TableGlossaire">
@@ -508,7 +508,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockOptions">
    <property name="minimumSize">
     <size>
      <width>166</width>
@@ -521,7 +521,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
+   <widget class="QWidget" name="vlOptions">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QLabel" name="label_2">
@@ -763,6 +763,21 @@
         </size>
        </property>
       </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockDecode">
+   <property name="windowTitle">
+    <string>Morse Decode</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPlainTextEdit" name="plainTextEdit"/>
      </item>
     </layout>
    </widget>

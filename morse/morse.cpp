@@ -81,6 +81,29 @@ void CMorse::initMorseMap (Code pCode)
         m_MorseMapping["8"] = "TTTPP";
         m_MorseMapping["9"] = "TTTTP";
         m_MorseMapping["0"] = "TTTTT";
+        m_MorseMapping["."] = "PTPTPT";
+        m_MorseMapping[","] = "TTPPTT";
+        m_MorseMapping["?"] = "PPTTPP";
+        m_MorseMapping["'"] = "PTTTTP";
+        m_MorseMapping["!"] = "TPTPTT";
+        m_MorseMapping["/"] = "TPPTP";
+        m_MorseMapping["("] = "TPTTP";
+        m_MorseMapping[")"] = "TPTTPT";
+        m_MorseMapping["&"] = "PTPPP";
+        m_MorseMapping[":"] = "TTTPPP";
+        m_MorseMapping[";"] = "TPTPTP";
+        m_MorseMapping["="] = "TPPPT";
+        m_MorseMapping["+"] = "PTPTP";
+        m_MorseMapping["-"] = "TPPPPT";
+        m_MorseMapping["_"] = "PPTTPT";
+        m_MorseMapping["\""] = "PTPPTP";
+        m_MorseMapping["$"] = "PPPTPPT";
+        m_MorseMapping["@"] = "PTTPTP";
+        m_MorseMapping["Ä"] = "PTPT";
+        m_MorseMapping["À"] = "PTTPT";
+        m_MorseMapping["Ç"] = "TPTPP";
+        m_MorseMapping["È"] = "PTPPT";
+        m_MorseMapping["É"] = "PPTPP";
         break;
     case American:
         break;
@@ -167,4 +190,27 @@ void CMorse::setFormat(const QAudioFormat &pFormat)
     {
         m_Format = pFormat;
     }
+}
+
+QString CMorse::decodeMorse(QString pMessage)
+{
+    QString Message;
+    QString Symbol;
+    for (int i = 0; i < pMessage.length(); i++)
+    {
+        QChar Char = pMessage[i];
+        if ((Char != ' ') && (Char != '/'))
+        {
+            Symbol.append(Char);
+            if ((i+1)<pMessage.length()) continue;
+        }
+        Message.append(m_MorseMapping.key(Symbol));
+        Symbol.clear();
+        if (Char==' ')
+        {
+            Message.append(' ');
+            Symbol.clear();
+        }
+    }
+    return Message;
 }

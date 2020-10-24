@@ -32,22 +32,39 @@
 #include <QWidget>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QDataStream>
 
 #include "tools/clogger.h"
+#include "tools/datetime.h"
+#include "morse/morse.h"
 
 class CAnalyze : public QObject
 {
     Q_OBJECT
 private:
+    QByteArray                      m_buffer;
     CLogger*                        m_log;
+    CMorse*                         m_morse;
     bool                            m_keyPressed;
     QTimer                          m_timer;
+    QString                         m_lastString;
+    quint64                         m_dotDuration;
+    quint64                         m_dashDuration;
+    quint64                         m_symbSilentDuration;
+    quint64                         m_charSilentDuration;
+    quint64                         m_wordSilentDuration;
+    quint64                            m_lastTrigOn;
+    quint64                            m_lastTrigOff;
+    bool                            m_autoAdapt;
+
+    void                            DecodeMorse();
 public:
-    explicit                        CAnalyze(QObject *parent = nullptr);
+    explicit                        CAnalyze(QObject *parent = nullptr,CMorse* pMorse = nullptr);
                                     ~CAnalyze ();
 public slots:
 
     void                            on_keyer(bool value);
+    void                            on_timer();
 
 };
 

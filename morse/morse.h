@@ -58,6 +58,7 @@ public:
     void                        setNoiseFilter(int pNoiseFilter){m_noiseFilter=pNoiseFilter;}
     void                        setFarnsWorth(bool pFW);
     bool                        getFarnsWorth();
+    QString                     decodeMorse(QString pMessage);
 
 private:
     int                         m_frequency;
