@@ -148,7 +148,7 @@ void CAnalyze::on_timer()
             m_symbSilentDuration = m_dotDuration;
             m_charSilentDuration = m_dotDuration*3;
         }
-        if (m_charSilentDuration > m_dotDuration) m_wordSilentDuration = m_charSilentDuration*3;
+        m_wordSilentDuration = m_charSilentDuration*2;
 #ifdef QT_DEBUG
         m_log->log("Auto adaptive analyzer is on :",Qt::magenta,LEVEL_NORMAL);
         m_log->log(QString("Dot duration in msec : %1").arg(m_dotDuration),Qt::magenta,LEVEL_NORMAL);

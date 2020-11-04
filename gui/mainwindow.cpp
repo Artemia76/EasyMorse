@@ -172,7 +172,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_audioOutput=nullptr;
     //Audio Initialization
-    initializeAudio(m_audioDeviceName);
+    initializeSoundCard(m_audioDeviceName);
+    initializeAudio();
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this, &m_morse);
@@ -219,8 +220,7 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.endGroup();
 }
 
-
-void MainWindow::initializeAudio(const QString &pDeviceName)
+void MainWindow::initializeSoundCard (const QString &pDeviceName)
 {
     if (m_audioOutput!=nullptr)
     {
@@ -229,31 +229,35 @@ void MainWindow::initializeAudio(const QString &pDeviceName)
         delete m_audioOutput;
         m_audioOutput=nullptr;
     }
-    QAudioDeviceInfo device;
     if (pDeviceName!="")
     {
         for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
         {
                 if (deviceInfo.deviceName()==pDeviceName)
-                    device= deviceInfo;
+                    m_device= deviceInfo;
         }
     }
     else
     {
-        device=QAudioDeviceInfo::defaultOutputDevice();
+        m_device=QAudioDeviceInfo::defaultOutputDevice();
     }
+}
+
+void MainWindow::initializeAudio()
+{
     //m_generator.reset(new CGenerator());
-    m_generator.setFormat(device.preferredFormat());
-    m_morse.setFormat(device.preferredFormat());
+    m_generator.setFormat(m_device.preferredFormat());
+    m_morse.setFormat(m_device.preferredFormat());
     m_generator.setFrequency(m_frequency);
     m_morse.setFrequency(m_frequency);
     m_generator.generateData(1000000, true);
     m_generator.NoiseBlank();
     m_generator.LPF();
     m_generator.Sampler();
-    m_audioOutput=new QAudioOutput(device,device.preferredFormat(),this);
+    m_audioOutput=new QAudioOutput(m_device,m_device.preferredFormat(),this);
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)),Qt::QueuedConnection);
     m_audioOutput->setVolume(m_volume);
+    m_audioOutput->setCategory("EasyMorse");
     m_generator.start();
     qreal slidervolume = QAudio::convertVolume(m_volume,
         QAudio::LinearVolumeScale,
@@ -340,7 +344,8 @@ void MainWindow::onCharSpeedChanged(int value)
 void MainWindow::onDeviceChanged(int /*index*/)
 {
     m_generator.stop();
-    initializeAudio(ui->m_deviceBox->currentText() );
+    initializeSoundCard(ui->m_deviceBox->currentText() );
+    initializeAudio();
 }
 
 void MainWindow::onFarnsWorthChanged(bool value)
@@ -469,9 +474,9 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
         m_morse.code(pMessage);
         if (m_audioOutput != nullptr)
         {
-            if (m_audioOutput->state()==QAudio::SuspendedState) m_audioOutput->stop();
-            m_audioOutput->reset();
-            m_audioOutput->setVolume(m_volume);
+            //if (m_audioOutput->state()==QAudio::SuspendedState) m_audioOutput->stop();
+            //m_audioOutput->reset();
+            //m_audioOutput->setVolume(m_volume);
             if (m_audioOutput->state()!=QAudio::ActiveState) m_audioOutput->start(m_morse.data());
         }
         m_playing_phrase=true;

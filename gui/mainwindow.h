@@ -88,6 +88,7 @@ private:
     Ui::MainWindow*                 ui;
     CGenerator                      m_generator;
     QAudioOutput*                   m_audioOutput;
+    QAudioDeviceInfo                m_device;
     CMorse                          m_morse;
     bool                            m_playing_phrase;
     bool                            m_playing_key;
@@ -107,7 +108,8 @@ private:
     QTimer                          m_timer;
     bool                            m_CTS;
     bool                            m_DSR;
-    void                            initializeAudio(const QString &pDeviceName);
+    void                            initializeSoundCard (const QString &pDeviceName);
+    void                            initializeAudio();
     void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);
 };
