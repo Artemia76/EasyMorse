@@ -194,6 +194,7 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent*)
 {
     if (m_audioOutput != nullptr) m_audioOutput->stop();
+    if (m_serial.isOpen()) m_serial.close();
     m_generator.stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
