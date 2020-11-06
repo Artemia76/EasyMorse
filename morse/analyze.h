@@ -44,7 +44,6 @@ class CAnalyze : public QObject
 private:
     QByteArray                      m_buffer;
     CLogger*                        m_log;
-    CMorse*                         m_morse;
     bool                            m_keyPressed;
     QTimer                          m_timer;
     QString                         m_lastString;
@@ -56,8 +55,9 @@ private:
     quint64                            m_lastTrigOn;
     quint64                            m_lastTrigOff;
     bool                            m_autoAdapt;
+    QSettings                       m_settings;
 
-    void                            DecodeMorse();
+    QString                         DecodeMorse();
 public:
     explicit                        CAnalyze(QObject *parent = nullptr,CMorse* pMorse = nullptr);
                                     ~CAnalyze ();
@@ -65,7 +65,8 @@ public slots:
 
     void                            on_keyer(bool value);
     void                            on_timer();
-
+signals:
+    void                            fire_message(QString pMessage="");
 };
 
 #endif // ANALYZE_H

@@ -30,6 +30,11 @@
 #define OPTIONS_H
 
 #include <QDialog>
+#include <QAudioDeviceInfo>
+#include <QAudioOutput>
+#include <QSettings>
+#include <QSerialPort>
+#include <QSerialPortInfo>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Options; }
@@ -41,8 +46,26 @@ class Options : public QDialog
 
 public:
     Options(QWidget *parent = nullptr);
+private slots:
+    void on_m_volumeSlider_valueChanged(int value);
+
+    void on_m_frequencySlider_valueChanged(int value);
+
+    void on_m_NoiseCorr_valueChanged(int value);
+
+    void on_m_NoiseFilterSlider_valueChanged(int value);
+
+    void on_m_CharSpeed_valueChanged(int value);
+
+    void on_m_WordSpeed_valueChanged(int value);
+
 private:
     Ui::Options*                 ui;
+    QAudioOutput*                m_audioOutput;
+    QAudioDeviceInfo             m_device;
+    QSettings                    m_settings;
+    QString                      m_audioDeviceName;
+    QString                      m_serialPortName;
 };
 
 #endif // OPTIONS_H

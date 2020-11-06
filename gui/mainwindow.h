@@ -76,6 +76,7 @@ private slots:
     void    onCharSpeedChanged(int value);
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
     void    on_timer();
+    void    on_morse_message(QString pMessage);
 
     void on_m_serialBox_currentIndexChanged(int index);
 

@@ -34,7 +34,6 @@
 CAnalyze::CAnalyze(QObject *parent, CMorse* pMorse)
     : QObject(parent)
 {
-    m_morse = pMorse;
     m_log = CLogger::instance();
 #ifdef QT_DEBUG
     m_log->log("Morse Analyser started...",Qt::magenta,LEVEL_NORMAL);
@@ -45,15 +44,24 @@ CAnalyze::CAnalyze(QObject *parent, CMorse* pMorse)
     m_timer.start(m_wordSilentDuration);
     m_lastTrigOff=0;
     m_lastTrigOn=0;
-    m_dotDuration = 0;
-    m_dashDuration = 0;
-    m_symbSilentDuration = 0;
-    m_charSilentDuration =0;
-    m_autoAdapt=true;
+    m_settings.beginGroup("morse");
+    m_dotDuration = m_settings.value("DotDuration",0).toULongLong();
+    m_dashDuration = m_settings.value("DashDuration",0).toULongLong();
+    m_symbSilentDuration = m_settings.value("SymbolSilentDuration",0).toULongLong();
+    m_charSilentDuration = m_settings.value("CharacterSilentDuration",0).toULongLong();
+    m_autoAdapt=m_settings.value("AutoAdapt",true).toBool();
+    m_settings.endGroup();
 }
 
 CAnalyze::~CAnalyze()
 {
+    m_settings.beginGroup("morse");
+    m_settings.setValue("DotDuration",m_dotDuration);
+    m_settings.setValue("DashDuration",m_dashDuration);
+    m_settings.setValue("SymbolSilentDuration",m_symbSilentDuration);
+    m_settings.setValue("CharacterSilentDuration",m_charSilentDuration);
+    m_settings.setValue("AutoAdapt",m_autoAdapt);
+    m_settings.endGroup();
 #ifdef QT_DEBUG
     m_log->log("Morse Analyser destroyed...",Qt::magenta,LEVEL_NORMAL);
 #endif
@@ -157,7 +165,7 @@ void CAnalyze::on_timer()
         m_log->log(QString("Char Silent duration in msec : %1").arg(m_charSilentDuration),Qt::magenta,LEVEL_NORMAL);
 #endif
     }
-    DecodeMorse();
+    emit (fire_message(DecodeMorse()));
 
     m_lastString.clear();
 
@@ -170,7 +178,7 @@ void CAnalyze::on_timer()
 ///
 /// \brief CAnalyze::DecodeMorse
 ///
-void CAnalyze::DecodeMorse()
+QString CAnalyze::DecodeMorse()
 {
     m_lastString.clear();
     quint64 LastTrigOn=0;
@@ -232,5 +240,6 @@ void CAnalyze::DecodeMorse()
 #ifdef QT_DEBUG
     m_log->log("Message is : "+ m_lastString);
 #endif
-    m_log->log(m_morse->decodeMorse(m_lastString));
+    return m_lastString;
+    //m_log->log(m_morse->decodeMorse(m_lastString));
 }

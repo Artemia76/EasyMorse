@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>667</height>
+    <height>860</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -777,7 +777,11 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      <widget class="QPlainTextEdit" name="m_MorseZone">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
