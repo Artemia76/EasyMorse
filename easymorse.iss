@@ -22,7 +22,7 @@
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 ArchitecturesInstallIn64BitMode=x64
-AppId={DB764E94-E3B1-4475-8609-C0882210D89C}
+AppId={{DB764E94-E3B1-4475-8609-C0882210D89C}}
 AppName={#ApplicationName}
 AppVerName={#ApplicationName} {#ApplicationVersion}
 AppPublisher={#ApplicationPublisher}
@@ -32,7 +32,7 @@ AppUpdatesURL={#ApplicationURL}
 DefaultDirName={pf}\{#ApplicationName}
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE.GPLv3
-InfoBeforeFile=changelog.txt
+;InfoBeforeFile=changelog.txt
 OutputDir=.\
 OutputBaseFilename= {#InstallFileName}
 SetupIconFile=.\Morse.ico
@@ -55,10 +55,10 @@ Source: "{#ApplicationFullPath}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDir}Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#BaseDir}Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDir}Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#BaseDir}Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#BaseDir}platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#BaseDir}iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -74,5 +74,5 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#ApplicationName}
 
 [Run]
 Filename: "{app}\{#ApplicationExeName}"; Description: "{cm:LaunchProgram,{#StringChange(ApplicationName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/Q"; Flags: waituntilterminated skipifdoesntexist; StatusMsg: "Microsoft Visual C++ 2017 (x64) installation. Please Wait..."
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/Q"; Flags: waituntilterminated skipifdoesntexist; StatusMsg: "Microsoft Visual C++ 2019 (x64) installation. Please Wait..."
 

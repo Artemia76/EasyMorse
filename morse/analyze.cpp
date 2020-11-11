@@ -31,7 +31,7 @@
 #include "analyze.h"
 #include "morse.h"
 
-CAnalyze::CAnalyze(QObject *parent, CMorse* pMorse)
+CAnalyze::CAnalyze(QObject *parent)
     : QObject(parent)
 {
     m_log = CLogger::instance();

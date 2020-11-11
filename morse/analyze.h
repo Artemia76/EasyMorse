@@ -59,7 +59,7 @@ private:
 
     QString                         DecodeMorse();
 public:
-    explicit                        CAnalyze(QObject *parent = nullptr,CMorse* pMorse = nullptr);
+    explicit                        CAnalyze(QObject *parent = nullptr);
                                     ~CAnalyze ();
 public slots:
 

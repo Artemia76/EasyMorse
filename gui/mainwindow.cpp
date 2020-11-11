@@ -176,7 +176,7 @@ MainWindow::MainWindow(QWidget *parent)
     initializeAudio();
     m_playing_phrase=false;
     m_playing_key=false;
-    m_analyzer = new CAnalyze(this, &m_morse);
+    m_analyzer = new CAnalyze(this);
     connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
     connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(on_morse_message(QString)));
 

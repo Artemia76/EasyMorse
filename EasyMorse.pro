@@ -33,14 +33,15 @@ QMAKE_EXTRA_TARGETS += versionTarget
 
 DEFINES += GIT_REVISION=$$GIT_REVISION
 
-QT       += core gui multimedia serialport
+QT += core gui multimedia serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++14
+CONFIG += build_all c++14
 CONFIG -= debug_and_release debug_and_release_target
 
 TARGET = easymorse
+TARGET_NAME = $$TARGET
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -195,7 +196,12 @@ macx {
 #Windows - Copy Qt Style and translation
 win32 {
     defineReplace(p){return ($$shell_quote($$shell_path($$1)))}
-    copydata.commands = xcopy /Y $$p($$PWD/intl/*.qm) $$p($$OUT_PWD/translations/)
+    exists($$OUT_PWD/translations) {
+        message("existing")
+    } else {
+        copydata.commands = mkdir $$p($$OUT_PWD/translations) &&
+    }
+    copydata.commands += xcopy /Y $$p($$PWD/intl/*.qm) $$p($$OUT_PWD/translations)
 }
 
 # =====================================================================
@@ -294,15 +300,15 @@ macx {
 # Windows specific deploy target
 win32 {
     defineReplace(p){return ($$shell_quote($$shell_path($$1)))}
-    RC_ICONS = Morse.ico
+    RC_ICONS = $$p($$PWD/gfx/Morse.ico)
     CONFIG(debug, debug|release) : DLL_SUFFIX=d
     CONFIG(release, debug|release) : DLL_SUFFIX=
     deploy.commands = ( rmdir /s /q $$p($$DEPLOY_BASE) || echo Directory already empty) &&
     deploy.commands += mkdir $$p($$DEPLOY_BASE/$$TARGET_NAME/translations) &&
-    deploy.commands += xcopy /Y $$p($$OUT_PWD/ffs2play.exe) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    deploy.commands += xcopy /Y $$p($$OUT_PWD/$$TARGET.$$TARGET_EXT) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
     deploy.commands += xcopy /Y $$p($$PWD/README.md) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
     deploy.commands += xcopy /Y $$p($$PWD/intl/*.qm) $$p($$DEPLOY_BASE/$$TARGET_NAME/translations) &&
-    deploy.commands += xcopy /Y $$p($$PWD/*.txt) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
+    #deploy.commands += xcopy /Y $$p($$PWD/*.txt) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
     deploy.commands += xcopy /Y $$p($$PWD/LICENSE.GPLv3) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
     deploy.commands += xcopy /Y $$p($$PWD/easymorse.iss) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
     deploy.commands += xcopy /Y $$p($$PWD/gfx/Morse.ico) $$p($$DEPLOY_BASE/$$TARGET_NAME) &&
@@ -320,3 +326,6 @@ all.depends = copydata
 deploy.depends = all
 
 QMAKE_EXTRA_TARGETS += deploy copydata all
+
+DISTFILES += \
+    LICENSE.GPLv3
