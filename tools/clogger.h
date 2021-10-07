@@ -32,7 +32,7 @@
 #include <QObject>
 #include <QSettings>
 #include <QColor>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QMutex>
 
 enum CL_DEBUG_LEVEL
@@ -54,7 +54,7 @@ private:
     QSettings               m_settings;
     bool                    m_logToFile;
     QString                 m_filtreLog;
-    QRegExp                 m_rx;
+    QRegularExpression      m_rx;
     QMutex                  m_mutex;
 
 public:

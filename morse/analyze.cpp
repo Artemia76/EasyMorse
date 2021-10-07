@@ -144,8 +144,13 @@ void CAnalyze::on_timer()
     {
         if (m_dotDuration) m_dotDuration = (m_dotDuration + DotDuration)/2;
         else m_dotDuration = DotDuration;
+
         if (m_dashDuration) m_dashDuration = (m_dashDuration + DashDuration)/2;
         else m_dashDuration = DashDuration;
+
+        if (m_dotDuration > 1000) m_dotDuration = 1000;
+        if (m_dashDuration > 3000) m_dashDuration = 3000;
+
         if (SymbSilentDuration)
         {
             m_symbSilentDuration = (m_symbSilentDuration + SymbSilentDuration)/2;
@@ -165,7 +170,7 @@ void CAnalyze::on_timer()
         m_log->log(QString("Char Silent duration in msec : %1").arg(m_charSilentDuration),Qt::magenta,LEVEL_NORMAL);
 #endif
     }
-    emit (fire_message(DecodeMorse()));
+    emit fire_message(DecodeMorse());
 
     m_lastString.clear();
 

@@ -29,6 +29,8 @@
 #include <gui/mainwindow.h>
 #include "ui_mainwindow.h"
 
+#include <QAudioDevice>
+#include <QAudioSink>
 #include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>
@@ -42,13 +44,15 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , m_devices(new QMediaDevices(this))
 {
     ui->setupUi(this);
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainWindow::applicationStateChanged);
+    connect(ui->actionafOptions, &QAction::triggered, this, &MainWindow::onActionAFOptionsTriggered);
     // Init window position and size
     m_settings.beginGroup("MainWindow");
     restoreGeometry(m_settings.value("Geometry").toByteArray());
-    restoreState(m_settings.value("State").toByteArray());
+    //restoreState(m_settings.value("State").toByteArray());
     m_settings.endGroup();
 
     m_settings.beginGroup("log");
@@ -152,11 +156,16 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     // Iterate available sound devices
-    for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+    const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
+    ui->m_deviceBox->addItem(defaultDeviceInfo.description(), QVariant::fromValue(defaultDeviceInfo));
+    for (auto &deviceInfo: m_devices->audioOutputs())
     {
-            ui->m_deviceBox->addItem(deviceInfo.deviceName(), QVariant::fromValue(deviceInfo));
+        if (deviceInfo != defaultDeviceInfo)
+            ui->m_deviceBox->addItem(deviceInfo.description(), QVariant::fromValue(deviceInfo));
     }
+    initializeAudio(defaultDeviceInfo);
     ui->m_deviceBox->setCurrentIndex(ui->m_deviceBox->findText(m_audioDeviceName));
+    connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::onDeviceChanged);
 
     // Iterat available serial ports
     for (auto& serialPort : QSerialPortInfo::availablePorts())
@@ -167,18 +176,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     initializeSerial(m_serialPortName);
 
-    connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::onDeviceChanged);
     m_CTS=false;
-
-    m_audioOutput=nullptr;
-    //Audio Initialization
-    initializeSoundCard(m_audioDeviceName);
-    initializeAudio();
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
     connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
-    connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(on_morse_message(QString)));
+    connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(onMorseMessage(QString)));
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 }
@@ -193,7 +196,7 @@ MainWindow::~MainWindow()
 ///
 void MainWindow::closeEvent(QCloseEvent*)
 {
-    if (m_audioOutput != nullptr) m_audioOutput->stop();
+    //if (m_audioOutput != nullptr) m_audioOutput->stop();
     if (m_serial.isOpen()) m_serial.close();
     m_generator.stop();
     m_settings.beginGroup("MainWindow");
@@ -208,7 +211,7 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("SoundLevel", m_volume);
     m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
     m_settings.setValue("NoiseFilter",m_noiseFilter);
-    m_settings.setValue("Device",QAudioDeviceInfo::defaultOutputDevice().deviceName());
+    m_settings.setValue("Device",QMediaDevices::defaultAudioOutput().description());
     m_settings.endGroup();
     m_settings.beginGroup("morse");
     m_settings.setValue("WordSpeed", m_wordSpeed);
@@ -223,45 +226,26 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.endGroup();
 }
 
-void MainWindow::initializeSoundCard (const QString &pDeviceName)
+///
+/// \brief MainWindow::initializeAudio
+///
+void MainWindow::initializeAudio(const QAudioDevice &deviceInfo)
 {
-    if (m_audioOutput!=nullptr)
-    {
-        if (m_audioOutput->state()!=QAudio::State::IdleState) m_audioOutput->stop();
-        disconnect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
-        delete m_audioOutput;
-        m_audioOutput=nullptr;
-    }
-    if (pDeviceName!="")
-    {
-        for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
-        {
-                if (deviceInfo.deviceName()==pDeviceName)
-                    m_device= deviceInfo;
-        }
-    }
-    else
-    {
-        m_device=QAudioDeviceInfo::defaultOutputDevice();
-    }
-}
+    QAudioFormat format = deviceInfo.preferredFormat();
+    m_audioOutput.reset(new QAudioSink(deviceInfo, format));
+    connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
 
-void MainWindow::initializeAudio()
-{
-    //m_generator.reset(new CGenerator());
-    m_generator.setFormat(m_device.preferredFormat());
-    m_morse.setFormat(m_device.preferredFormat());
+    m_generator.setFormat(format);
+    m_morse.setFormat(format);
     m_generator.setFrequency(m_frequency);
     m_morse.setFrequency(m_frequency);
     m_generator.generateData(1000000, true);
     m_generator.NoiseBlank();
     m_generator.LPF();
     m_generator.Sampler();
-    m_audioOutput=new QAudioOutput(m_device,m_device.preferredFormat(),this);
-    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)),Qt::QueuedConnection);
-    m_audioOutput->setVolume(m_volume);
-    m_audioOutput->setCategory("EasyMorse");
     m_generator.start();
+    m_audioOutput->start (&m_generator);
+    m_audioOutput->suspend();
     qreal slidervolume = QAudio::convertVolume(m_volume,
         QAudio::LinearVolumeScale,
         QAudio::LogarithmicVolumeScale);
@@ -272,10 +256,12 @@ void MainWindow::initializeAudio()
     ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
     ui->m_UseFarnsWorth->setChecked(m_morse.getFarnsWorth());
     ui->m_CharSpeed->setValue(m_charSpeed);
-    m_audioOutput->start(&m_generator);
-    m_audioOutput->suspend();
 }
 
+///
+/// \brief MainWindow::initializeSerial
+/// \param pSerialPortName
+///
 void MainWindow::initializeSerial(const QString &pSerialPortName)
 {
     QSerialPortInfo portInfo;
@@ -299,6 +285,10 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
 
 }
 
+///
+/// \brief MainWindow::onVolumeChanged
+/// \param value
+///
 void MainWindow::onVolumeChanged(int value)
 {
     m_volume = QAudio::convertVolume(value / qreal(100),
@@ -308,6 +298,10 @@ void MainWindow::onVolumeChanged(int value)
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
 }
 
+///
+/// \brief MainWindow::onFrequencyChanged
+/// \param value
+///
 void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
@@ -319,17 +313,13 @@ void MainWindow::onFrequencyChanged(int value)
     m_generator.Sampler();
     m_morse.setFrequency(m_frequency);
     m_generator.start();
-    if (m_audioOutput != nullptr)
-    {
-        m_audioOutput->start(&m_generator);
-        if (!m_playing_key)
-        {
-            m_audioOutput->suspend();
-        }
-    }
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
 }
 
+///
+/// \brief MainWindow::onWordSpeedChanged
+/// \param value
+///
 void MainWindow::onWordSpeedChanged(int value)
 {
     m_wordSpeed = value;
@@ -337,6 +327,10 @@ void MainWindow::onWordSpeedChanged(int value)
     ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
 }
 
+///
+/// \brief MainWindow::onCharSpeedChanged
+/// \param value
+///
 void MainWindow::onCharSpeedChanged(int value)
 {
     m_charSpeed = value;
@@ -344,18 +338,30 @@ void MainWindow::onCharSpeedChanged(int value)
     ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
 }
 
-void MainWindow::onDeviceChanged(int /*index*/)
+///
+/// \brief MainWindow::onDeviceChanged
+///
+void MainWindow::onDeviceChanged(int index)
 {
     m_generator.stop();
-    initializeSoundCard(ui->m_deviceBox->currentText() );
-    initializeAudio();
+    m_audioOutput->stop();
+    m_audioOutput->disconnect(this);
+    initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDevice>());
 }
 
+///
+/// \brief MainWindow::onFarnsWorthChanged
+/// \param value
+///
 void MainWindow::onFarnsWorthChanged(bool value)
 {
     m_morse.setFarnsWorth(value);
 }
 
+///
+/// \brief MainWindow::onNoiseCorChanged
+/// \param index
+///
 void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
@@ -363,6 +369,10 @@ void MainWindow::onNoiseCorChanged(int index)
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
 }
 
+///
+/// \brief MainWindow::onNoiseFilterChanged
+/// \param index
+///
 void MainWindow::onNoiseFilterChanged(int index)
 {
     m_noiseFilter = index;
@@ -370,6 +380,10 @@ void MainWindow::onNoiseFilterChanged(int index)
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(index));
 }
 
+///
+/// \brief MainWindow::keyPressEvent
+/// \param event
+///
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     if ((event->key() == Qt::Key_Alt))
@@ -381,6 +395,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     }
 }
 
+///
+/// \brief MainWindow::keyReleaseEvent
+/// \param event
+///
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Alt)
@@ -392,6 +410,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
     }
 }
 
+///
+/// \brief MainWindow::applicationStateChanged
+/// \param state
+///
 void MainWindow::applicationStateChanged(Qt::ApplicationState state)
 {
     if (state==Qt::ApplicationHidden)
@@ -399,37 +421,23 @@ void MainWindow::applicationStateChanged(Qt::ApplicationState state)
         m_playing_key=false;
     }
     if (m_playing_phrase) return;
-    m_audioOutput->suspend();
+    if (m_audioOutput.data() != Q_NULLPTR)
+        if (m_audioOutput->state() == QAudio::ActiveState) m_audioOutput->suspend();
 }
 
-
+///
+/// \brief MainWindow::onOutputAudioStateChanged
+/// \param pNewState
+///
 void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
 {
     switch (pNewState)
     {
-        case QAudio::IdleState:
-        {
-#ifdef QT_DEBUG
-            m_log->log("Audio now in idle state",Qt::magenta,LEVEL_VERBOSE);
-#endif
-            if (m_playing_phrase)
-                on_m_pbSend_clicked();
-            break;
-        }
         case QAudio::StoppedState:
         {
-            // Stopped for other reasons
-            if (m_audioOutput->error() != QAudio::NoError)
-            {
-                m_log->log(tr("Error occured on audio device"),Qt::red);
-            }
-            else
-            {
 #ifdef QT_DEBUG
-                m_log->log("Audio now in stopped state",Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in stopped state",Qt::magenta,LEVEL_VERBOSE);
 #endif
-            }
-            break;
         }
         case QAudio::SuspendedState:
         {
@@ -438,11 +446,19 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
 #endif
             break;
         }
-        case QAudio::ActiveState:
+        case QAudio::IdleState:
         {
 #ifdef QT_DEBUG
-            m_log->log("Audio now in active state",Qt::magenta,LEVEL_VERBOSE);
+            m_log->log("Audio now in Idle state",Qt::magenta,LEVEL_VERBOSE);
 #endif
+            if (m_playing_phrase) StopMorseMessage();
+            break;
+        }
+        case QAudio::ActiveState:
+        {
+    #ifdef QT_DEBUG
+            m_log->log("Audio now in Active state",Qt::magenta,LEVEL_VERBOSE);
+    #endif
             break;
         }
         default:
@@ -455,32 +471,35 @@ void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
     }
 }
 
+///
+/// \brief MainWindow::on_m_pbSend_clicked
+///
 void MainWindow::on_m_pbSend_clicked()
 {
     if (!m_playing_phrase)
     {
-        if (PlayMorseMessage(ui->m_leMessage->text()))
-            ui->m_pbSend->setText(tr("Stop"));
+        PlayMorseMessage(ui->m_leMessage->text());
     }
     else
     {
         StopMorseMessage();
-        ui->m_pbSend->setText(tr("Play"));
     }
 }
 
+///
+/// \brief MainWindow::PlayMorseMessage
+/// \param pMessage
+/// \return
+///
 bool MainWindow::PlayMorseMessage(const QString& pMessage)
 {
     if (!m_playing_phrase)
     {
         if (pMessage.isEmpty()) return false;
         m_morse.code(pMessage);
-        if (m_audioOutput != nullptr)
+        if (m_audioOutput->state()!= QAudio::ActiveState)
         {
-            //if (m_audioOutput->state()==QAudio::SuspendedState) m_audioOutput->stop();
-            //m_audioOutput->reset();
-            //m_audioOutput->setVolume(m_volume);
-            if (m_audioOutput->state()!=QAudio::ActiveState) m_audioOutput->start(m_morse.data());
+            m_audioOutput->start (m_morse.data());
         }
         m_playing_phrase=true;
         ui->m_deviceBox->setDisabled(true);
@@ -490,11 +509,15 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
         ui->m_CharSpeed->setDisabled(true);
         ui->m_NoiseCorr->setDisabled(true);
         ui->m_NoiseFilterSlider->setDisabled(true);
+        ui->m_pbSend->setText(tr("Stop"));
         return true;
     }
     return false;
 }
 
+///
+/// \brief MainWindow::StopMorseMessage
+///
 void MainWindow::StopMorseMessage()
 {
     if (m_playing_phrase)
@@ -509,11 +532,8 @@ void MainWindow::StopMorseMessage()
         m_generator.LPF();
         m_generator.Sampler();
         m_generator.start();
-        if (m_audioOutput != nullptr)
-        {
-            m_audioOutput->start(&m_generator);
-            m_audioOutput->suspend();
-        }
+        m_audioOutput->start (&m_generator);
+        m_audioOutput->suspend();
         m_playing_phrase=false;
         ui->m_deviceBox->setDisabled(false);
         ui->m_frequencySlider->setDisabled(false);
@@ -522,6 +542,7 @@ void MainWindow::StopMorseMessage()
         ui->m_CharSpeed->setDisabled(false);
         ui->m_NoiseCorr->setDisabled(false);
         ui->m_NoiseFilterSlider->setDisabled(false);
+        ui->m_pbSend->setText(tr("Play"));
     }
 }
 
@@ -576,7 +597,7 @@ void MainWindow::saveLog()
     FileDlg.setNameFilter(tr("Web File (*.htm *.html)"));
     if (FileDlg.exec())
     {
-        File = FileDlg.selectedFiles().first();
+        File = FileDlg.selectedFiles().constFirst();
         if (!File.isEmpty())
         {
             QTextDocument* Doc = ui->m_LogZone->document();
@@ -592,17 +613,24 @@ void MainWindow::saveLog()
     }
 }
 
+///
+/// \brief MainWindow::on_m_TableGlossaire_itemDoubleClicked
+/// \param item
+///
 void MainWindow::on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item)
 {
     PlayMorseMessage(item->text());
 }
 
+///
+/// \brief MainWindow::on_timer
+///
 void MainWindow::on_timer()
 {
     if (m_serial.isOpen())
     {
         QSerialPort::PinoutSignals state = m_serial.pinoutSignals();
-        bool CTS = (state & QSerialPort::ClearToSendSignal) != 0;
+        //bool CTS = (state & QSerialPort::ClearToSendSignal) != 0;
         bool DSR = (state & QSerialPort::DataSetReadySignal) != 0;
         if (m_playing_phrase) return;
         if (DSR && (!m_DSR) && (!m_playing_key))
@@ -617,6 +645,9 @@ void MainWindow::on_timer()
     }
 }
 
+///
+/// \brief MainWindow::keyerOn
+///
 void MainWindow::keyerOn()
 {
     if (m_playing_phrase) return;
@@ -624,10 +655,13 @@ void MainWindow::keyerOn()
     {
         m_audioOutput->resume();
         m_playing_key=true;
-        emit(Keyer(true));
+        emit Keyer(true);
     }
 }
 
+///
+/// \brief MainWindow::keyerOff
+///
 void MainWindow::keyerOff()
 {
     if (m_playing_phrase) return;
@@ -635,22 +669,34 @@ void MainWindow::keyerOff()
     {
         m_audioOutput->suspend();
         m_playing_key=false;
-        emit(Keyer(false));
+        emit Keyer(false);
     }
 }
 
+///
+/// \brief MainWindow::on_m_serialBox_currentIndexChanged
+///
 void MainWindow::on_m_serialBox_currentIndexChanged(int)
 {
     initializeSerial(ui->m_serialBox->currentText() );
 }
 
-void MainWindow::on_actionafOptions_triggered()
+///
+/// \brief MainWindow::onActionAFOptionsTriggered
+///
+void MainWindow::onActionAFOptionsTriggered()
 {
     Options* DlgOptions= new Options(this);
     DlgOptions->show();
 }
 
-void MainWindow::on_morse_message(QString pMessage)
+///
+/// \brief MainWindow::onMorseMessage
+/// \param pMessage
+///
+void MainWindow::onMorseMessage(QString pMessage)
 {
     ui->m_MorseZone->insertPlainText(m_morse.decodeMorse(pMessage) + ' ');
 }
+
+

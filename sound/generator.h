@@ -31,6 +31,7 @@
 #define GENERATEUR_H
 
 #include <QAudioOutput>
+#include <QAudioFormat>
 #include <QRandomGenerator>
 #include <QByteArray>
 #include <QIODevice>

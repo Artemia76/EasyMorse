@@ -30,7 +30,7 @@
 #define OPTIONS_H
 
 #include <QDialog>
-#include <QAudioDeviceInfo>
+#include <QAudioDevice>
 #include <QAudioOutput>
 #include <QSettings>
 #include <QSerialPort>
@@ -62,7 +62,7 @@ private slots:
 private:
     Ui::Options*                 ui;
     QAudioOutput*                m_audioOutput;
-    QAudioDeviceInfo             m_device;
+    QAudioDevice                 m_device;
     QSettings                    m_settings;
     QString                      m_audioDeviceName;
     QString                      m_serialPortName;

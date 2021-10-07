@@ -26,6 +26,7 @@
 * This class define the main window of the application
 * **************************************************************************/
 
+#include <QMediaDevices>
 #include "options.h"
 #include "ui_options.h"
 
@@ -48,9 +49,9 @@ Options::Options(QWidget *parent)
     m_settings.beginGroup("audio");
     //Populate Controls
     // Iterate available sound devices
-    for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+    for (QAudioDevice &deviceInfo: QMediaDevices::audioOutputs())
     {
-            ui->m_deviceBox->addItem(deviceInfo.deviceName(), QVariant::fromValue(deviceInfo));
+            ui->m_deviceBox->addItem(deviceInfo.description(), QVariant::fromValue(deviceInfo));
     }
     m_audioDeviceName = m_settings.value("DeviceName","").toString();
     ui->m_deviceBox->setCurrentIndex(ui->m_deviceBox->findText(m_audioDeviceName));
