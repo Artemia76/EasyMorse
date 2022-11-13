@@ -37,7 +37,7 @@ QT += core gui multimedia serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += build_all c++14
+CONFIG += build_all c++17
 CONFIG -= debug_and_release debug_and_release_target
 
 TARGET = easymorse

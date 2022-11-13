@@ -64,7 +64,6 @@ protected:
 
 private slots:
     void    onDeviceChanged(int index);
-    void    onOutputAudioStateChanged(QAudio::State newState);
     void    onLog(const QString& pMessage,QColor pColor, CL_DEBUG_LEVEL pLevel);
     void    onLogContextMenuRequested(const QPoint &pos);
     void    clearLog();
@@ -88,9 +87,8 @@ signals:
 
 private:
     Ui::MainWindow*                 ui;
-    CGenerator                      m_generator;
+    CGenerator*                     m_generator;
     QMediaDevices*                  m_devices = nullptr;
-    QScopedPointer<QAudioSink>      m_audioOutput;
     CMorse                          m_morse;
     bool                            m_playing_phrase;
     bool                            m_playing_key;
@@ -99,7 +97,7 @@ private:
     QSettings                       m_settings;
     int                             m_maxLine;
     int                             m_frequency;
-    qreal                           m_volume;
+    int                             m_volume;
     qreal                           m_noiseCorrelation;
     QSerialPort                     m_serial;
     int                             m_noiseFilter;

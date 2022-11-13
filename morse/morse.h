@@ -49,8 +49,6 @@ public:
 
     void                        initMorseMap (Code pCode=International);
     void                        code(const QString& pMessage);
-    CGenerator*                 data();
-    void                        setFormat(const QAudioFormat &pFormat);
     void                        setFrequency(int pFrequency){m_frequency=pFrequency;}
     void                        setWordSpeed(int pWordSpeed){m_wordSpeed=pWordSpeed;}
     void                        setCharSpeed(int pCharSpeed){m_charSpeed=pCharSpeed;}
@@ -68,8 +66,7 @@ private:
     QMap                        <QString, QString> m_MorseMapping;
     quint32                     m_wordSpeed;
     quint32                     m_charSpeed;
-    CGenerator                  m_generator;
-    QAudioFormat                m_Format;
+    CGenerator*                 m_generator;
 signals:
 
 public slots:

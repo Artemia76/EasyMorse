@@ -28,6 +28,7 @@
 ****************************************************************************/
 
 #include "generator.h"
+#include "tools/singleton.h"
 
 #include <QMediaDevices>
 #include <QAudioOutput>
@@ -38,50 +39,63 @@
 #include <QSysInfo>
 #include <math.h>
 
-QAudioFormat CGenerator::m_Format;
-
-CGenerator::CGenerator()
+CGenerator::CGenerator(QObject* parent) :
+    QIODevice(parent)
 {
 
     m_Freq = 900;
     m_FadeTime = 1000;
     m_Amplitude =0.0;
     m_log = CLogger::instance();
-    init();
-}
-
-CGenerator::CGenerator(int pFrequency)
-{
-    m_Freq = pFrequency;
-    init();
-}
-
-void CGenerator::init()
-{
-    m_log = CLogger::instance();
-    m_loop = true;
-    m_sample.clear();
-    m_sample.resize(0);
     m_noise_correlation=0.0;
     m_LastSample=0.0;
     m_Lowfilter_T=0;
+    m_phi = 0;
+}
+
+///
+/// \brief CGenerator::createInstance
+/// \return
+///
+CGenerator* CGenerator::createInstance()
+{
+    return new CGenerator();
+}
+
+///
+/// \brief CGenerator::instance
+/// \return#include "singleton.h"
+///
+CGenerator* CGenerator::instance()
+{
+    return Singleton<CGenerator>::instance(CGenerator::createInstance);
+}
+
+void CGenerator::setDevice(const QAudioDevice &deviceInfo)
+{
+    stop();
+    m_audioOutput.reset(new QAudioSink(deviceInfo, deviceInfo.preferredFormat()));
+    m_Format = deviceInfo.preferredFormat();
 }
 
 void CGenerator::start()
 {
-    open(QIODevice::ReadOnly);
+    if (!m_audioOutput.isNull())
+    {
+        connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
+        open(QIODevice::ReadOnly);
+        m_audioOutput->setBufferSize(256);
+        m_audioOutput->start(this);
+    }
 }
 
 void CGenerator::stop()
 {
-    m_pos = 0;
-    close();
-}
-void CGenerator::setFormat(const QAudioFormat &pFormat)
-{
-    if (pFormat.isValid())
+    if (!m_audioOutput.isNull())
     {
-        m_Format = pFormat;
+        m_audioOutput->stop();
+        close();
+        disconnect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
     }
 }
 
@@ -99,9 +113,19 @@ int CGenerator::getFrequency()
 {
     return m_Freq;
 }
-void CGenerator::setLoop(bool pLoop)
+
+void CGenerator::setVolume(int pVolume)
 {
-    m_loop = pLoop;
+    m_Volume = QAudio::convertVolume(pVolume / qreal(100),
+        QAudio::LogarithmicVolumeScale,
+        QAudio::LinearVolumeScale);
+        if (!m_audioOutput.isNull())
+            m_audioOutput->setVolume(m_Volume);
+}
+
+int CGenerator::getVolume()
+{
+    return m_Freq;
 }
 
 void CGenerator::setNoiseCorrelation(qreal pNoiseCorrelation)
@@ -119,160 +143,83 @@ void CGenerator::setNoiseFilter(int pNoiseFilter)
     }
 }
 
-void CGenerator::generateData(qint64 durationUs, bool pErase, bool pSilent)
+qint64 CGenerator::_sampler(qint64 pLen)
 {
-    if (pErase)
-    {
-        m_signal.clear();
-        m_signal.resize(0);
-        m_sample.clear();
-        m_sample.resize(0);
-        m_pos=0;
-    }
     const int sampleRate = m_Format.sampleRate();
-    quint64 length = sampleRate * static_cast<qreal>(durationUs) / static_cast<qreal>(1000000);
-    int sampleIndex = 0;
-    while (length)
-    {
-        qreal w = 0.0; //Wave
-        // Wave generator in function of Samplerate and frequency
-        if (!pSilent)
-        {
-            w = qSin(2.0 * M_PI * static_cast<qreal>(m_Freq) * static_cast<qreal>(sampleIndex++ % m_Format.sampleRate()) / static_cast<qreal>(m_Format.sampleRate()));
-        }
-        m_signal.push_back(w);
-        length--;
-    }
-}
-
-void CGenerator::Sampler()
-{
-    m_sample.clear();
-    const int channelBytes  = m_Format.bytesPerSample();
-    const int sampleBytes = m_Format.channelCount() * channelBytes;
-    quint64 length = m_signal.length()* sampleBytes;
+    qreal TimeStep = -100000.0 / static_cast<qreal>(sampleRate);
+    quint64 length = pLen * _getSampleBytes();
+    qreal w = 0.0; //Wave
     m_sample.resize(length);
     unsigned char *ptr = reinterpret_cast<unsigned char *>(m_sample.data());
-    for (QVector<qreal>::iterator it = m_signal.begin(); it != m_signal.end(); ++it)
+    int old_phi = m_phi;
+    for (int i=old_phi; i< pLen+old_phi; i++)
     {
+        m_phi = i % m_Format.sampleRate();
+        // Wave generator in function of Samplerate and frequency
+        w = qSin(2.0 * M_PI * static_cast<qreal>(m_Freq) * static_cast<qreal>(m_phi++) / static_cast<qreal>(m_Format.sampleRate()));
+        // Pure Noise generator
+        if ((m_noise_correlation > 0.0) && (m_noise_correlation <=1.0))
+        {
+            w = (((m_Rnd.generateDouble()*2.0)-1.0)*m_noise_correlation + (w * (1.0 - m_noise_correlation)));
+        }
+        // Apply volume
+        w *= m_Volume;
+        if (m_Lowfilter_T > 0.0)
+        {
+            qreal Filter = (1- exp(TimeStep/m_Lowfilter_T));
+            qreal Diff = w - m_LastSample;
+            qreal Value = m_LastSample + (Diff * Filter);
+            w = Value;
+            m_LastSample = w;
+        }
         for (int i=0; i<m_Format.channelCount(); ++i)
         {
             switch (m_Format.sampleFormat())
             {
                 case QAudioFormat::UInt8:
-                    *reinterpret_cast<quint8 *>(ptr) = static_cast<quint8>((1.0 + *it) / 2 * 0xFF);
+                    *reinterpret_cast<quint8 *>(ptr) = static_cast<quint8>((1.0 + w) / 2 * 0xFF);
                     break;
                 case QAudioFormat::Int16:
-                    *reinterpret_cast<qint16 *>(ptr) = static_cast<qint16>(*it * 0x7FFF);
+                    *reinterpret_cast<qint16 *>(ptr) = static_cast<qint16>(w * 0x7FFF);
                     break;
                 case QAudioFormat::Int32:
-                    *reinterpret_cast<qint32 *>(ptr) = static_cast<qint32>(*it * std::numeric_limits<qint32>::max());
+                    *reinterpret_cast<qint32 *>(ptr) = static_cast<qint32>(w * std::numeric_limits<qint32>::max());
                     break;
                 case QAudioFormat::Float:
-                    *reinterpret_cast<float *>(ptr) = *it;
+                    *reinterpret_cast<float *>(ptr) = w;
                     break;
                 default:
                     break;
             }
 
-            ptr += channelBytes ;
+            ptr += m_Format.bytesPerSample() ;
         }
     }
+    return m_sample.length();
 }
 
-void CGenerator::NoiseBlank()
+int CGenerator::_getSampleBytes()
 {
-    // Pure Noise generator
-    for (QVector<qreal>::iterator it = m_signal.begin(); it != m_signal.end(); ++it)
-    {
-        if ((m_noise_correlation > 0.0) && (m_noise_correlation <=1.0))
-        {
-            *it = (((m_Rnd.generateDouble()*2.0)-1.0)*m_noise_correlation + (*it * (1.0 - m_noise_correlation)));
-        }
-    }
-}
-void CGenerator::LPF()
-{
-        const int sampleRate = m_Format.sampleRate();
-        qreal TimeStep = -100000.0 / static_cast<qreal>(sampleRate);
-        //Applying filter
-        if (m_Lowfilter_T > 0.0)
-        {
-            for (QVector<qreal>::iterator it = m_signal.begin(); it != m_signal.end(); ++it)
-            {
-                qreal Filter = (1- exp(TimeStep/m_Lowfilter_T));
-                qreal Diff = *it - m_LastSample;
-                qreal Value = m_LastSample + (Diff * Filter);
-                *it = Value;
-                m_LastSample = *it;
-            }
-        }
+    return m_Format.channelCount() * m_Format.bytesPerSample();
 }
 
-void CGenerator::AntiClick()
-{
-    qreal LastSample = 0.0;
-    qreal Threshold = 0.1;
-    bool FirstSample =true;
-    for (QVector<qreal>::iterator it = m_signal.begin(); it != m_signal.end(); ++it)
-    {
-        if (!FirstSample)
-        {
-            qreal diff = *it - LastSample;
-            if (qAbs(diff) > Threshold)
-            {
-                *it = LastSample + (diff * Threshold);
-            }
-            LastSample = *it;
-
-        }
-        else
-        {
-            FirstSample = false;
-            LastSample = *it;
-        }
-    }
-}
-
-void CGenerator::clear()
-{
-    if (isOpen()) stop();
-    m_sample.clear();
-    m_sample.resize(0);
-}
-
-qint64 CGenerator::readData(char *data, qint64 len)
+///
+/// \brief CGenerator::readData
+/// \param data
+/// \param len
+/// \return
+///
+/// Generate jit signal
+///
+qsizetype CGenerator::readData(char *data, qint64 len)
 {
     if (!isOpen()) return -1;
-    qint64 total = 0;
-    if (!m_sample.isEmpty())
-    {
-        if (m_loop)
-        {
-            while (len - total > 0)
-            {
-                const qint64 chunk = qMin((m_sample.size() - m_pos), len - total);
-                memcpy(data + total, m_sample.constData() + m_pos, static_cast<size_t>(chunk));
-                m_pos = (m_pos + chunk) % m_sample.size();
-                total += chunk;
-            }
-        }
-        else
-        {
-            const qint64 chunk = qMin((m_sample.size() - m_pos), len);
-            if (chunk>0)
-            {
-                memcpy(data, m_sample.constData() + m_pos, static_cast<size_t>(chunk));
-                total = chunk;
-                m_pos = (m_pos + chunk);
-            }
-            else
-            {
-                total = 0;
-            }
-        }
-    }
-    return total;
+    if (len < _getSampleBytes()) return -1;
+    qint64 SignalLen = len / _getSampleBytes();
+    //qint64 SampleLen = SignalLen *  _getSampleBytes();
+    qint64 SampleLen = _sampler(SignalLen);
+    memcpy(data, m_sample.constData(), static_cast<size_t>(SampleLen));
+    return SampleLen;
 }
 
 qint64 CGenerator::writeData(const char *data, qint64 len)
@@ -285,23 +232,61 @@ qint64 CGenerator::writeData(const char *data, qint64 len)
 
 qint64 CGenerator::pos() const
 {
-    return m_pos;
+    return 0;
 }
 
 qint64 CGenerator::bytesAvailable() const
 {
-    if (m_loop)
-    {
-        return m_sample.size() + QIODevice::bytesAvailable();
-    }
-    else
-    {
-        return m_sample.size()-m_pos;
-    }
+    return 100000;
 }
 
 bool CGenerator::atEnd() const
 {
-    if ((!m_loop) && (m_pos >= m_sample.size())) return true;
-    else return false;
+    return false;
+}
+
+///
+/// \brief CGenerator::onOutputAudioStateChanged
+/// \param pNewState
+///
+void CGenerator::onOutputAudioStateChanged(QAudio::State pNewState)
+{
+    switch (pNewState)
+    {
+        case QAudio::StoppedState:
+        {
+#ifdef QT_DEBUG
+            m_log->log("Audio now in stopped state",Qt::magenta,LEVEL_VERBOSE);
+#endif
+        }
+        case QAudio::SuspendedState:
+        {
+#ifdef QT_DEBUG
+            m_log->log("Audio now in suspended state",Qt::magenta,LEVEL_VERBOSE);
+#endif
+            break;
+        }
+        case QAudio::IdleState:
+        {
+#ifdef QT_DEBUG
+            m_log->log("Audio now in Idle state",Qt::magenta,LEVEL_VERBOSE);
+#endif
+            //if (m_playing_phrase) StopMorseMessage();
+            break;
+        }
+        case QAudio::ActiveState:
+        {
+    #ifdef QT_DEBUG
+            m_log->log("Audio now in Active state",Qt::magenta,LEVEL_VERBOSE);
+    #endif
+            break;
+        }
+        default:
+        {
+#ifdef QT_DEBUG
+            m_log->log("Audio now in unknown state",Qt::magenta,LEVEL_VERBOSE);
+#endif
+            break;
+        }
+    }
 }

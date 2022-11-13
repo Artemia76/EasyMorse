@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_devices(new QMediaDevices(this))
 {
     ui->setupUi(this);
+    m_generator = CGenerator::instance();
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainWindow::applicationStateChanged);
     connect(ui->actionafOptions, &QAction::triggered, this, &MainWindow::onActionAFOptionsTriggered);
     // Init window position and size
@@ -64,23 +65,25 @@ MainWindow::MainWindow(QWidget *parent)
     //Set Sound Frequency
     connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
     m_frequency = m_settings.value("SoundFreq",900).toInt();
+    m_generator->setFrequency(m_frequency);
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_frequency));
 
     //Set Sound Volume
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
-    m_volume = m_settings.value("SoundLevel", 1.0).toReal();
-    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume*100));
+    m_volume = m_settings.value("SoundLevel", 100).toInt();
+    m_generator->setVolume(m_volume);
+    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume));
 
     //Set NoiseCorrelation
     connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
     m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
-    m_morse.setNoiseCorrelation(m_noiseCorrelation);
+    m_generator->setNoiseCorrelation(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(m_noiseCorrelation*100));
 
     //Set noise Filter
     connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
     m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
-    m_morse.setNoiseFilter(m_noiseFilter);
+    m_generator->setNoiseFilter(m_noiseFilter);
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(m_noiseFilter));
 
     m_settings.endGroup();
@@ -141,9 +144,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->m_LogZone->setMaximumBlockCount(m_maxLine);
     m_log->log(tr("Welcome to EasyMorse"),Qt::blue);
 
-    //const QAudioDeviceInfo &defaultDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
-    //ui->m_deviceBox->addItem(defaultDeviceInfo.deviceName(), QVariant::fromValue(defaultDeviceInfo));
-
     if (QFontDatabase::addApplicationFont(":/fonts/morse.ttf")==-1)
         ui->m_LogZone->appendPlainText(tr("Failed to load font"));
 
@@ -184,6 +184,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(onMorseMessage(QString)));
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
+    grabKeyboard();
+    //m_generator->setVolume(0);
 }
 
 MainWindow::~MainWindow()
@@ -198,7 +200,7 @@ void MainWindow::closeEvent(QCloseEvent*)
 {
     //if (m_audioOutput != nullptr) m_audioOutput->stop();
     if (m_serial.isOpen()) m_serial.close();
-    m_generator.stop();
+    m_generator->stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());
@@ -231,25 +233,15 @@ void MainWindow::closeEvent(QCloseEvent*)
 ///
 void MainWindow::initializeAudio(const QAudioDevice &deviceInfo)
 {
-    QAudioFormat format = deviceInfo.preferredFormat();
-    m_audioOutput.reset(new QAudioSink(deviceInfo, format));
-    connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
+    m_generator->stop();
+    m_generator->setDevice(deviceInfo);
+    m_generator->setFrequency(m_frequency);
+    m_generator->setVolume(m_volume);
+    m_generator->setNoiseCorrelation(m_noiseCorrelation);
+    m_generator->setNoiseFilter(m_noiseFilter);
+    m_generator->start();
 
-    m_generator.setFormat(format);
-    m_morse.setFormat(format);
-    m_generator.setFrequency(m_frequency);
-    m_morse.setFrequency(m_frequency);
-    m_generator.generateData(1000000, true);
-    m_generator.NoiseBlank();
-    m_generator.LPF();
-    m_generator.Sampler();
-    m_generator.start();
-    m_audioOutput->start (&m_generator);
-    m_audioOutput->suspend();
-    qreal slidervolume = QAudio::convertVolume(m_volume,
-        QAudio::LinearVolumeScale,
-        QAudio::LogarithmicVolumeScale);
-    ui->m_volumeSlider->setValue(qRound(slidervolume * 100));
+    ui->m_volumeSlider->setValue(m_volume);
     ui->m_frequencySlider->setValue(m_frequency);
     ui->m_WordSpeed->setValue(m_wordSpeed);
     ui->m_NoiseCorr->setValue(qRound(m_noiseCorrelation*100));
@@ -291,10 +283,8 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
 ///
 void MainWindow::onVolumeChanged(int value)
 {
-    m_volume = QAudio::convertVolume(value / qreal(100),
-        QAudio::LogarithmicVolumeScale,
-        QAudio::LinearVolumeScale);
-    m_audioOutput->setVolume(m_volume);
+    m_volume = value;
+    m_generator->setVolume(value);
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
 }
 
@@ -305,14 +295,7 @@ void MainWindow::onVolumeChanged(int value)
 void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
-    m_generator.stop();
-    m_generator.setFrequency(m_frequency);
-    m_generator.generateData(1000000,true);
-    m_generator.NoiseBlank();
-    m_generator.LPF();
-    m_generator.Sampler();
-    m_morse.setFrequency(m_frequency);
-    m_generator.start();
+    m_generator->setFrequency(m_frequency);
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
 }
 
@@ -343,9 +326,7 @@ void MainWindow::onCharSpeedChanged(int value)
 ///
 void MainWindow::onDeviceChanged(int index)
 {
-    m_generator.stop();
-    m_audioOutput->stop();
-    m_audioOutput->disconnect(this);
+    m_generator->stop();
     initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDevice>());
 }
 
@@ -365,7 +346,7 @@ void MainWindow::onFarnsWorthChanged(bool value)
 void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
-    m_morse.setNoiseCorrelation(m_noiseCorrelation);
+    m_generator->setNoiseCorrelation(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
 }
 
@@ -376,7 +357,7 @@ void MainWindow::onNoiseCorChanged(int index)
 void MainWindow::onNoiseFilterChanged(int index)
 {
     m_noiseFilter = index;
-    m_morse.setNoiseFilter(m_noiseFilter);
+    m_generator->setNoiseFilter(m_noiseFilter);
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(index));
 }
 
@@ -421,55 +402,10 @@ void MainWindow::applicationStateChanged(Qt::ApplicationState state)
         m_playing_key=false;
     }
     if (m_playing_phrase) return;
-    if (m_audioOutput.data() != Q_NULLPTR)
-        if (m_audioOutput->state() == QAudio::ActiveState) m_audioOutput->suspend();
+    //if (m_audioOutput.data() != Q_NULLPTR)
+    //    if (m_audioOutput->state() == QAudio::ActiveState) m_audioOutput->suspend();
 }
 
-///
-/// \brief MainWindow::onOutputAudioStateChanged
-/// \param pNewState
-///
-void MainWindow::onOutputAudioStateChanged(QAudio::State pNewState)
-{
-    switch (pNewState)
-    {
-        case QAudio::StoppedState:
-        {
-#ifdef QT_DEBUG
-            m_log->log("Audio now in stopped state",Qt::magenta,LEVEL_VERBOSE);
-#endif
-        }
-        case QAudio::SuspendedState:
-        {
-#ifdef QT_DEBUG
-            m_log->log("Audio now in suspended state",Qt::magenta,LEVEL_VERBOSE);
-#endif
-            break;
-        }
-        case QAudio::IdleState:
-        {
-#ifdef QT_DEBUG
-            m_log->log("Audio now in Idle state",Qt::magenta,LEVEL_VERBOSE);
-#endif
-            if (m_playing_phrase) StopMorseMessage();
-            break;
-        }
-        case QAudio::ActiveState:
-        {
-    #ifdef QT_DEBUG
-            m_log->log("Audio now in Active state",Qt::magenta,LEVEL_VERBOSE);
-    #endif
-            break;
-        }
-        default:
-        {
-#ifdef QT_DEBUG
-            m_log->log("Audio now in unknown state",Qt::magenta,LEVEL_VERBOSE);
-#endif
-            break;
-        }
-    }
-}
 
 ///
 /// \brief MainWindow::on_m_pbSend_clicked
@@ -493,7 +429,7 @@ void MainWindow::on_m_pbSend_clicked()
 ///
 bool MainWindow::PlayMorseMessage(const QString& pMessage)
 {
-    if (!m_playing_phrase)
+    /*if (!m_playing_phrase)
     {
         if (pMessage.isEmpty()) return false;
         m_morse.code(pMessage);
@@ -511,7 +447,7 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
         ui->m_NoiseFilterSlider->setDisabled(true);
         ui->m_pbSend->setText(tr("Stop"));
         return true;
-    }
+    }*/
     return false;
 }
 
@@ -523,17 +459,7 @@ void MainWindow::StopMorseMessage()
     if (m_playing_phrase)
     {
         // Finished playing (no more data)
-        m_audioOutput->stop();
-        m_morse.data()->stop();
-        m_generator.stop();
-        m_generator.setFrequency(m_frequency);
-        m_generator.generateData(1000000,true);
-        m_generator.NoiseBlank();
-        m_generator.LPF();
-        m_generator.Sampler();
-        m_generator.start();
-        m_audioOutput->start (&m_generator);
-        m_audioOutput->suspend();
+        //m_morse->stop();
         m_playing_phrase=false;
         ui->m_deviceBox->setDisabled(false);
         ui->m_frequencySlider->setDisabled(false);
@@ -653,7 +579,8 @@ void MainWindow::keyerOn()
     if (m_playing_phrase) return;
     if (!m_playing_key)
     {
-        m_audioOutput->resume();
+        m_generator->setVolume(m_volume);
+        //m_audioOutput->resume();
         m_playing_key=true;
         emit Keyer(true);
     }
@@ -667,7 +594,8 @@ void MainWindow::keyerOff()
     if (m_playing_phrase) return;
     if (m_playing_key)
     {
-        m_audioOutput->suspend();
+        m_generator->setVolume(0);
+        //m_audioOutput->suspend();
         m_playing_key=false;
         emit Keyer(false);
     }
