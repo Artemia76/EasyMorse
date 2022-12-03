@@ -83,8 +83,12 @@ void CGenerator::start()
     if (!m_audioOutput.isNull())
     {
         connect(m_audioOutput.data(), SIGNAL(stateChanged(QAudio::State)), this, SLOT(onOutputAudioStateChanged(QAudio::State)));
-        open(QIODevice::ReadOnly);
-        m_audioOutput->setBufferSize(256);
+        if (!open(QIODevice::ReadOnly))
+        {
+            m_log->log(tr("Error openning sound output"),Qt::magenta);
+            return;
+        }
+        //m_audioOutput->setBufferSize(256);
         m_audioOutput->start(this);
     }
 }

@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Set Sound Volume
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
     m_volume = m_settings.value("SoundLevel", 100).toInt();
-    m_generator->setVolume(m_volume);
+    //m_generator->setVolume(m_volume);
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume));
 
     //Set NoiseCorrelation
@@ -163,9 +163,20 @@ MainWindow::MainWindow(QWidget *parent)
         if (deviceInfo != defaultDeviceInfo)
             ui->m_deviceBox->addItem(deviceInfo.description(), QVariant::fromValue(deviceInfo));
     }
-    initializeAudio(defaultDeviceInfo);
-    ui->m_deviceBox->setCurrentIndex(ui->m_deviceBox->findText(m_audioDeviceName));
+
+    // Initialize Audio
     connect(ui->m_deviceBox, QOverload<int>::of(&QComboBox::activated), this, &MainWindow::onDeviceChanged);
+    int i =ui->m_deviceBox->findText(m_audioDeviceName);
+    if (i != -1)
+    {
+        ui->m_deviceBox->setCurrentIndex(i);
+        initializeAudio(ui->m_deviceBox->itemData(i).value<QAudioDevice>());
+    }
+    else
+    {
+        ui->m_deviceBox->setCurrentIndex(0);
+        initializeAudio(defaultDeviceInfo);
+    }
 
     // Iterat available serial ports
     for (auto& serialPort : QSerialPortInfo::availablePorts())
@@ -236,7 +247,7 @@ void MainWindow::initializeAudio(const QAudioDevice &deviceInfo)
     m_generator->stop();
     m_generator->setDevice(deviceInfo);
     m_generator->setFrequency(m_frequency);
-    m_generator->setVolume(m_volume);
+    //m_generator->setVolume(m_volume);
     m_generator->setNoiseCorrelation(m_noiseCorrelation);
     m_generator->setNoiseFilter(m_noiseFilter);
     m_generator->start();
@@ -284,7 +295,7 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
 void MainWindow::onVolumeChanged(int value)
 {
     m_volume = value;
-    m_generator->setVolume(value);
+    //m_generator->setVolume(value);
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
 }
 
