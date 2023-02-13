@@ -85,6 +85,19 @@ win32 {
     CONFIG(debug, debug|release) : WINDEPLOY_FLAGS += --debug
     CONFIG(release, debug|release) : WINDEPLOY_FLAGS += --release
 
+    # Find PortAudio location
+    isEmpty(PORTAUDIO_PATH) {
+    PORTAUDIO_PATH="E:\devel\portaudio"
+    INCLUDEPATH += $$PORTAUDIO_PATH"\include"
+    CONFIG(debug, debug|release) {
+        PORTAUDIO_LIB_PATH = $$PORTAUDIO_PATH"\build\msvc\x64\Debug"
+    } else {
+        PORTAUDIO_LIB_PATH = $$PORTAUDIO_PATH"\build\msvc\x64\Release"
+    }
+    LIBS += -L$$PORTAUDIO_LIB_PATH
+    LIBS += -lportaudio_x64
+}
+
     DEFINES += _WINSOCKAPI_
     LIBS += -lWs2_32
     LIBS += -liphlpapi
@@ -236,7 +249,8 @@ win32 {
     } else {
         copydata.commands = mkdir $$p($$OUT_PWD/translations) &&
     }
-    copydata.commands += xcopy /Y $$p($$PWD/intl/*.qm) $$p($$OUT_PWD/translations)
+    copydata.commands += xcopy /Y $$p($$PWD/intl/*.qm) $$p($$OUT_PWD/translations) &&
+    copydata.commands += xcopy /Y $$p($$PORTAUDIO_LIB_PATH/portaudio_x64.dll) $$p($$OUT_PWD/)
 }
 
 # =====================================================================

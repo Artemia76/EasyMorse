@@ -29,8 +29,6 @@
 #include <gui/mainwindow.h>
 #include "ui_mainwindow.h"
 
-#include <QAudioDevice>
-#include <QAudioSink>
 #include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>

@@ -26,5 +26,5 @@ float Saw::calculate(float fTime, float fFrequency)
 {
     float x = fTime * fFrequency;
 
-    return x - floorf32(x);
+    return x - floorf(x);
 }
