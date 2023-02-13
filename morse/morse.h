@@ -32,13 +32,14 @@
 #include <QObject>
 #include <QMap>
 
-#include "sound/generator.h"
+#include "audio/Audio.h"
+#include "audio/voicemanager/VoiceManager.h"
 
 class CMorse : public QObject
 {
     Q_OBJECT
 public:
-    explicit CMorse(QObject *parent = nullptr );
+    explicit CMorse(QObject *parent = nullptr, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr );
     enum Code
     {
         American,
@@ -59,6 +60,10 @@ public:
     QString                     decodeMorse(QString pMessage);
 
 private:
+
+    //AUDIO
+    AudioHal*                   m_hal;
+    VoiceManager*               m_manager;
     int                         m_frequency;
     bool                        m_farnsWorth;
     qreal                       m_noiseCorrelation;
@@ -66,7 +71,6 @@ private:
     QMap                        <QString, QString> m_MorseMapping;
     quint32                     m_wordSpeed;
     quint32                     m_charSpeed;
-    CGenerator*                 m_generator;
 signals:
 
 public slots:

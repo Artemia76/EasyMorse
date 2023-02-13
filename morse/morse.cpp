@@ -27,10 +27,13 @@
 * **************************************************************************/
 
 #include "morse.h"
+#include <QThread>
 
-CMorse::CMorse(QObject *parent) : QObject(parent)
+CMorse::CMorse(QObject *parent,AudioHal* hal, VoiceManager* pVoiceManager) :
+    QObject(parent)
+    , m_hal(hal)
+    , m_manager(pVoiceManager)
 {
-    m_generator = CGenerator::instance();
     m_wordSpeed = 12;
     m_charSpeed = 18;
     m_noiseFilter=0;
@@ -131,7 +134,6 @@ void CMorse::code(const QString& pMessage)
         }
     }
 
-    //m_generator.generateData(DelayChar, true, true ); // Silent before start
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
@@ -139,23 +141,27 @@ void CMorse::code(const QString& pMessage)
         {
             if (*MorseChar=='P')
             {
-                //m_generator.generateData(DotDuration ); //Make a dot
-                //m_generator.generateData(DotDuration, false, true ); // Silent between element
+                m_hal->play(m_frequency);
+                QThread::usleep(DotDuration);
+                m_hal->stop(m_frequency);
+                QThread::usleep(DotDuration);
             }
             if (*MorseChar=='T')
             {
-                //m_generator.generateData(DotDuration * 3); // Make a dash
-                //m_generator.generateData(DotDuration, false, true ); // Silent between element
+                m_hal->play(m_frequency);
+                QThread::usleep(DotDuration*3);
+                m_hal->stop(m_frequency);
+                QThread::usleep(DotDuration);
             }
             if (*MorseChar=='S')
             {
-                //m_generator.generateData(DelayWord, false, true ); // Silent between Word
+                QThread::usleep(DelayWord);
             }
         }
         // End of char
-        //m_generator.generateData(DelayChar, false, true ); //Silent between Char
+        QThread::usleep(DelayChar);
     }
-    //m_generator.generateData(DelayChar, false, true ); // Silent at end
+    QThread::usleep(DelayChar);
 }
 
 void CMorse::setFarnsWorth(bool pFW)

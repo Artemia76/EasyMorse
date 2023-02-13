@@ -30,16 +30,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QAudioSink>
 #include <QTableWidgetItem>
 #include <QTimer>
 #include <QtSerialPort>
-#include <QScopedPointer>
-#include <QMediaDevices>
-#include "sound/generator.h"
 #include "morse/morse.h"
 #include "tools/clogger.h"
 #include "morse/analyze.h"
+
+#include "audio/Audio.h"
+#include "audio/voicemanager/VoiceManager.h"
+#include "audio/IOscillatorFunction.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-            MainWindow(QWidget *parent = Q_NULLPTR);
+            MainWindow(QWidget *parent = Q_NULLPTR, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr);
             ~MainWindow();
     bool    PlayMorseMessage(const QString& pMessage);
     void    StopMorseMessage();
@@ -58,7 +58,6 @@ public:
 protected:
     void    keyPressEvent(QKeyEvent* event);
     void    keyReleaseEvent(QKeyEvent* event);
-    void    applicationStateChanged(Qt::ApplicationState state);
     void    keyerOn();
     void    keyerOff();
 
@@ -87,8 +86,19 @@ signals:
 
 private:
     Ui::MainWindow*                 ui;
-    CGenerator*                     m_generator;
-    QMediaDevices*                  m_devices = nullptr;
+
+    //AUDIO
+    AudioHal*                       m_hal;
+    VoiceManager*                   m_manager;
+    double m_dBaseFrequencyOsc1;
+    double m_dBaseFrequencyOsc2;
+    double m_dOctaveOsc;
+
+    Square m_square;
+    Sine m_sine;
+    Triangle m_triangle;
+
+    //Morse
     CMorse                          m_morse;
     bool                            m_playing_phrase;
     bool                            m_playing_key;
@@ -108,7 +118,7 @@ private:
     QTimer                          m_timer;
     bool                            m_CTS;
     bool                            m_DSR;
-    void                            initializeAudio(const QAudioDevice &deviceInfo);
+    void                            initializeAudio();
     void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);
 };

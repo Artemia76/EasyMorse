@@ -33,8 +33,22 @@
 #include <QTranslator>
 #include <QDir>
 
+
+#include "audio/Audio.h"
+#include "audio/voicemanager/VoiceManager.h"
+
 int main(int argc, char *argv[])
 {
+    //create audio interface
+    AudioHal audio;
+
+    //create a voice manager
+    VoiceManager manager;
+
+    audio.setVoiceManager(&manager);
+    audio.initialize();
+    audio.open();
+
     QSettings::setDefaultFormat(QSettings::NativeFormat);
     QCoreApplication::setOrganizationName("EasyMorse");
     QCoreApplication::setOrganizationDomain("");
@@ -63,7 +77,7 @@ int main(int argc, char *argv[])
         a.setStyleSheet(styleFile.readAll());
         styleFile.close();
     }
-    MainWindow w;
+    MainWindow w(nullptr, &audio, &manager);
     w.show();
     return a.exec();
 }

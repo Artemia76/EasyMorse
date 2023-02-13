@@ -74,6 +74,9 @@ unix:!macx {
     # Makes the shell script and setting LD_LIBRARY_PATH redundant
     QMAKE_RPATHDIR=.
     QMAKE_RPATHDIR+=./lib
+
+    CONFIG += link_pkgconfig
+    PKGCONFIG += portaudio-2.0
 }
 
 win32 {
@@ -136,21 +139,53 @@ message(-----------------------------------)
 # Files
 
 SOURCES += \
+    audio/Audio.cpp \
+    audio/Saw.cpp \
+    audio/Sine.cpp \
+    audio/Square.cpp \
+    audio/Triangle.cpp \
+    audio/envelope/Envelope.cpp \
+    audio/filter/BandpassFilter.cpp \
+    audio/filter/HighpassFilter.cpp \
+    audio/filter/LowpassFilter.cpp \
+    audio/modulation/ModulationValue.cpp \
+    audio/oscillator/Lfo.cpp \
+    audio/voice/Voice.cpp \
+    audio/voicemanager/Param.cpp \
+    audio/voicemanager/VoiceManager.cpp \
     gui/options.cpp \
     main.cpp \
     gui/mainwindow.cpp \
     morse/analyze.cpp \
     morse/morse.cpp \
-    sound/generator.cpp \
     tools/clogger.cpp \
     tools/datetime.cpp
 
 HEADERS += \
+    audio/Audio.h \
+    audio/DefaultParameters.h \
+    audio/IOscillatorFunction.h \
+    audio/envelope/Envelope.h \
+    audio/envelope/IEnvelope.h \
+    audio/envelope/NoEnvelope.h \
+    audio/filter/BandpassFilter.h \
+    audio/filter/FilterTypes.h \
+    audio/filter/HighpassFilter.h \
+    audio/filter/IFilter.h \
+    audio/filter/LowpassFilter.h \
+    audio/filter/NoFilter.h \
+    audio/modulation/ModulationValue.h \
+    audio/oscillator/ILfo.h \
+    audio/oscillator/Lfo.h \
+    audio/oscillator/NoOscillator.h \
+    audio/voice/IVoice.h \
+    audio/voice/Voice.h \
+    audio/voicemanager/Param.h \
+    audio/voicemanager/VoiceManager.h \
     gui/mainwindow.h \
     gui/options.h \
     morse/analyze.h \
     morse/morse.h \
-    sound/generator.h \
     tools/call_once.h \
     tools/clogger.h \
     tools/datetime.h \

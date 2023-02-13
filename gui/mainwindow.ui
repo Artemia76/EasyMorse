@@ -37,7 +37,11 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLineEdit" name="m_leMessage"/>
+       <widget class="QLineEdit" name="m_leMessage">
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="m_pbSend">
@@ -295,16 +299,10 @@
         <property name="text">
          <string>Morse</string>
         </property>
-        <property name="textAlignment">
-         <set>AlignCenter</set>
-        </property>
        </column>
        <item row="0" column="0">
         <property name="text">
          <string notr="true">a</string>
-        </property>
-        <property name="textAlignment">
-         <set>AlignLeading|AlignVCenter</set>
         </property>
         <property name="flags">
          <set>ItemIsSelectable|ItemIsEnabled</set>
