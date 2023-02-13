@@ -33,7 +33,7 @@ QMAKE_EXTRA_TARGETS += versionTarget
 
 DEFINES += GIT_REVISION=$$GIT_REVISION
 
-QT += core gui multimedia serialport
+QT += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
