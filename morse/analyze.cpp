@@ -27,9 +27,8 @@
 ****************************************************************************/
 
 #include <QApplication>
-
 #include "analyze.h"
-#include "morse.h"
+#include "tools/datetime.h"
 
 CAnalyze::CAnalyze(QObject *parent)
     : QObject(parent)
@@ -74,9 +73,7 @@ CAnalyze::~CAnalyze()
 ///
 void CAnalyze::on_keyer(bool state)
 {
-#ifdef QT_DEBUG
     m_log->log(QString("Morse Analyser keyer value = %1 ...").arg(state),Qt::magenta,LEVEL_VERBOSE);
-#endif
     QByteArray buff;
     QDataStream ds(&buff,QIODevice::WriteOnly);
     ds << static_cast<quint64>(toTimeStamp(Now()));
@@ -162,13 +159,11 @@ void CAnalyze::on_timer()
             m_charSilentDuration = m_dotDuration*3;
         }
         m_wordSilentDuration = m_charSilentDuration*2;
-#ifdef QT_DEBUG
-        m_log->log("Auto adaptive analyzer is on :",Qt::magenta,LEVEL_NORMAL);
-        m_log->log(QString("Dot duration in msec : %1").arg(m_dotDuration),Qt::magenta,LEVEL_NORMAL);
-        m_log->log(QString("Dash duration in msec : %1").arg(m_dashDuration),Qt::magenta,LEVEL_NORMAL);
-        m_log->log(QString("Symbol Silent duration in msec : %1").arg(m_symbSilentDuration),Qt::magenta,LEVEL_NORMAL);
-        m_log->log(QString("Char Silent duration in msec : %1").arg(m_charSilentDuration),Qt::magenta,LEVEL_NORMAL);
-#endif
+        m_log->log("Self-Tune adaptative analyzer is on.",Qt::blue,LEVEL_NORMAL);
+        m_log->log(QString("Dot duration : %1 msec").arg(m_dotDuration),Qt::blue,LEVEL_NORMAL);
+        m_log->log(QString("Dash duration : %1 msec").arg(m_dashDuration),Qt::blue,LEVEL_NORMAL);
+        m_log->log(QString("Symbol Silent duration : %1 msec").arg(m_symbSilentDuration),Qt::blue,LEVEL_NORMAL);
+        m_log->log(QString("Char Silent duration : %1 msec").arg(m_charSilentDuration),Qt::blue,LEVEL_NORMAL);
     }
     emit fire_message(DecodeMorse());
 
@@ -191,9 +186,11 @@ QString CAnalyze::DecodeMorse()
     quint64 DotDash = m_dotDuration + ((m_dashDuration-m_dotDuration)/2);
     quint64 SymbChar = m_symbSilentDuration + ((m_charSilentDuration-m_symbSilentDuration)/2);
 #ifdef QT_DEBUG
-    m_log->log(QString("DotDash Separation in msec : %1").arg(DotDash),Qt::magenta,LEVEL_NORMAL);
-    m_log->log(QString("SymbChar Silent Separation in msec : %1").arg(SymbChar),Qt::magenta,LEVEL_NORMAL);
-    m_log->log(QString("WordDuration Silent duration in msec : %1").arg(m_wordSilentDuration),Qt::magenta,LEVEL_NORMAL);
+    m_log->log(QString("DotDash Separation silent : %1 msec").arg(DotDash),Qt::blue,LEVEL_NORMAL);
+    m_log->log(QString("SymbChar Silent Separation : %1 msec").arg(SymbChar),Qt::blue,LEVEL_NORMAL);
+    m_log->log(QString("WordDuration Silent duration : %1 msec").arg(m_wordSilentDuration),Qt::blue,LEVEL_NORMAL);
+    if (m_dotDuration > 0)
+        m_log->log(QString("Estimated Speed : %1 wpm").arg(60000/((m_dotDuration + (m_dashDuration/3))*20)),Qt::blue,LEVEL_NORMAL);
 #endif
     QDataStream ds(&m_buffer,QIODevice::ReadOnly);
     while (!ds.atEnd())

@@ -35,8 +35,6 @@
 #include <QDataStream>
 
 #include "tools/clogger.h"
-#include "tools/datetime.h"
-#include "morse/morse.h"
 
 class CAnalyze : public QObject
 {

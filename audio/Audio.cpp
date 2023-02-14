@@ -23,12 +23,12 @@ AudioHal::AudioHal()
 , right_phase(0)
 , m_Playing(false)
 {
-
+    m_log = CLogger::instance();
 }
 
 void AudioHal::initialize()
 {
-    printf("AudioHal: Initializing audio interface.\n");
+    m_log->log("AudioHal: Initializing audio interface", Qt::darkGreen,LEVEL_NORMAL);
     
     PaError err;
 
@@ -36,24 +36,25 @@ void AudioHal::initialize()
 
     if (err != paNoError)
     {
-        printf("AudioHal: Error while initialiazing.\n");
+        m_log->log("AudioHal: Error while initialiazing", Qt::red);
     }
     
     const PaDeviceInfo *deviceInfo;
 
-    printf("AudioHal: Setting audio to default device.\n");
+    m_log->log("AudioHal: Setting audio to default device",Qt::darkGreen,LEVEL_NORMAL);
     m_sDefaultDeviceNumber = Pa_GetDefaultOutputDevice();
 
-    printf( "Default Output: [ " );
+    m_log->log( "Default Output: [ " ,Qt::darkGreen,LEVEL_NORMAL);
 
     deviceInfo = Pa_GetDeviceInfo( m_sDefaultDeviceNumber );
 
     if( m_sDefaultDeviceNumber == Pa_GetHostApiInfo( deviceInfo->hostApi )->defaultOutputDevice )
     {
         const PaHostApiInfo *hostInfo = Pa_GetHostApiInfo( deviceInfo->hostApi );
+        m_log->log(hostInfo->name, Qt::darkGreen,LEVEL_NORMAL);
     }
 
-    printf( " ]\n" );
+    m_log->log(" ]",Qt::darkGreen,LEVEL_NORMAL);
 }
 
 void AudioHal::terminate()
@@ -68,7 +69,7 @@ void AudioHal::open()
     
     outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
-      fprintf(stderr,"Error: No default output device.\n");
+      m_log->log("Error: No default output device", Qt::red);
       terminate();
     }
     outputParameters.channelCount = 2;       /* stereo output */
@@ -109,7 +110,7 @@ void AudioHal::play(float frequency)
     
     if (m_pVoiceManager != nullptr)
     {   
-        printf("AudioHal::play\n");
+        m_log->log("AudioHal::play",Qt::darkGreen,LEVEL_VERBOSE);
         m_pVoiceManager->noteOn(frequency, getGlobalTime());
     }
  }
@@ -118,8 +119,26 @@ void AudioHal::stop(float frequency)
 {
     if (m_pVoiceManager)
     {
-        printf("AudioHal::stop\n");
+        m_log->log("AudioHal::stop",Qt::darkGreen,LEVEL_VERBOSE);
         m_pVoiceManager->noteOff(frequency, getGlobalTime());
+    }
+}
+
+void AudioHal::startNoise()
+{
+    if (m_pVoiceManager != nullptr)
+    {
+        m_log->log("AudioHal::start noise",Qt::darkGreen,LEVEL_VERBOSE);
+        m_pVoiceManager->noiseOn(getGlobalTime());
+    }
+ }
+
+void AudioHal::stopNoise()
+{
+    if (m_pVoiceManager)
+    {
+        m_log->log("AudioHal::stop noise",Qt::darkGreen,LEVEL_VERBOSE);
+        m_pVoiceManager->noiseOff(getGlobalTime());
     }
 }
 

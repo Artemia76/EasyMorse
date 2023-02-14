@@ -13,11 +13,12 @@
 #include "audio/envelope/Envelope.h"
 #include "audio/filter/LowpassFilter.h"
 #include "audio/voice/Voice.h"
+#include "audio/voice/Noise.h"
 
 VoiceManager::VoiceManager()
 {
     m_pGain = std::make_shared<Param>(0.0,1.0, 0.2);
-
+    noiseRatio = 0.0;
     m_pOscillatorMix = std::make_shared<Param>(0.0,1.0, 0.0);
 
     m_pEnvelopeAttackTime = std::make_shared<Param>(0.01, 0.99, 0.01);
@@ -80,10 +81,28 @@ void VoiceManager::noteOff(float fFrequency, float fTime)
     }
 }
 
+void VoiceManager::noiseOn(float fTime)
+{
+    noise->reset();
+    noise->noteOn(fTime);
+}
+
+void VoiceManager::noiseOff(float fTime)
+{
+    noise->noteOff(fTime);
+}
+
+
 void VoiceManager::setGain(int gain)
 {
     m_pGain->setValue(gain / 1000.0);
 }
+
+void VoiceManager::setNoiseRatio(float gain)
+{
+    noiseRatio = gain;
+}
+
 
 float VoiceManager::getSample(float fTime)
 {   
@@ -98,6 +117,8 @@ float VoiceManager::getSample(float fTime)
             value += pVoice->process(fTime);
         }
     }
+
+    value += noiseRatio * noise->process(fTime);
 
     return value * m_pGain->getValue();
 }
@@ -124,6 +145,15 @@ void VoiceManager::createVoices()
 
         voices[i] = voice;
     }
+
+    //Create noise ambiant sound
+    std::shared_ptr<IFilter> filter = std::make_shared<LowpassFilter>();
+    std::shared_ptr<IEnvelope> pFilterEnvelope = std::make_shared<Envelope>(m_pFilterEnvelopeAttackTime
+                                                                , m_pFilterEnvelopeDecayTime
+                                                                , m_pFilterEnvelopeReleaseTime
+                                                                , m_pFilterEnvelopeSustainAmplitude);
+
+    noise = new Noise(filter,m_pLfo, pFilterEnvelope);
 }
 
 void VoiceManager::setOscillator1(std::shared_ptr<IOscillatorFunction> func)
@@ -183,6 +213,7 @@ void VoiceManager::setFilter(FilterType type)
             pVoice->setFilter(type);
         }
     }
+    noise->setFilter(type);
 }
 
 void VoiceManager::setCutOffFrequency(int frequency)
@@ -196,6 +227,7 @@ void VoiceManager::setCutOffFrequency(int frequency)
             pVoice->getFilterCutOff()->setValue(frequency / 1000.0);
         }
     }
+    noise->getFilterCutOff()->setValue(frequency / 1000.0);
 }
 
 void VoiceManager::setResonance(int resonance)

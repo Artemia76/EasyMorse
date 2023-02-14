@@ -62,7 +62,6 @@ protected:
     void    keyerOff();
 
 private slots:
-    void    onDeviceChanged(int index);
     void    onLog(const QString& pMessage,QColor pColor, CL_DEBUG_LEVEL pLevel);
     void    onLogContextMenuRequested(const QPoint &pos);
     void    clearLog();
@@ -78,8 +77,11 @@ private slots:
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
     void    on_timer();
     void    onMorseMessage(QString pMessage);
-    void    on_m_serialBox_currentIndexChanged(int index);
     void    onActionAFOptionsTriggered();
+    void    on_rb_filterNone_toggled(bool checked);
+    void    on_rb_filterNormal_toggled(bool checked);
+    void    on_rb_filterVerbose_toggled(bool checked);
+    void    on_cb_filter_currentTextChanged(const QString &arg1);
 
 signals:
     void    Keyer(bool value);
@@ -113,6 +115,7 @@ private:
     int                             m_noiseFilter;
     int                             m_wordSpeed;
     int                             m_charSpeed;
+    bool                            m_serialEnable;
     QString                         m_serialPortName;
     QString                         m_audioDeviceName;
     QTimer                          m_timer;

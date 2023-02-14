@@ -54,12 +54,44 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     restoreGeometry(m_settings.value("Geometry").toByteArray());
     //restoreState(m_settings.value("State").toByteArray());
     m_settings.endGroup();
-
-    m_settings.beginGroup("log");
+    // Setting Log
+    m_log = CLogger::instance();
+    connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)));
+    m_settings.beginGroup("Log");
+    m_log->setDebugLevel(m_settings.value("Level",LEVEL_NONE).value<CL_DEBUG_LEVEL>());
+    m_log->log("Main Window started...",Qt::magenta,LEVEL_NORMAL);
+    switch (m_log->DebugLevel)
+    {
+        case LEVEL_NONE:
+        {
+            ui->rb_filterNone->setChecked(true);
+            break;
+        }
+        case LEVEL_NORMAL:
+        {
+            ui->rb_filterNormal->setChecked(true);
+            break;
+        }
+        case LEVEL_VERBOSE:
+        {
+            ui->rb_filterVerbose->setChecked(true);
+            break;
+        }
+    }
+    int id=ui->cb_filter->findText(m_log->getFilter(),Qt::MatchExactly);
+    if (id >=0)
+    {
+        ui->cb_filter->setCurrentIndex(id);
+    }
+    else
+    {
+        ui->cb_filter->addItem(m_log->getFilter());
+        ui->cb_filter->setCurrentIndex(ui->cb_filter->findText(m_log->getFilter(),Qt::MatchExactly));
+    }
     m_maxLine = m_settings.value("MaxLine",200).toInt();
     m_settings.endGroup();
 
-    m_settings.beginGroup("synth");
+    m_settings.beginGroup("Synth");
 
     //Set Sound Frequency
     connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
@@ -79,17 +111,19 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     //Set NoiseCorrelation
     connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
     m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
+    m_manager->setNoiseRatio(m_noiseCorrelation);
     //m_generator->setNoiseCorrelation(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(m_noiseCorrelation*100));
-
+    m_hal->startNoise();
     //Set noise Filter
+    m_manager->setFilter(FilterType::LOWPASS);
     connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
     m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
-    //m_generator->setNoiseFilter(m_noiseFilter);
+    m_manager->setCutOffFrequency(m_noiseFilter);
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(m_noiseFilter));
 
     m_settings.endGroup();
-    m_settings.beginGroup("morse");
+    m_settings.beginGroup("Morse");
 
     //Set FarnsWorth Option
     connect(ui->m_UseFarnsWorth, &QCheckBox::stateChanged, this, &MainWindow::onFarnsWorthChanged);
@@ -109,6 +143,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     m_settings.endGroup();
 
     m_settings.beginGroup("serial");
+    m_serialEnable = m_settings.value("PortEnable",false).toBool();
     m_serialPortName = m_settings.value("PortName",
 #ifdef Q_OS_LINUX
     "tty0"
@@ -129,14 +164,6 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
     m_timer.setSingleShot(false);
     m_timer.start(10);
-
-    // Setting Log
-    m_log = CLogger::instance();
-    connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)));
-#ifdef QT_DEBUG
-    m_log->setDebugLevel(LEVEL_VERBOSE);
-    m_log->log("Main Window started...",Qt::magenta,LEVEL_NORMAL);
-#endif
 
     // LogZone Initialize
     ui->m_LogZone->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -170,13 +197,14 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     initializeAudio();
 
     // Iterat available serial ports
-    for (auto& serialPort : QSerialPortInfo::availablePorts())
-    {
-        ui->m_serialBox->addItem(serialPort.portName());
-    }
-    ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
+    //for (auto& serialPort : QSerialPortInfo::availablePorts())
+    //{
+    //    ui->m_serialBox->addItem(serialPort.portName());
+    //}
+    //ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
 
-    initializeSerial(m_serialPortName);
+    if (m_serialEnable)
+        initializeSerial(m_serialPortName);
 
     m_CTS=false;
     m_playing_phrase=false;
@@ -206,25 +234,20 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("State",saveState());
     m_settings.endGroup();
     m_settings.beginGroup("Log");
+    m_settings.setValue("Level", m_log->DebugLevel);
     m_settings.setValue("MaxLine",m_maxLine);
     m_settings.endGroup();
-    m_settings.beginGroup("synth");
+    m_settings.beginGroup("Synth");
     m_settings.setValue("SoundFreq",m_frequency);
     m_settings.setValue("SoundLevel", m_volume);
     m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
     m_settings.setValue("NoiseFilter",m_noiseFilter);
     //m_settings.setValue("Device",QMediaDevices::defaultAudioOutput().description());
     m_settings.endGroup();
-    m_settings.beginGroup("morse");
+    m_settings.beginGroup("Morse");
     m_settings.setValue("WordSpeed", m_wordSpeed);
     m_settings.setValue("FarnsWorth",m_morse.getFarnsWorth());
     m_settings.setValue("CharSpeed", m_charSpeed);
-    m_settings.endGroup();
-    m_settings.beginGroup("serial");
-    m_settings.setValue("PortName", ui->m_serialBox->currentText());
-    m_settings.endGroup();
-    m_settings.beginGroup("audio");
-    m_settings.setValue("DeviceName", ui->m_deviceBox->currentText());
     m_settings.endGroup();
 }
 
@@ -262,7 +285,9 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
         m_serial.setPort(portInfo);
         m_serial.setFlowControl(QSerialPort::NoFlowControl);
         if (!m_serial.open(QIODevice::ReadWrite))
-            m_log->log(tr("Failed to open Serial port..."),Qt::red,LEVEL_NORMAL);
+        {
+            m_log->log(tr("Failed to open Serial port..."),Qt::red);
+        }
         m_serial.setDataTerminalReady(true);
         m_serial.setRequestToSend(false);
     }
@@ -315,15 +340,6 @@ void MainWindow::onCharSpeedChanged(int value)
 }
 
 ///
-/// \brief MainWindow::onDeviceChanged
-///
-void MainWindow::onDeviceChanged(int index)
-{
-    //m_generator->stop();
-    //initializeAudio(ui->m_deviceBox->itemData(index).value<QAudioDevice>());
-}
-
-///
 /// \brief MainWindow::onFarnsWorthChanged
 /// \param value
 ///
@@ -339,7 +355,7 @@ void MainWindow::onFarnsWorthChanged(bool value)
 void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
-    //m_generator->setNoiseCorrelation(m_noiseCorrelation);
+    m_manager->setNoiseRatio(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
 }
 
@@ -350,8 +366,8 @@ void MainWindow::onNoiseCorChanged(int index)
 void MainWindow::onNoiseFilterChanged(int index)
 {
     m_noiseFilter = index;
-    //m_generator->setNoiseFilter(m_noiseFilter);
-    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(index));
+    m_manager->setCutOffFrequency(m_noiseFilter);
+    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 Hz")).arg(index));
 }
 
 ///
@@ -422,7 +438,6 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
     {
         if (pMessage.isEmpty()) return false;
         m_playing_phrase=true;
-        ui->m_deviceBox->setDisabled(true);
         ui->m_frequencySlider->setDisabled(true);
         //ui->m_volumeSlider->setDisabled(true);
         ui->m_WordSpeed->setDisabled(true);
@@ -447,7 +462,6 @@ void MainWindow::StopMorseMessage()
         // Finished playing (no more data)
         //m_morse->stop();
         m_playing_phrase=false;
-        ui->m_deviceBox->setDisabled(false);
         ui->m_frequencySlider->setDisabled(false);
         //ui->m_volumeSlider->setDisabled(false);
         ui->m_WordSpeed->setDisabled(false);
@@ -588,14 +602,6 @@ void MainWindow::keyerOff()
 }
 
 ///
-/// \brief MainWindow::on_m_serialBox_currentIndexChanged
-///
-void MainWindow::on_m_serialBox_currentIndexChanged(int)
-{
-    initializeSerial(ui->m_serialBox->currentText() );
-}
-
-///
 /// \brief MainWindow::onActionAFOptionsTriggered
 ///
 void MainWindow::onActionAFOptionsTriggered()
@@ -613,4 +619,41 @@ void MainWindow::onMorseMessage(QString pMessage)
     ui->m_MorseZone->insertPlainText(m_morse.decodeMorse(pMessage) + ' ');
 }
 
+
+///
+/// \brief MainWindow::on_rb_filterNone_toggled
+/// \param checked
+///
+void MainWindow::on_rb_filterNone_toggled(bool checked)
+{
+    if (checked) m_log->setDebugLevel(LEVEL_NONE);
+}
+
+///
+/// \brief MainWindow::on_rb_filterNormal_toggled
+/// \param checked
+///
+void MainWindow::on_rb_filterNormal_toggled(bool checked)
+{
+    if (checked) m_log->setDebugLevel(LEVEL_NORMAL);
+}
+
+///
+/// \brief MainWindow::on_rb_filterVerbose_toggled
+/// \param checked
+///
+void MainWindow::on_rb_filterVerbose_toggled(bool checked)
+{
+    if (checked) m_log->setDebugLevel(LEVEL_VERBOSE);
+}
+
+///
+/// \brief MainWindow::on_cb_filter_currentTextChanged
+/// \param arg1
+///
+
+void MainWindow::on_cb_filter_currentTextChanged(const QString &arg1)
+{
+    m_log->setFilter(arg1);
+}
 

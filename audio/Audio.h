@@ -19,6 +19,7 @@
 #include <portaudio.h>
 
 #include "audio/voicemanager/VoiceManager.h"
+#include "tools/clogger.h"
 
 #define SAMPLE_RATE (44100.0)
 #define TABLE_SIZE (1024) 
@@ -36,6 +37,8 @@ public:
     void open();
     void play(float frequency);
     void stop(float frequency);
+    void startNoise();
+    void stopNoise();
 
     int paUserCallback( const void *inputBuffer, void *outputBuffer,
                         unsigned long framesPerBuffer,
@@ -70,6 +73,7 @@ private:
     double m_globalTime;
 
     VoiceManager* m_pVoiceManager;
+    CLogger* m_log;
 
     PaStream *stream;
     int left_phase;

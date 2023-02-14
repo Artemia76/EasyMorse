@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>860</height>
+    <height>915</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -510,7 +510,7 @@
    <property name="minimumSize">
     <size>
      <width>166</width>
-     <height>543</height>
+     <height>552</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -521,32 +521,6 @@
    </attribute>
    <widget class="QWidget" name="vlOptions">
     <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Output Sound Card</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="m_deviceBox"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Serial Port</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="m_serialBox"/>
-     </item>
      <item>
       <widget class="QLabel" name="m_labelFreq">
        <property name="text">
@@ -684,20 +658,20 @@
      <item>
       <widget class="QLabel" name="m_LowPassFilter">
        <property name="text">
-        <string>Low Pass Filter = %1 %</string>
+        <string>Low Pass Filter = %1 Hz</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QSlider" name="m_NoiseFilterSlider">
        <property name="maximum">
-        <number>100</number>
+        <number>3000</number>
        </property>
        <property name="singleStep">
-        <number>5</number>
+        <number>100</number>
        </property>
        <property name="pageStep">
-        <number>10</number>
+        <number>500</number>
        </property>
        <property name="value">
         <number>0</number>
@@ -712,7 +686,7 @@
         <enum>QSlider::TicksBelow</enum>
        </property>
        <property name="tickInterval">
-        <number>25</number>
+        <number>500</number>
        </property>
       </widget>
      </item>
@@ -779,6 +753,51 @@
        <property name="readOnly">
         <bool>true</bool>
        </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockDebugOpt">
+   <property name="windowTitle">
+    <string>Debug</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QRadioButton" name="rb_filterNone">
+       <property name="text">
+        <string>None</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rb_filterNormal">
+       <property name="text">
+        <string>Normal</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rb_filterVerbose">
+       <property name="text">
+        <string>Verbose</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cb_filter">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>*</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

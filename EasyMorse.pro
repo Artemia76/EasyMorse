@@ -164,6 +164,7 @@ SOURCES += \
     audio/filter/LowpassFilter.cpp \
     audio/modulation/ModulationValue.cpp \
     audio/oscillator/Lfo.cpp \
+    audio/voice/Noise.cpp \
     audio/voice/Voice.cpp \
     audio/voicemanager/Param.cpp \
     audio/voicemanager/VoiceManager.cpp \
@@ -192,7 +193,9 @@ HEADERS += \
     audio/oscillator/ILfo.h \
     audio/oscillator/Lfo.h \
     audio/oscillator/NoOscillator.h \
+    audio/voice/INoise.h \
     audio/voice/IVoice.h \
+    audio/voice/Noise.h \
     audio/voice/Voice.h \
     audio/voicemanager/Param.h \
     audio/voicemanager/VoiceManager.h \

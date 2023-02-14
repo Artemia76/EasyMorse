@@ -10,6 +10,8 @@
 #define VOICEMANAGER_H
 
 #include "audio/voice/IVoice.h"
+#include "audio/voice/INoise.h"
+
 #include <QObject>
 
 #include "audio/oscillator/Lfo.h"
@@ -27,6 +29,10 @@ public:
     void noteOn(float fFrequency, float fTime);
 
     void noteOff(float fFrequency, float fTime);
+
+    void noiseOn(float fTime);
+
+    void noiseOff(float fTime);
 
     float getSample(float fTime);
 
@@ -61,11 +67,17 @@ public:
     void setLfoAmount(int amount);
     void setLfoOscillator(std::shared_ptr<IOscillatorFunction> func);
 
+    //Noise
+    void setNoiseRatio(float gain);
 private:
 
     IVoice* voices[NumberOfVoices];
 
     IVoice* findFreeVoice();
+
+    INoise* noise;
+
+    float noiseRatio;
 
     std::shared_ptr<Lfo>        m_pLfo;
 
