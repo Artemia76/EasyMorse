@@ -113,6 +113,7 @@ macx {
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
     PKG_CONFIG = /usr/local/bin/pkg-config
+    PKGCONFIG += portaudio-2.0
 
     #add /usr/local scope which is not included by default on osx
     INCLUDEPATH += /usr/local/include
