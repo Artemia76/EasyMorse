@@ -34,6 +34,7 @@ void Noise::noteOn(float fTime)
 
 void Noise::noteOff(float fTime)
 {
+    m_bActive = false;
     m_pFilterEnvelope->noteOff(fTime);
     m_pFilter->triggerOff();
 }
@@ -43,7 +44,7 @@ float Noise::process(float fTime)
 
     m_pFilter->setCutoffFrequency(m_pFilterCutOff->getModulatedValue(fTime));
     m_pFilter->setResonance(m_pFilterResonance->getModulatedValue(fTime));
-    float filtered = m_pFilter->process((float) rand()/RAND_MAX);
+    float filtered = m_pFilter->process((float) m_Rnd.generateDouble()* 2.0 - 1.0);
 
     return filtered;
 }

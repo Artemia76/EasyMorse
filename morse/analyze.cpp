@@ -185,13 +185,11 @@ QString CAnalyze::DecodeMorse()
     quint64 LastTrigOff=0;
     quint64 DotDash = m_dotDuration + ((m_dashDuration-m_dotDuration)/2);
     quint64 SymbChar = m_symbSilentDuration + ((m_charSilentDuration-m_symbSilentDuration)/2);
-#ifdef QT_DEBUG
     m_log->log(QString("DotDash Separation silent : %1 msec").arg(DotDash),Qt::blue,LEVEL_NORMAL);
     m_log->log(QString("SymbChar Silent Separation : %1 msec").arg(SymbChar),Qt::blue,LEVEL_NORMAL);
     m_log->log(QString("WordDuration Silent duration : %1 msec").arg(m_wordSilentDuration),Qt::blue,LEVEL_NORMAL);
     if (m_dotDuration > 0)
         m_log->log(QString("Estimated Speed : %1 wpm").arg(60000/((m_dotDuration + (m_dashDuration/3))*20)),Qt::blue,LEVEL_NORMAL);
-#endif
     QDataStream ds(&m_buffer,QIODevice::ReadOnly);
     while (!ds.atEnd())
     {

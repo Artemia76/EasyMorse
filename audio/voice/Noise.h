@@ -2,7 +2,7 @@
 #define NOISE_H
 
 #include "INoise.h"
-
+#include <QRandomGenerator>
 #include "audio/voicemanager/Param.h"
 
 class Noise : public INoise
@@ -34,6 +34,7 @@ private:
     std::shared_ptr<IFilter> m_pFilter;
     std::shared_ptr<IEnvelope> m_pFilterEnvelope;
     bool m_bActive;
+    QRandomGenerator m_Rnd;
 
 /******************************************************************************
     Modulation
