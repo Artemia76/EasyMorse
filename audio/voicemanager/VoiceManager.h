@@ -26,15 +26,15 @@ public:
 
     static const int NumberOfVoices = 20;
 
-    void noteOn(float fFrequency, float fTime);
+    void noteOn(double dFrequency, double dTime);
 
-    void noteOff(float fFrequency, float fTime);
+    void noteOff(double dFrequency, double dTime);
 
-    void noiseOn(float fTime);
+    void noiseOn(double dTime);
 
-    void noiseOff(float fTime);
+    void noiseOff(double dTime);
 
-    float getSample(float fTime);
+    double getSample(double dTime);
 
     //Gain
     void setGain(int gain);
@@ -68,7 +68,7 @@ public:
     void setLfoOscillator(std::shared_ptr<IOscillatorFunction> func);
 
     //Noise
-    void setNoiseRatio(float gain);
+    void setNoiseRatio(double dGain);
 private:
 
     IVoice* voices[NumberOfVoices];
@@ -77,7 +77,7 @@ private:
 
     INoise* noise;
 
-    float noiseRatio;
+    double noiseRatio;
 
     std::shared_ptr<Lfo>        m_pLfo;
 

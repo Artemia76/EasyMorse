@@ -22,12 +22,12 @@ void Lfo::setOscillator(std::shared_ptr<IOscillatorFunction> pOscillator)
     m_pOscillator = pOscillator;
 }
 
-void Lfo::trigger(float fTime)
+void Lfo::trigger(double dTime)
 {
-    m_fModulationAmount = m_pAmount->getValue() * (m_pOscillator.get()->calculate(fTime, m_pFrequency->getValue()));
+    m_fModulationAmount = m_pAmount->getValue() * (m_pOscillator.get()->calculate(dTime, m_pFrequency->getValue()));
 }
 
-float Lfo::getModulationAmount()
+double Lfo::getModulationAmount()
 {
     return m_fModulationAmount;
 }

@@ -13,22 +13,22 @@ class Param
 {
 public:
 
-    Param(float fMinValue, float fMaxValue, float fDefaultValue);
+    Param(double dMinValue, double dMaxValue, double dDefaultValue);
 
-    float getValue();
-    void setValue(float);
+    double getValue();
+    void setValue(double);
 
     float getMinValue();
-    void setMinValue(float fMinValue);
+    void setMinValue(double dMinValue);
     
     float getMaxValue();
-    void setMaxValue(float fMaxValue);
+    void setMaxValue(double dMaxValue);
 
 protected:
 
-    float   m_fValue;
-    float   m_fMinValue;
-    float   m_fMaxValue;
+    double   m_dValue;
+    double   m_dMinValue;
+    double   m_dMaxValue;
 };
 
 #endif

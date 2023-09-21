@@ -13,7 +13,7 @@ class IOscillatorFunction
 {
 public:
 
-virtual float calculate(float fTime, float fFrequency) = 0;
+virtual double calculate(double dTime, double dFrequency) = 0;
 
 private:
 };
@@ -27,7 +27,7 @@ public:
     //dtor
     virtual ~Sine();
   
-    float calculate(float fTime, float fFrequency) override;
+    double calculate(double dTime, double dFrequency) override;
 };
 
 class Square : public IOscillatorFunction
@@ -39,7 +39,7 @@ public:
     //dtor
     virtual ~Square();
   
-    float calculate(float fTime, float fFrequency) override;
+    double calculate(double dTime, double dFrequency) override;
 };
 
 class Triangle : public IOscillatorFunction
@@ -51,7 +51,7 @@ public:
     //dtor
     virtual ~Triangle();
   
-    float calculate(float fTime, float fFrequency) override;
+    double calculate(double dTime, double dFrequency) override;
 };
 
 class Saw : public IOscillatorFunction
@@ -63,7 +63,7 @@ public:
     //dtor
     virtual ~Saw();
   
-    float calculate(float fTime, float fFrequency) override;
+    double calculate(double dTime, double dFrequency) override;
 };
 
 #endif

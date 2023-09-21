@@ -18,14 +18,14 @@ class NoFilter : public IFilter
         // do nothing
     }
 
-    void triggerOff()override
+    void triggerOff() override
     {
         // do nothing
     }
 
-    float process(float fInputValue)
+    double process(double dInputValue) override
     {
-        return fInputValue;
+        return dInputValue;
     }    
 };
 

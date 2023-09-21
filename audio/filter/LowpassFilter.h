@@ -22,26 +22,26 @@ public:
     void triggerOn() override;
     void triggerOff() override;
 
-    float process(float fInputValue) override;
+    double process(double dInputValue) override;
     void  reset() override;
 
-    void setCutoffFrequency(float fFrequency) override;
-    void setResonance(float fResonance) override;
-    float getFeedbackAmount() override;
+    void setCutoffFrequency(double dFrequency) override;
+    void setResonance(double dResonance) override;
+    double getFeedbackAmount() override;
 
 private:
 
-    float m_fCutoffFrequency;
-    float m_fBuf0;
-    float m_fBuf1;
-    float m_fBuf2;
+    double m_dCutoffFrequency;
+    double m_dBuf0;
+    double m_dBuf1;
+    double m_dBuf2;
 
-    float m_fResonance;
-    float m_fFeedbackAmount;
+    double m_dResonance;
+    double m_dFeedbackAmount;
 
     bool m_bNoteOn;
 
-    inline void calculateFeedbackAmount() { m_fFeedbackAmount = m_fResonance + m_fResonance/(1.0 - m_fCutoffFrequency); }
+    inline void calculateFeedbackAmount() { m_dFeedbackAmount = m_dResonance + m_dResonance/(1.0 - m_dCutoffFrequency); }
 };
 
 #endif //LOWPASS_FILTER_H

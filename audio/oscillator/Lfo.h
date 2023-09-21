@@ -22,14 +22,14 @@ public:
 
     void setOscillator(std::shared_ptr<IOscillatorFunction> pOscillator) override;
 
-    void trigger(float fTime) override;
-    float getModulationAmount() override;
+    void trigger(double dTime) override;
+    double getModulationAmount() override;
 
 private:
     std::shared_ptr<Param> m_pFrequency;
     std::shared_ptr<Param> m_pAmount;
 
-    float m_fModulationAmount;
+    double m_fModulationAmount;
     std::shared_ptr<IOscillatorFunction> m_pOscillator;
 };
 #endif

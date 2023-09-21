@@ -22,9 +22,9 @@ Saw::Saw()
 
  }
 
-float Saw::calculate(float fTime, float fFrequency)
+double Saw::calculate(double fTime, double fFrequency)
 {
-    float x = fTime * fFrequency;
+    double x = fTime * fFrequency;
 
-    return x - floorf(x);
+    return x - floor(x);
 }

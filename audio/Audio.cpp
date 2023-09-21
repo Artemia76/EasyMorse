@@ -104,7 +104,7 @@ void AudioHal::open()
     }
 }
 
-void AudioHal::play(float frequency)
+void AudioHal::play(double frequency)
 {
     m_frequency = frequency;
     
@@ -115,7 +115,7 @@ void AudioHal::play(float frequency)
     }
  }
 
-void AudioHal::stop(float frequency)
+void AudioHal::stop(double frequency)
 {
     if (m_pVoiceManager)
     {
@@ -143,7 +143,7 @@ void AudioHal::stopNoise()
 }
 
 int AudioHal::paUserCallback(   const void *inputBuffer, void *outputBuffer,
-                                unsigned long framesPerBuffer,
+                                unsigned long /*framesPerBuffer*/,
                                 const PaStreamCallbackTimeInfo* timeInfo,
                                 PaStreamCallbackFlags statusFlags)
 {
@@ -157,7 +157,7 @@ int AudioHal::paUserCallback(   const void *inputBuffer, void *outputBuffer,
     //create signal
     for( j=0; j<TABLE_SIZE; j++ )
     {
-        float value = m_pVoiceManager->getSample(m_globalTime);
+        float value = static_cast<float>(m_pVoiceManager->getSample(m_globalTime));
 
         *out++ = value;  /* left */
         *out++ = value;  /* right */
@@ -172,7 +172,7 @@ int AudioHal::paUserCallback(   const void *inputBuffer, void *outputBuffer,
 SETTER AND GETTER
 */
 
-float AudioHal::getGlobalTime()
+double AudioHal::getGlobalTime()
 {
     return m_globalTime;
 }

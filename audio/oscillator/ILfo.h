@@ -18,9 +18,9 @@ class ILfo
 public:
     virtual void setOscillator(std::shared_ptr<IOscillatorFunction> pOscillator) = 0;
 
-    virtual void trigger(float fTime) = 0;
+    virtual void trigger(double dTime) = 0;
     
-    virtual float getModulationAmount() = 0;
+    virtual double getModulationAmount() = 0;
 
 };
 #endif

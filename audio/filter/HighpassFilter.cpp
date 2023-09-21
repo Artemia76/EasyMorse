@@ -10,12 +10,12 @@
 
 //ctor
 HighpassFilter::HighpassFilter()
-: m_fCutoffFrequency(0.999)
-, m_fBuf0(0.0)
-, m_fBuf1(0.0)
-, m_fBuf2(0.0)
-, m_fResonance(0.0)
-, m_bNoteOn(false)
+    : m_dCutoffFrequency(0.999)
+    , m_dBuf0(0.0)
+    , m_dBuf1(0.0)
+    , m_dBuf2(0.0)
+    , m_dResonance(0.0)
+    , m_bNoteOn(false)
 {
   calculateFeedbackAmount();
 }
@@ -37,33 +37,33 @@ void HighpassFilter::triggerOff()
   m_bNoteOn = false;
 }
 
-float HighpassFilter::process(float fInputValue)
+double HighpassFilter::process(double dInputValue)
 {
-  m_fBuf0 += m_fCutoffFrequency *  (fInputValue - m_fBuf0 + m_fFeedbackAmount * (m_fBuf0 - m_fBuf1));
-  m_fBuf1 += m_fCutoffFrequency *  (m_fBuf0 - m_fBuf1);
-  m_fBuf2 += m_fCutoffFrequency *  (m_fBuf1 - m_fBuf2);
+  m_dBuf0 += m_dCutoffFrequency *  (dInputValue - m_dBuf0 + m_dFeedbackAmount * (m_dBuf0 - m_dBuf1));
+  m_dBuf1 += m_dCutoffFrequency *  (m_dBuf0 - m_dBuf1);
+  m_dBuf2 += m_dCutoffFrequency *  (m_dBuf1 - m_dBuf2);
   
-  return fInputValue - m_fBuf2;
+  return dInputValue - m_dBuf2;
 }
 
 void HighpassFilter::reset()
 {
-  m_fBuf0 = m_fBuf1 = m_fBuf2 = 0.0;
+  m_dBuf0 = m_dBuf1 = m_dBuf2 = 0.0;
 }
 
-void HighpassFilter::setCutoffFrequency(float fFrequency)
+void HighpassFilter::setCutoffFrequency(double dFrequency)
 {
-  m_fCutoffFrequency = fFrequency;
+  m_dCutoffFrequency = dFrequency;
   calculateFeedbackAmount();
 }
 
-void HighpassFilter::setResonance(float fResonance)
+void HighpassFilter::setResonance(double dResonance)
 {
-  m_fResonance = fResonance;
+  m_dResonance = dResonance;
   calculateFeedbackAmount();
 }
 
-float HighpassFilter::getFeedbackAmount()
+double HighpassFilter::getFeedbackAmount()
 {
-  return m_fFeedbackAmount;
+  return m_dFeedbackAmount;
 }

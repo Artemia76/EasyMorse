@@ -8,8 +8,8 @@ Noise::Noise(std::shared_ptr<IFilter> pFilter
             , std::shared_ptr<ILfo> pLfo
             , std::shared_ptr<IEnvelope> pFilterEnvelope)
 : m_pFilter(pFilter)
-, m_bActive(false)
 , m_pFilterEnvelope(pFilterEnvelope)
+, m_bActive(false)
 {
     m_pFilterCutOff = std::make_shared<modulation::ModulationValue>(0.01, 0.99, 0.99);
     m_pFilterCutOff->setLfo(pLfo);
@@ -25,26 +25,26 @@ Noise::~Noise()
 
 }
 
-void Noise::noteOn(float fTime)
+void Noise::noteOn(double dTime)
 {
     m_bActive = true;
-    m_pFilterEnvelope->noteOn(fTime);
+    m_pFilterEnvelope->noteOn(dTime);
     m_pFilter->triggerOn();
 }
 
-void Noise::noteOff(float fTime)
+void Noise::noteOff(double dTime)
 {
     m_bActive = false;
-    m_pFilterEnvelope->noteOff(fTime);
+    m_pFilterEnvelope->noteOff(dTime);
     m_pFilter->triggerOff();
 }
 
-float Noise::process(float fTime)
+double Noise::process(double dTime)
 {
 
-    m_pFilter->setCutoffFrequency(m_pFilterCutOff->getModulatedValue(fTime));
-    m_pFilter->setResonance(m_pFilterResonance->getModulatedValue(fTime));
-    float filtered = m_pFilter->process((float) m_Rnd.generateDouble()* 2.0 - 1.0);
+    m_pFilter->setCutoffFrequency(m_pFilterCutOff->getModulatedValue(dTime));
+    m_pFilter->setResonance(m_pFilterResonance->getModulatedValue(dTime));
+    double filtered = m_pFilter->process( m_Rnd.generateDouble()* 2.0 - 1.0);
 
     return filtered;
 }

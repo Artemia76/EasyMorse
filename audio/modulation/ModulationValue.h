@@ -20,9 +20,9 @@ namespace modulation
     class ModulationValue : public Param
     {
     public:
-        ModulationValue(float fMinValue, float fMaxValue, float fDefaultValue);
+        ModulationValue(double dMinValue, double dMaxValue, double dDefaultValue);
 
-        float getModulatedValue(float fTime);
+        double getModulatedValue(double dTime);
 
         void setLfo(std::shared_ptr<ILfo> pModulator);
         void setEnvelopeModulator(std::shared_ptr<IEnvelope> pEnvelopeModulator);

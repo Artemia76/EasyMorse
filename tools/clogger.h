@@ -42,6 +42,8 @@ enum CL_DEBUG_LEVEL
     LEVEL_VERBOSE
 };
 
+Q_DECLARE_METATYPE(CL_DEBUG_LEVEL);
+
 class CLogger : public QObject
 {
     Q_OBJECT

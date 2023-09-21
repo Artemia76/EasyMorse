@@ -10,8 +10,6 @@
 #define VOICE_H
 
 #include "IVoice.h"
-#include "audio/voicemanager/Param.h"
-#include "audio/oscillator/Lfo.h"
 
 class Voice : public IVoice
 {
@@ -26,21 +24,21 @@ public:
     //dtor
     ~Voice();
 
-    void noteOn(float fFrequency, float fTime) override;
+    void noteOn(double dFrequency, double dTime) override;
 
-    void noteOff(float fTime) override;
+    void noteOff(double dTime) override;
 
-    float process(float fTime) override;
+    double process(double dTime) override;
 
     void reset() override;
 
     bool isActive() override;
     void setActive() override;
 
-    float getFrequency() override;
+    double getFrequency() override;
 
-    std::shared_ptr<modulation::ModulationValue> getFilterCutOff();
-    std::shared_ptr<modulation::ModulationValue> getFilterResonance();
+    std::shared_ptr<modulation::ModulationValue> getFilterCutOff() override;
+    std::shared_ptr<modulation::ModulationValue> getFilterResonance() override;
 
 private:
     std::shared_ptr<IOscillatorFunction> m_pOscillator1;
@@ -48,8 +46,8 @@ private:
     std::shared_ptr<IFilter> m_pFilter;
     std::shared_ptr<IEnvelope> m_pAmpEnvelope;
     std::shared_ptr<IEnvelope> m_pFilterEnvelope;
-    float m_fFrequency;
-    float m_fMix;
+    double m_dFrequency;
+    double m_dMix;
     bool m_bActive;
 
 /******************************************************************************
@@ -73,9 +71,9 @@ private:
     std::shared_ptr<IEnvelope> getFilterEnvelope() override;
     
     std::shared_ptr<IFilter> getFilter() override;
-    void setFilter(FilterType type);
+    void setFilter(FilterType type) override;
 
-    void setOscillationMix(float fMix);
+    void setOscillationMix(double dMix) override;
 };
 
 #endif

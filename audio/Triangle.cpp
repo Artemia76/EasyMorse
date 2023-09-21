@@ -21,7 +21,7 @@ Triangle::~Triangle()
 
 }
 
-float Triangle::calculate(float fTime, float fFrequency)
+double Triangle::calculate(double fTime, double fFrequency)
 {
     return asin(sin(2.0 * M_PI * fFrequency * fTime)) * (2.0 / M_PI);
 }

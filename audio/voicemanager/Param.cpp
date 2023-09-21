@@ -9,44 +9,44 @@
 #include "Param.h"
 #include "qdebug.h"
 
-Param::Param(float fMinValue, float fMaxValue, float fDefaultValue)
-: m_fMaxValue(fMaxValue)
-, m_fMinValue(fMinValue)
-, m_fValue(fDefaultValue)
+Param::Param(double dMinValue, double dMaxValue, double dDefaultValue)
+    : m_dValue(dDefaultValue)
+    , m_dMinValue(dMinValue)
+    , m_dMaxValue(dMaxValue)
 {
 
 }
 
-float Param::getValue()
+double Param::getValue()
 {
-    return m_fValue;
+    return m_dValue;
 }
 
-void Param::setValue(float fValue)
+void Param::setValue(double dValue)
 {
-    if (fValue <= m_fMaxValue && fValue >= m_fMinValue)
+    if (dValue <= m_dMaxValue && dValue >= m_dMinValue)
     {
-        qDebug() << "Setting value to " << fValue;
-        m_fValue = fValue;
+        qDebug() << "Setting value to " << dValue;
+        m_dValue = dValue;
     }
 }
 
-void Param::setMinValue(float fMinValue)
+void Param::setMinValue(double dMinValue)
 {
-    m_fMinValue = fMinValue;
+    m_dMinValue = dMinValue;
 }
 
 float Param::getMinValue()
 {
-    return m_fMinValue;
+    return m_dMinValue;
 }
 
-void Param::setMaxValue(float fMaxValue)
+void Param::setMaxValue(double dMaxValue)
 {
-    m_fMaxValue = fMaxValue;
+    m_dMaxValue = dMaxValue;
 }
 
 float Param::getMaxValue()
 {
-    return m_fMaxValue;
+    return m_dMaxValue;
 }

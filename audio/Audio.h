@@ -22,7 +22,7 @@
 #include "tools/clogger.h"
 
 #define SAMPLE_RATE (44100.0)
-#define TABLE_SIZE (1024) 
+#define TABLE_SIZE (128)
 #define FRAMES_PER_BUFFER TABLE_SIZE
 #define TIME_STEP (1.0/SAMPLE_RATE)
 
@@ -35,8 +35,8 @@ public:
     void initialize();
     void terminate();
     void open();
-    void play(float frequency);
-    void stop(float frequency);
+    void play(double frequency);
+    void stop(double frequency);
     void startNoise();
     void stopNoise();
 
@@ -45,7 +45,7 @@ public:
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags);
 
-    float getGlobalTime();
+    double getGlobalTime();
 
     void setVoiceManager(VoiceManager* pVoicemanager);
 
@@ -69,7 +69,7 @@ private:
 
     static int m_sDefaultDeviceNumber;
 
-    float m_frequency;
+    double m_frequency;
     double m_globalTime;
 
     VoiceManager* m_pVoiceManager;

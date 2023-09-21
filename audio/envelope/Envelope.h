@@ -27,10 +27,10 @@ public:
     //dtor
     virtual ~Envelope();
 
-    void noteOn(float fTime) override;
-    void noteOff(float fTime) override;
-    float getAmplitude(float fTime) override;
-    float getCurrentAmplitude() override;
+    void noteOn(double dTime) override;
+    void noteOff(double dTime) override;
+    double getAmplitude(double dTime) override;
+    double getCurrentAmplitude() override;
     void reset() override;
     bool isNoteOff() override;
 
@@ -41,13 +41,13 @@ private:
     std::shared_ptr<Param> m_pReleaseTime;
     std::shared_ptr<Param> m_pSustainAmplitude;
     
-    float m_fActualSustainAmplitude;
-    float m_fStartAmplitude;
-    float m_fTimeNoteOn;
-    float m_fTimeNoteOff;
-	float m_fTriggerOffTime;
-	float m_fTriggerOnTime;
-    float m_fCurrentAmplitude;
+    double m_dActualSustainAmplitude;
+    double m_dStartAmplitude;
+    double m_dTimeNoteOn;
+    double m_dTimeNoteOff;
+    double m_dTriggerOffTime;
+    double m_dTriggerOnTime;
+    double m_dCurrentAmplitude;
     
     bool m_bNoteOn;
 };

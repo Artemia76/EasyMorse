@@ -12,8 +12,8 @@
 #include "audio/voicemanager/VoiceManager.h"
 #include "audio/envelope/Envelope.h"
 #include "audio/filter/LowpassFilter.h"
-#include "audio/voice/Voice.h"
 #include "audio/voice/Noise.h"
+#include "audio/voice/Voice.h"
 
 VoiceManager::VoiceManager()
 {
@@ -56,69 +56,69 @@ IVoice* VoiceManager::findFreeVoice()
     return freeVoice;
 }
 
-void VoiceManager::noteOn(float fFrequency, float fTime)
+void VoiceManager::noteOn(double dFrequency, double fTime)
 {
     IVoice* pVoice = findFreeVoice();
     
     if (pVoice)
     {   
         pVoice->reset();
-        pVoice->noteOn(fFrequency, fTime);
+        pVoice->noteOn(dFrequency, fTime);
     }
 }
 
-void VoiceManager::noteOff(float fFrequency, float fTime)
+void VoiceManager::noteOff(double dFrequency, double dTime)
 {
     IVoice* pVoice = nullptr;
     
     for (int i = 0; i < NumberOfVoices; i++)
     {
         pVoice = voices[i];
-        if (pVoice->isActive() && pVoice->getFrequency() == fFrequency)
+        if (pVoice->isActive() && pVoice->getFrequency() == dFrequency)
         {
-            pVoice->noteOff(fTime);
+            pVoice->noteOff(dTime);
         }
     }
 }
 
-void VoiceManager::noiseOn(float fTime)
+void VoiceManager::noiseOn(double dTime)
 {
     noise->reset();
-    noise->noteOn(fTime);
+    noise->noteOn(dTime);
 }
 
-void VoiceManager::noiseOff(float fTime)
+void VoiceManager::noiseOff(double dTime)
 {
-    noise->noteOff(fTime);
+    noise->noteOff(dTime);
 }
 
 
-void VoiceManager::setGain(int gain)
+void VoiceManager::setGain(int Gain)
 {
-    m_pGain->setValue(gain / 1000.0);
+    m_pGain->setValue(Gain / 1000.0);
 }
 
-void VoiceManager::setNoiseRatio(float gain)
+void VoiceManager::setNoiseRatio(double dGain)
 {
-    noiseRatio = gain;
+    noiseRatio = dGain;
 }
 
 
-float VoiceManager::getSample(float fTime)
+double VoiceManager::getSample(double dTime)
 {   
-    float value = 0.0;
+    double value = 0.0;
     IVoice* pVoice = nullptr;
-    m_pLfo->trigger(fTime);
+    m_pLfo->trigger(dTime);
     for (int i = 0; i < NumberOfVoices; i++)
     {   
         pVoice = voices[i];
         if (pVoice->isActive())
         {
-            value += pVoice->process(fTime);
+            value += pVoice->process(dTime);
         }
     }
 
-    value += noiseRatio * noise->process(fTime);
+    value += noiseRatio * noise->process(dTime);
 
     return value * m_pGain->getValue();
 }

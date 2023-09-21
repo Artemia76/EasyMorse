@@ -13,7 +13,7 @@
 
 class NoOscillator : public IOscillatorFunction
 {
-   float calculate(float& fTime, float fFrequency) override
+   double calculate(double dTime, double dFrequency) override
    {
        return 0.0;
    }

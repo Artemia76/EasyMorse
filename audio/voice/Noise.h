@@ -3,7 +3,6 @@
 
 #include "INoise.h"
 #include <QRandomGenerator>
-#include "audio/voicemanager/Param.h"
 
 class Noise : public INoise
 {
@@ -15,19 +14,19 @@ public:
     //dtor
     ~Noise();
 
-    void noteOn(float fTime) override;
+    void noteOn(double dTime) override;
 
-    void noteOff(float fTime) override;
+    void noteOff(double dTime) override;
 
-    float process(float fTime) override;
+    double process(double dTime) override;
 
     void reset() override;
 
     bool isActive() override;
     void setActive() override;
 
-    std::shared_ptr<modulation::ModulationValue> getFilterCutOff();
-    std::shared_ptr<modulation::ModulationValue> getFilterResonance();
+    std::shared_ptr<modulation::ModulationValue> getFilterCutOff() override;
+    std::shared_ptr<modulation::ModulationValue> getFilterResonance() override;
 
 private:
 
@@ -47,7 +46,7 @@ private:
 ******************************************************************************/
 
     std::shared_ptr<IFilter> getFilter() override;
-    void setFilter(FilterType type);
+    void setFilter(FilterType type) override;
 };
 
 #endif // NOISE_H

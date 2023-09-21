@@ -19,11 +19,11 @@ class INoise
 {
 public:
 
-    virtual void noteOn(float fTime) = 0;
+    virtual void noteOn(double dTime) = 0;
 
-    virtual void noteOff(float fTime) = 0;
+    virtual void noteOff(double dTime) = 0;
 
-    virtual float process(float fTime) = 0;
+    virtual double process(double dTime) = 0;
 
     virtual void reset() = 0;
 
