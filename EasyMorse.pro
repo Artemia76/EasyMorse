@@ -381,4 +381,5 @@ deploy.depends = all
 QMAKE_EXTRA_TARGETS += deploy copydata all
 
 DISTFILES += \
+    .gitignore \
     LICENSE.GPLv3
