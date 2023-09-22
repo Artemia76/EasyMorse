@@ -158,6 +158,9 @@ void CAnalyze::on_timer()
             m_symbSilentDuration = m_dotDuration;
             m_charSilentDuration = m_dotDuration*3;
         }
+        //Limit Silent Duration to 1 sec
+        if (m_symbSilentDuration > 1000000) m_symbSilentDuration = 1000000;
+        if (m_charSilentDuration > 1000000) m_symbSilentDuration = 1000000;
         m_wordSilentDuration = m_charSilentDuration*2;
         m_log->log("Self-Tune adaptative analyzer is on.",Qt::blue,LEVEL_NORMAL);
         m_log->log(QString("Dot duration : %1 msec").arg(m_dotDuration),Qt::blue,LEVEL_NORMAL);

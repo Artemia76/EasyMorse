@@ -50,8 +50,8 @@ private:
     quint64                         m_symbSilentDuration;
     quint64                         m_charSilentDuration;
     quint64                         m_wordSilentDuration;
-    quint64                            m_lastTrigOn;
-    quint64                            m_lastTrigOff;
+    quint64                         m_lastTrigOn;
+    quint64                         m_lastTrigOff;
     bool                            m_autoAdapt;
     QSettings                       m_settings;
 

@@ -108,8 +108,7 @@ win32 {
 macx {
 
     # Mac Specific
-    # Compatibility down to OS X 10.10
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
     PKG_CONFIG = /usr/local/bin/pkg-config

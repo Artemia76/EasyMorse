@@ -579,8 +579,8 @@ void MainWindow::keyerOn()
     if (m_playing_phrase) return;
     if (!m_playing_key)
     {
-        m_hal->play(m_frequency);
-        //m_generator->setVolume(m_volume);
+        m_afrequency = m_frequency;
+        m_hal->play(m_afrequency);
         m_playing_key=true;
         emit Keyer(true);
     }
@@ -594,8 +594,7 @@ void MainWindow::keyerOff()
     if (m_playing_phrase) return;
     if (m_playing_key)
     {
-        m_hal->stop(m_frequency);
-        //m_generator->setVolume(0);
+        m_hal->stop(m_afrequency);
         m_playing_key=false;
         emit Keyer(false);
     }

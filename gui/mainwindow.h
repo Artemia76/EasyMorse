@@ -109,6 +109,7 @@ private:
     QSettings                       m_settings;
     int                             m_maxLine;
     int                             m_frequency;
+    int                             m_afrequency;
     int                             m_volume;
     qreal                           m_noiseCorrelation;
     QSerialPort                     m_serial;

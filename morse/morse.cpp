@@ -137,23 +137,23 @@ void CMorse::code(const QString& pMessage)
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
-        for (QString::const_iterator MorseChar = Morse.begin(); MorseChar!=Morse.end(); ++MorseChar)
+        for (auto MorseChar : qAsConst(Morse))
         {
-            if (*MorseChar=='P')
+            if (MorseChar=='P')
             {
                 m_hal->play(m_frequency);
                 QThread::usleep(DotDuration);
                 m_hal->stop(m_frequency);
                 QThread::usleep(DotDuration);
             }
-            if (*MorseChar=='T')
+            if (MorseChar=='T')
             {
                 m_hal->play(m_frequency);
                 QThread::usleep(DotDuration*3);
                 m_hal->stop(m_frequency);
                 QThread::usleep(DotDuration);
             }
-            if (*MorseChar=='S')
+            if (MorseChar=='S')
             {
                 QThread::usleep(DelayWord);
             }
