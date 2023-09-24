@@ -184,24 +184,8 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
         ui->m_TableGlossaire->item(i,0)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     }
 
-    // Iterate available sound devices
-    //const QAudioDevice &defaultDeviceInfo = m_devices->defaultAudioOutput();
-    //ui->m_deviceBox->addItem(defaultDeviceInfo.description(), QVariant::fromValue(defaultDeviceInfo));
-    //for (auto &deviceInfo: m_devices->audioOutputs())
-    //{
-    //    if (deviceInfo != defaultDeviceInfo)
-    //        ui->m_deviceBox->addItem(deviceInfo.description(), QVariant::fromValue(deviceInfo));
-    //}
-
     // Initialize Audio
     initializeAudio();
-
-    // Iterat available serial ports
-    //for (auto& serialPort : QSerialPortInfo::availablePorts())
-    //{
-    //    ui->m_serialBox->addItem(serialPort.portName());
-    //}
-    //ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
 
     if (m_serialEnable)
         initializeSerial(m_serialPortName);
@@ -229,6 +213,7 @@ void MainWindow::closeEvent(QCloseEvent*)
     //if (m_audioOutput != nullptr) m_audioOutput->stop();
     if (m_serial.isOpen()) m_serial.close();
     //m_generator->stop();
+    m_hal->terminate();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());

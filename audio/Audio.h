@@ -22,7 +22,7 @@
 #include "tools/clogger.h"
 
 #define SAMPLE_RATE (44100.0)
-#define TABLE_SIZE (128)
+#define TABLE_SIZE (1024)
 #define FRAMES_PER_BUFFER TABLE_SIZE
 #define TIME_STEP (1.0/SAMPLE_RATE)
 
