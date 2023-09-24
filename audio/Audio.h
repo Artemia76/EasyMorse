@@ -22,7 +22,11 @@
 #include "tools/clogger.h"
 
 #define SAMPLE_RATE (44100.0)
+#ifdef Q_OS_WIN
+#define TABLE_SIZE (128) // Avoid windows latency on realtek audio; todo : implement combo box to chosse latency
+#else
 #define TABLE_SIZE (1024)
+#endif
 #define FRAMES_PER_BUFFER TABLE_SIZE
 #define TIME_STEP (1.0/SAMPLE_RATE)
 
