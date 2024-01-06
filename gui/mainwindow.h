@@ -122,7 +122,7 @@ private:
     QTimer                          m_timer;
     bool                            m_CTS;
     bool                            m_DSR;
-    void                            initializeAudio();
+    void                            initialize();
     void                            initializeSerial(const QString& pSerialPortName);
     void                            closeEvent(QCloseEvent* pEvent);
 };

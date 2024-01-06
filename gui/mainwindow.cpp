@@ -184,8 +184,8 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
         ui->m_TableGlossaire->item(i,0)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     }
 
-    // Initialize Audio
-    initializeAudio();
+    // Initialize
+    initialize();
 
     if (m_serialEnable)
         initializeSerial(m_serialPortName);
@@ -198,6 +198,8 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(onMorseMessage(QString)));
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
+
+    m_hal->getAudioDeviceList();
 }
 
 MainWindow::~MainWindow()
@@ -237,9 +239,9 @@ void MainWindow::closeEvent(QCloseEvent*)
 }
 
 ///
-/// \brief MainWindow::initializeAudio
+/// \brief MainWindow::initialize
 ///
-void MainWindow::initializeAudio()
+void MainWindow::initialize()
 {
     ui->m_volumeSlider->setValue(m_volume);
     ui->m_frequencySlider->setValue(m_frequency);
@@ -592,6 +594,10 @@ void MainWindow::onActionAFOptionsTriggered()
 {
     Options* DlgOptions= new Options(this);
     DlgOptions->show();
+    if (DlgOptions->result()==QDialog::Accepted)
+    {
+        initialize();
+    }
 }
 
 ///

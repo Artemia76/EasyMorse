@@ -45,17 +45,7 @@ class Options : public QDialog
 public:
     Options(QWidget *parent = nullptr);
 private slots:
-    void on_m_volumeSlider_valueChanged(int value);
-
-    void on_m_frequencySlider_valueChanged(int value);
-
-    void on_m_NoiseCorr_valueChanged(int value);
-
-    void on_m_NoiseFilterSlider_valueChanged(int value);
-
-    void on_m_CharSpeed_valueChanged(int value);
-
-    void on_m_WordSpeed_valueChanged(int value);
+    void on_buttonBox_accepted();
 
 private:
     Ui::Options*                 ui;

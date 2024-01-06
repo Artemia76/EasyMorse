@@ -21,9 +21,9 @@
 #include "audio/voicemanager/VoiceManager.h"
 #include "tools/clogger.h"
 
-#define SAMPLE_RATE (44100.0)
+#define SAMPLE_RATE (48000.0)
 #ifdef Q_OS_WIN
-#define TABLE_SIZE (128) // Avoid windows latency on realtek audio; todo : implement combo box to chosse latency
+#define TABLE_SIZE (64) // Avoid windows latency on realtek audio; todo : implement combo box to chosse latency
 #else
 #define TABLE_SIZE (1024)
 #endif
@@ -43,6 +43,7 @@ public:
     void stop(double frequency);
     void startNoise();
     void stopNoise();
+    QStringList getAudioDeviceList();
 
     int paUserCallback( const void *inputBuffer, void *outputBuffer,
                         unsigned long framesPerBuffer,

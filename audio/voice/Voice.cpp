@@ -25,7 +25,7 @@ Voice::Voice( std::shared_ptr<IOscillatorFunction> pOscillator1
     , m_pAmpEnvelope(pAmpEnvelope)
     , m_pFilterEnvelope(pFilterEnvelope)
     , m_dFrequency(0.0)
-    , m_dMix(0.5)
+    , m_dMix(0.0)
     , m_bActive(false)
 {   
     m_pFilterCutOff = std::make_shared<modulation::ModulationValue>(0.01, 0.99, 0.99);
@@ -61,7 +61,7 @@ void Voice::noteOff(double dTime)
 double Voice::process(double dTime)
 {
     double osc1 = m_pOscillator1->calculate(m_dFrequency, dTime);
-    double osc2 = m_pOscillator2->calculate(m_dFrequency, dTime);
+    double osc2 = m_pOscillator2->calculate(m_dFrequency*2, dTime);
     double amp = m_pAmpEnvelope->getAmplitude(dTime);
     
     m_pFilter->setCutoffFrequency(m_pFilterCutOff->getModulatedValue(dTime));

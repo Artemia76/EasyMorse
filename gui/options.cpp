@@ -34,21 +34,11 @@ Options::Options(QWidget *parent)
     , ui(new Ui::Options)
 {
     ui->setupUi(this);
-    m_settings.beginGroup("synth");
-    ui->m_volumeSlider->setValue(qRound(m_settings.value("SoundLevel", 1.0).toReal() * 100));
-    ui->m_frequencySlider->setValue(m_settings.value("SoundFreq",900).toInt());
-    ui->m_NoiseCorr->setValue(qRound(m_settings.value("NoiseCorrelation",0.0).toReal()*100));
-    ui->m_NoiseFilterSlider->setValue(m_settings.value("NoiseFilter",0).toInt());
-    m_settings.endGroup();
-    m_settings.beginGroup("morse");
-    ui->m_CharSpeed->setValue(m_settings.value("CharSpeed", 18).toInt());
-    ui->m_UseFarnsWorth->setChecked(m_settings.value("FarnsWorth",true).toBool());
-    ui->m_WordSpeed->setValue(m_settings.value("WordSpeed", 12).toInt());
-    m_settings.endGroup();
     m_settings.beginGroup("audio");
     //Populate Controls
     m_settings.endGroup();
     m_settings.beginGroup("serial");
+    ui->m_enableSerial->setEnabled(m_settings.value("PortEnable",false).toBool());
     m_serialPortName = m_settings.value("PortName",
 #ifdef Q_OS_LINUX
     "tty0"
@@ -71,32 +61,12 @@ Options::Options(QWidget *parent)
     ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
 }
 
-void Options::on_m_volumeSlider_valueChanged(int value)
+void Options::on_buttonBox_accepted()
 {
-    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
+    m_serialPortName = ui->m_serialBox->currentText();
+    m_settings.beginGroup("serial");
+    m_settings.setValue("PortName", m_serialPortName);
+    m_settings.setValue("PortEnable", ui->m_enableSerial->isChecked());
+    m_settings.endGroup();
 }
 
-void Options::on_m_frequencySlider_valueChanged(int value)
-{
-    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
-}
-
-void Options::on_m_NoiseCorr_valueChanged(int value)
-{
-    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(value));
-}
-
-void Options::on_m_NoiseFilterSlider_valueChanged(int value)
-{
-    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(value));
-}
-
-void Options::on_m_CharSpeed_valueChanged(int value)
-{
-    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(value));
-}
-
-void Options::on_m_WordSpeed_valueChanged(int value)
-{
-    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(value));
-}

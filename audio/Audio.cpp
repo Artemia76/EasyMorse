@@ -26,6 +26,19 @@ AudioHal::AudioHal()
     m_log = CLogger::instance();
 }
 
+QStringList AudioHal::getAudioDeviceList()
+{
+    QStringList Liste;
+    int numDevices;
+    numDevices = Pa_GetDeviceCount();
+    for (int i=0; i < numDevices; i++)
+    {
+        Liste.append(Pa_GetDeviceInfo( i )->name);
+        m_log->log( QString("Device %1").arg(i) + QString::fromStdString(Pa_GetDeviceInfo( i )->name),Qt::darkGreen,LEVEL_NORMAL);
+    }
+    return Liste;
+}
+
 void AudioHal::initialize()
 {
     m_log->log("AudioHal: Initializing audio interface", Qt::darkGreen,LEVEL_NORMAL);
@@ -66,7 +79,8 @@ void AudioHal::open()
 {
     PaStreamParameters outputParameters;
     PaError err;
-    
+
+
     outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
       m_log->log("Error: No default output device", Qt::red);
@@ -74,7 +88,8 @@ void AudioHal::open()
     }
     outputParameters.channelCount = 2;       /* stereo output */
     outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
-    outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+    //outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+    outputParameters.suggestedLatency = 0.050;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
 
