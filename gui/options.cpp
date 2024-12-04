@@ -38,7 +38,7 @@ Options::Options(QWidget *parent)
     //Populate Controls
     m_settings.endGroup();
     m_settings.beginGroup("serial");
-    ui->m_enableSerial->setEnabled(m_settings.value("PortEnable",false).toBool());
+    ui->m_enableSerial->setChecked(m_settings.value("PortEnable",false).toBool());
     m_serialPortName = m_settings.value("PortName",
 #ifdef Q_OS_LINUX
     "tty0"
