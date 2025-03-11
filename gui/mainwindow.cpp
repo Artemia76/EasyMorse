@@ -126,7 +126,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     m_settings.beginGroup("Morse");
 
     //Set FarnsWorth Option
-    connect(ui->m_UseFarnsWorth, &QCheckBox::stateChanged, this, &MainWindow::onFarnsWorthChanged);
+    connect(ui->m_UseFarnsWorth, &QCheckBox::checkStateChanged, this, &MainWindow::onFarnsWorthChanged);
     m_morse.setFarnsWorth(m_settings.value("FarnsWorth",true).toBool());
 
     //Set Word Speed
