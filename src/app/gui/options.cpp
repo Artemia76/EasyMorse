@@ -55,7 +55,7 @@ Options::Options(Trainer* pTrainer, QWidget *parent)
 #ifdef EASYMORSE_HAS_SERIALPORT
     ui->m_enableSerial->setChecked(settings->serialEnabled());
     ui->m_serialBox->addItems(m_trainer->serialPorts());
-    ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(settings->serialPort()));
+    ui->m_serialBox->setCurrentText(settings->serialPort());
 #else
     ui->m_enableSerial->setEnabled(false);
     ui->m_serialBox->setEnabled(false);

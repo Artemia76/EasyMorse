@@ -56,6 +56,8 @@ private slots:
         QVERIFY(!keyer.isOpen());
         QVERIFY(keyer.portName().isEmpty());
         QVERIFY(!keyer.isDown());
+        QVERIFY(!keyer.open("/dev/easymorse-no-such-device"));
+        QCOMPARE(errors.count(), 2);
     }
 #endif
 };

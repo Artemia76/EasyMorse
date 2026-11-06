@@ -26,6 +26,7 @@
 
 #include "serialkeyer.h"
 
+#include <QFileInfo>
 #include <QSerialPortInfo>
 
 namespace
@@ -57,7 +58,9 @@ QStringList SerialKeyer::availablePorts()
 bool SerialKeyer::open(const QString& pPortName)
 {
     close();
-    if (!availablePorts().contains(pPortName))
+    // A device path (/dev/serial/by-id/...) may be given instead of a listed port name
+    const bool isPath = pPortName.contains(u'/');
+    if (isPath ? !QFileInfo::exists(pPortName) : !availablePorts().contains(pPortName))
     {
         emit errorOccurred(tr("Serial port %1 not found").arg(pPortName));
         return false;

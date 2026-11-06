@@ -57,6 +57,7 @@ public:
 
     ///
     /// \brief open the port and start watching the key line
+    /// \param pPortName a name from availablePorts() or a device path
     /// \return false if the port does not exist or cannot be opened (see errorOccurred)
     ///
     bool    open(const QString& pPortName);

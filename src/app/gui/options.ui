@@ -45,7 +45,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="m_serialBox"/>
+       <widget class="QComboBox" name="m_serialBox">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Choose a port or type a device path</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="m_autoAdapt">
