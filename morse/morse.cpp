@@ -29,6 +29,8 @@
 #include "morse.h"
 #include <QThread>
 
+#include <utility>
+
 CMorse::CMorse(QObject *parent,AudioHal* hal, VoiceManager* pVoiceManager) :
     QObject(parent)
     , m_hal(hal)
@@ -137,7 +139,7 @@ void CMorse::code(const QString& pMessage)
     for (QString::const_iterator Char = pMessage.begin(); Char!=pMessage.end(); ++Char)
     {
         QString Morse = m_MorseMapping[Char->toUpper()];
-        for (auto MorseChar : qAsConst(Morse))
+        for (auto MorseChar : std::as_const(Morse))
         {
             if (MorseChar=='P')
             {

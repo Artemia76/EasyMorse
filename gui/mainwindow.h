@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-            MainWindow(QWidget *parent = Q_NULLPTR, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr);
+            MainWindow(QWidget *parent = nullptr, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr);
             ~MainWindow();
     bool    PlayMorseMessage(const QString& pMessage);
     void    StopMorseMessage();

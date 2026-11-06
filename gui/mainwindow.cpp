@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     m_settings.endGroup();
     // Setting Log
     m_log = CLogger::instance();
-    connect(m_log, SIGNAL(fireLog(QString,QColor,CL_DEBUG_LEVEL)),this,SLOT(onLog(QString,QColor,CL_DEBUG_LEVEL)));
+    connect(m_log, &CLogger::fireLog, this, &MainWindow::onLog);
     m_settings.beginGroup("Log");
     m_log->setDebugLevel(m_settings.value("Level",LEVEL_NONE).value<CL_DEBUG_LEVEL>());
     m_log->log("Main Window started...",Qt::magenta,LEVEL_NORMAL);
@@ -161,7 +161,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     m_settings.beginGroup("audio");
     m_audioDeviceName = m_settings.value("DeviceName","").toString();
     m_settings.endGroup();
-    connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
+    connect(&m_timer, &QTimer::timeout, this, &MainWindow::on_timer);
     m_timer.setSingleShot(false);
     m_timer.start(10);
 
@@ -194,8 +194,8 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
-    connect(this,SIGNAL(Keyer(bool)),m_analyzer,SLOT(on_keyer(bool)));
-    connect(m_analyzer,SIGNAL(fire_message(QString)), this, SLOT(onMorseMessage(QString)));
+    connect(this, &MainWindow::Keyer, m_analyzer, &CAnalyze::on_keyer);
+    connect(m_analyzer, &CAnalyze::fire_message, this, &MainWindow::onMorseMessage);
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 
@@ -484,8 +484,8 @@ void MainWindow::onLogContextMenuRequested(const QPoint &pos)
     QMenu *menu = ui->m_LogZone->createStandardContextMenu();
     // Handle global position
     QPoint globalPos = ui->m_LogZone->mapToGlobal(pos);
-    menu->addAction(tr("Clear"),this,SLOT(clearLog()));
-    menu->addAction(tr("Save"),this,SLOT(saveLog()));
+    menu->addAction(tr("Clear"), this, &MainWindow::clearLog);
+    menu->addAction(tr("Save"), this, &MainWindow::saveLog);
     menu->exec(globalPos);
     delete menu;
 }

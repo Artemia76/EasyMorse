@@ -38,7 +38,7 @@ CAnalyze::CAnalyze(QObject *parent)
     m_log->log("Morse Analyser started...",Qt::magenta,LEVEL_NORMAL);
 #endif
     m_wordSilentDuration = 1000;
-    connect(&m_timer,SIGNAL(timeout()),this,SLOT(on_timer()));
+    connect(&m_timer, &QTimer::timeout, this, &CAnalyze::on_timer);
     m_timer.setSingleShot(true);
     m_timer.start(m_wordSilentDuration);
     m_lastTrigOff=0;

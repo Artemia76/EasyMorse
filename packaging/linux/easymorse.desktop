@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=EasyMorse
+GenericName=Morse code trainer
+GenericName[fr]=Apprentissage du morse
+Comment=Learn Morse code by ear and by hand
+Comment[fr]=Apprendre le code morse à l'oreille et au manipulateur
+Exec=easymorse
+Icon=easymorse
+Terminal=false
+Categories=Education;HamRadio;Qt;
+Keywords=morse;cw;ham;radio;

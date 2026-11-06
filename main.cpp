@@ -32,6 +32,7 @@
 #include <QSettings>
 #include <QTranslator>
 #include <QDir>
+#include <QLibraryInfo>
 
 
 #include "audio/Audio.h"
@@ -53,26 +54,27 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("EasyMorse");
     QCoreApplication::setOrganizationDomain("");
     QCoreApplication::setApplicationName("EasyMorse");
-    QString locale = QLocale::system().name();
     QApplication a(argc, argv);
     QDir::setCurrent(a.applicationDirPath());
+    // Qt own translations (standard dialogs, buttons...)
+    QTranslator QtTS;
+    if (QtTS.load(QLocale(), "qtbase", "_", QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        a.installTranslator(&QtTS);
+    // EasyMorse translations are embedded in resources
     QTranslator EasyMorseTS;
+    if (EasyMorseTS.load(QLocale(), "easymorse", "_", ":/i18n"))
+        a.installTranslator(&EasyMorseTS);
 #ifdef Q_OS_LINUX
-    EasyMorseTS.load("/usr/share/easymorse/translations/easymorse_" + locale +".qm");
     QFile styleFile ("/usr/share/easymorse/easymorse.qss");
 #else
 #ifdef Q_OS_MACOS
-    EasyMorseTS.load("../Resources/easymorse_"+ locale +".qm");
     QFile styleFile ("../Resources/easymorse.qss");
 #else
-    EasyMorseTS.load("translations/easymorse_" + locale +".qm");
     QFile styleFile ( "easymorse.qss");
 #endif
 #endif
-    a.installTranslator(&EasyMorseTS);
     //Load Style Sheet
-    styleFile.open(QFile::ReadOnly);
-    if (styleFile.isOpen())
+    if (styleFile.open(QFile::ReadOnly))
     {
         a.setStyleSheet(styleFile.readAll());
         styleFile.close();

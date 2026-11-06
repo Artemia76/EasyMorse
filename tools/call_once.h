@@ -52,11 +52,7 @@ inline static void qCallOnce(Function func, QBasicAtomicInt& flag)
 {
     using namespace CallOnce;
 
-#if QT_VERSION < 0x051400
-    int protectFlag = flag.fetchAndStoreAcquire(flag);
-#else
     int protectFlag = flag.fetchAndStoreAcquire(flag.loadRelaxed());
-#endif
 
     if (protectFlag == CO_Finished)
         return;
