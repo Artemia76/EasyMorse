@@ -35,6 +35,7 @@
 #include <QtQml/qqmlregistration.h>
 
 #include "keyer/keyerinput.h"
+#include "net/peersession.h"
 #include "settings/settings.h"
 #include "trainer.h"
 
@@ -69,6 +70,14 @@ struct SettingsForeign : ExistingInstance<Settings>
     QML_FOREIGN(Settings)
     QML_NAMED_ELEMENT(MorseSettings)
     QML_SINGLETON
+};
+
+struct PeerSessionForeign
+{
+    Q_GADGET
+    QML_FOREIGN(PeerSession)
+    QML_NAMED_ELEMENT(PeerSession)
+    QML_UNCREATABLE("Provided by Trainer.session")
 };
 
 struct KeyerInputForeign

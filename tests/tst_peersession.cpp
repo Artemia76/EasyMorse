@@ -83,6 +83,25 @@ private slots:
         QVERIFY(!bob.remoteKeyer()->isDown());
     }
 
+    void connectedOnlyWhenBothSidesJoined()
+    {
+        PeerSession alice, bob;
+        alice.start();
+        bob.start();
+        QTRY_COMPARE_WITH_TIMEOUT(alice.state(), PeerSession::State::Inviting, 5000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.state(), PeerSession::State::Inviting, 5000);
+        // Only Bob pasted Alice's invitation: the UDP path may open, but
+        // Alice cannot read Bob yet
+        QCOMPARE(bob.join(alice.invitation()), QString());
+        QTest::qWait(2500);
+        QCOMPARE(bob.state(), PeerSession::State::Connecting);
+        QCOMPARE(alice.state(), PeerSession::State::Inviting);
+        // Alice pastes Bob's invitation later
+        QCOMPARE(alice.join(bob.invitation()), QString());
+        QTRY_COMPARE_WITH_TIMEOUT(alice.state(), PeerSession::State::Connected, 10000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.state(), PeerSession::State::Connected, 10000);
+    }
+
     void rejectsBadInvitations()
     {
         PeerSession alice;

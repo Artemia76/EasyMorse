@@ -61,7 +61,7 @@ public:
         Idle,
         Preparing,      // gathering addresses for the invitation
         Inviting,       // invitation ready, waiting for the peer's one
-        Connecting,
+        Connecting,     // until the peer proves it has our invitation
         Connected,
         Disconnected,   // the peer left or the link was lost
         Failed          // no path between the two stations
@@ -125,12 +125,14 @@ private:
     void    sendKeys();
     void    ping();
     void    endSession(State pState);
+    void    peerConfirmed();
 
     PeerLink                        m_link;
     std::unique_ptr<SecureChannel>  m_channel;
     JitterBuffer                    m_jitter;
     RemoteKeyer                     m_remoteKeyer;
     QTimer                          m_pingTimer;
+    QTimer                          m_helloTimer;
     State                           m_state = State::Idle;
     QString                         m_callsign;
     QString                         m_invitation;

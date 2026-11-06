@@ -151,6 +151,42 @@ Page {
             }
 
             GroupBox {
+                title: qsTr("Network")
+                Layout.fillWidth: true
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
+
+                GridLayout {
+                    anchors.fill: parent
+                    columns: root.width < 560 ? 1 : 2
+                    columnSpacing: 12
+
+                    Label { text: qsTr("STUN server") }
+                    TextField {
+                        text: MorseSettings.stunServer
+                        placeholderText: "host:port"
+                        onEditingFinished: MorseSettings.stunServer = text
+                        Layout.fillWidth: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Tells your public address to find a path through your Internet box. Used for the next connection.")
+                    }
+
+                    Label { text: qsTr("Reception delay") }
+                    SpinBox {
+                        from: 0
+                        to: 1000
+                        stepSize: 50
+                        value: MorseSettings.jitterDelayMs
+                        textFromValue: (value) => qsTr("%1 ms").arg(value)
+                        valueFromText: (text) => parseInt(text)
+                        onValueModified: MorseSettings.jitterDelayMs = value
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Longer keeps the rhythm of the remote station on an irregular connection, shorter answers sooner.")
+                    }
+                }
+            }
+
+            GroupBox {
                 title: qsTr("Interface")
                 Layout.fillWidth: true
                 Layout.leftMargin: 12

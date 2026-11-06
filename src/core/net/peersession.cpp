@@ -70,6 +70,10 @@ PeerSession::PeerSession(QObject* parent)
     connect(&m_jitter, &JitterBuffer::keyChanged, &m_remoteKeyer, &RemoteKeyer::apply);
     m_pingTimer.setInterval(PingIntervalMs);
     connect(&m_pingTimer, &QTimer::timeout, this, &PeerSession::ping);
+    // The UDP path may open before the peer has pasted our invitation (its
+    // ICE agent answers probes already): hello is repeated until it answers
+    m_helloTimer.setInterval(1000);
+    connect(&m_helloTimer, &QTimer::timeout, this, [this] { sendPacket(Protocol::Hello{m_callsign}); });
 }
 
 PeerSession::~PeerSession()
@@ -152,6 +156,7 @@ void PeerSession::stop()
 void PeerSession::endSession(State pState)
 {
     m_pingTimer.stop();
+    m_helloTimer.stop();
     m_jitter.reset();
     // Never leave the remote key down
     m_remoteKeyer.apply(false, MonotonicClock::nowMs());
@@ -221,14 +226,10 @@ void PeerSession::onLinkState(PeerLink::State pState)
     switch (pState)
     {
     case PeerLink::State::Connected:
-        if (m_state == State::Connecting)
+        if (m_state == State::Connecting && !m_helloTimer.isActive())
         {
-            m_lastReceivedMs = MonotonicClock::nowMs();
-            setState(State::Connected);
             sendPacket(Protocol::Hello{m_callsign});
-            m_pingTimer.start();
-            ping();
-            CLogger::instance()->log(tr("Connected with %1 (%2)").arg(m_peerCallsign, m_link.pathType()), Qt::darkGreen);
+            m_helloTimer.start();
         }
         break;
     case PeerLink::State::Failed:
@@ -254,6 +255,9 @@ void PeerSession::onDatagram(const QByteArray& pDatagram)
         return;
     const qint64 now = MonotonicClock::nowMs();
     m_lastReceivedMs = now;
+    // An authentic packet: the peer has our key, the session is open
+    if (m_state == State::Connecting)
+        peerConfirmed();
 
     if (const auto* keys = std::get_if<Protocol::Keys>(&*packet))
     {
@@ -292,6 +296,17 @@ void PeerSession::onDatagram(const QByteArray& pDatagram)
         endSession(State::Disconnected);
         m_link.close();
     }
+}
+
+void PeerSession::peerConfirmed()
+{
+    m_helloTimer.stop();
+    // Our hello may have been sent before the peer could read it
+    sendPacket(Protocol::Hello{m_callsign});
+    setState(State::Connected);
+    m_pingTimer.start();
+    ping();
+    CLogger::instance()->log(tr("Connected with %1 (%2)").arg(m_peerCallsign, m_link.pathType()), Qt::darkGreen);
 }
 
 void PeerSession::setState(State pState)

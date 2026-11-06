@@ -24,7 +24,7 @@ ApplicationWindow {
 
     // On narrow screens the sound and speed controls get their own tab
     readonly property bool wide: width >= 800
-    readonly property int pageCount: 5
+    readonly property int pageCount: 6
     property int currentPage: 0
 
     onCurrentPageChanged: tabs.currentIndex = currentPage
@@ -94,6 +94,7 @@ ApplicationWindow {
 
                 TabButton { text: qsTr("Send"); width: implicitWidth }
                 TabButton { text: qsTr("Key"); width: implicitWidth }
+                TabButton { text: qsTr("Network"); width: implicitWidth }
                 TabButton { text: qsTr("Glossary"); width: implicitWidth }
                 TabButton { text: qsTr("Log"); width: implicitWidth }
                 TabButton { text: qsTr("Options"); width: implicitWidth }
@@ -111,6 +112,7 @@ ApplicationWindow {
 
                 SendPage {}
                 KeyPage {}
+                NetworkPage {}
                 GlossaryPage {
                     onPlayRequested: (text) => {
                         Trainer.play(text)
