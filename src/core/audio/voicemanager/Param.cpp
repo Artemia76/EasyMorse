@@ -26,7 +26,6 @@ void Param::setValue(double dValue)
 {
     if (dValue <= m_dMaxValue && dValue >= m_dMinValue)
     {
-        qDebug() << "Setting value to " << dValue;
         m_dValue = dValue;
     }
 }
