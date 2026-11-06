@@ -144,6 +144,11 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
 
 Trainer::~Trainer()
 {
+    // Members are destroyed in reverse order: the session, closing, would
+    // report to slots using the remote decoder and timer already destroyed
+    disconnect(&m_session, nullptr, this, nullptr);
+    disconnect(m_session.remoteKeyer(), nullptr, this, nullptr);
+    m_session.stop();
     m_settings->setDecoderEstimates(m_decoder.dotMs(), m_decoder.dashMs(), m_decoder.gapMs());
 }
 
