@@ -70,14 +70,6 @@ ScrollView {
             onMoved: (v) => MorseSettings.charSpeed = v
             Layout.leftMargin: 16; Layout.rightMargin: 16
         }
-        LabeledSlider {
-            text: qsTr("Overall: %1 WPM")
-            from: 5; to: 40; stepSize: 1
-            value: MorseSettings.wordSpeed
-            enabled: !Trainer.playing
-            onMoved: (v) => MorseSettings.wordSpeed = v
-            Layout.leftMargin: 16; Layout.rightMargin: 16
-        }
         Switch {
             text: qsTr("Farnsworth spacing")
             checked: MorseSettings.farnsworth
@@ -85,8 +77,17 @@ ScrollView {
             onToggled: MorseSettings.farnsworth = checked
             Layout.leftMargin: 8
         }
+        LabeledSlider {
+            text: qsTr("Effective: %1 WPM")
+            // Only used with Farnsworth spacing, and never faster than the characters
+            from: 5; to: Math.max(5, MorseSettings.charSpeed); stepSize: 1
+            value: Math.min(MorseSettings.wordSpeed, MorseSettings.charSpeed)
+            enabled: !Trainer.playing && MorseSettings.farnsworth
+            onMoved: (v) => MorseSettings.wordSpeed = v
+            Layout.leftMargin: 16; Layout.rightMargin: 16
+        }
         Label {
-            text: qsTr("Characters are sent at their own speed, spaces are stretched to reach the overall speed.")
+            text: qsTr("Characters are sent at their own speed, spaces are stretched to reach the effective speed.")
             wrapMode: Text.WordWrap
             opacity: 0.7
             font.pixelSize: 12

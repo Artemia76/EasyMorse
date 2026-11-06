@@ -55,9 +55,18 @@ private slots:
 
     void farnsworthIgnoredWhenNotSlower()
     {
+        // An effective speed above the character speed has no effect
         const MorseTiming timing = MorseTiming::fromSpeed(25, 20, true);
-        QCOMPARE(timing.unit, 1.2 / 25);
+        QCOMPARE(timing.unit, 1.2 / 20);
         QCOMPARE(timing.charGap, 3 * timing.unit);
+    }
+
+    void characterSpeedWithoutFarnsworth()
+    {
+        // Without Farnsworth spacing the effective speed is not used
+        const MorseTiming timing = MorseTiming::fromSpeed(8, 20, false);
+        QCOMPARE(timing.unit, 1.2 / 20);
+        QCOMPARE(timing.wordGap, 7 * timing.unit);
     }
 
     void elementsOfA()

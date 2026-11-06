@@ -62,19 +62,27 @@
         <translation>Caractères : %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="74"/>
-        <source>Overall: %1 WPM</source>
-        <translation>Globale : %1 mots/min</translation>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="81"/>
+        <source>Effective: %1 WPM</source>
+        <translation>Effective : %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="82"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="90"/>
+        <source>Characters are sent at their own speed, spaces are stretched to reach the effective speed.</source>
+        <translation>Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse effective.</translation>
+    </message>
+    <message>
+        <source>Overall: %1 WPM</source>
+        <translation type="vanished">Globale : %1 mots/min</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="74"/>
         <source>Farnsworth spacing</source>
         <translation>Espacement Farnsworth</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="89"/>
         <source>Characters are sent at their own speed, spaces are stretched to reach the overall speed.</source>
-        <translation>Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse globale.</translation>
+        <translation type="vanished">Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse globale.</translation>
     </message>
 </context>
 <context>
@@ -611,7 +619,7 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="147"/>
+        <location filename="../src/app/main.cpp" line="167"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>

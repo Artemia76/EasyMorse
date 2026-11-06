@@ -48,8 +48,8 @@ struct MorseTiming
 
     ///
     /// \brief compute the timing from speeds in words per minute (PARIS standard)
-    /// \param pWordSpeed overall speed
-    /// \param pCharSpeed character speed, used when Farnsworth spacing is on
+    /// \param pWordSpeed effective speed, used with Farnsworth spacing when slower than pCharSpeed
+    /// \param pCharSpeed character speed, the speed of everything without Farnsworth spacing
     ///
     static MorseTiming fromSpeed(int pWordSpeed, int pCharSpeed, bool pFarnsworth);
 };

@@ -55,7 +55,8 @@ MorseTiming MorseTiming::fromSpeed(int pWordSpeed, int pCharSpeed, bool pFarnswo
     }
     else
     {
-        timing.unit = 1.2 / wordSpeed;
+        // Without Farnsworth spacing everything follows the character speed
+        timing.unit = 1.2 / charSpeed;
         timing.charGap = 3.0 * timing.unit;
         timing.wordGap = 7.0 * timing.unit;
     }
