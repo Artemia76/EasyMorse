@@ -22,6 +22,7 @@
 class IVoice
 {
 public:
+    virtual ~IVoice() = default;
 
     virtual void noteOn(double dFrequency, double dTime) = 0;
 

@@ -123,9 +123,7 @@ qt_add_library(easymorse_core STATIC
     morse/morsecodec.cpp morse/morsecodec.h
     morse/sequencer.cpp morse/sequencer.h
 
-    tools/call_once.h
     tools/clogger.cpp tools/clogger.h
-    tools/singleton.h
     tools/spscqueue.h
     "${CMAKE_BINARY_DIR}/generated/tools/version.h"
 )

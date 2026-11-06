@@ -50,7 +50,6 @@ class CLogger : public QObject
 
 private:
                             CLogger(QObject* pParent = nullptr);
-    static CLogger*         createInstance();
     void                    updatePattern();
     CL_DEBUG_LEVEL          m_DebugLevel;
     QSettings               m_settings;

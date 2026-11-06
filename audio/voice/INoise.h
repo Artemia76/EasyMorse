@@ -18,6 +18,7 @@
 class INoise
 {
 public:
+    virtual ~INoise() = default;
 
     virtual void noteOn(double dTime) = 0;
 

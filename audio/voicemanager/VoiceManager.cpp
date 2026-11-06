@@ -48,7 +48,7 @@ IVoice* VoiceManager::findFreeVoice()
     {   
         if (!voices[i]->isActive())
         {
-            freeVoice = voices[i];
+            freeVoice = voices[i].get();
             break;
         }
     }
@@ -73,7 +73,7 @@ void VoiceManager::noteOff(double dFrequency, double dTime)
     
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        pVoice = voices[i];
+        pVoice = voices[i].get();
         if (pVoice->isActive() && pVoice->getFrequency() == dFrequency)
         {
             pVoice->noteOff(dTime);
@@ -111,7 +111,7 @@ double VoiceManager::getSample(double dTime)
     m_pLfo->trigger(dTime);
     for (int i = 0; i < NumberOfVoices; i++)
     {   
-        pVoice = voices[i];
+        pVoice = voices[i].get();
         if (pVoice->isActive())
         {
             value += pVoice->process(dTime);
@@ -141,9 +141,9 @@ void VoiceManager::createVoices()
                                                                     , m_pFilterEnvelopeReleaseTime
                                                                     , m_pFilterEnvelopeSustainAmplitude);
 
-        IVoice* voice = new Voice(osc1, osc2, filter, m_pLfo, pFilterEnvelope, pAmpEnvelope);
+        auto voice = std::make_unique<Voice>(osc1, osc2, filter, m_pLfo, pFilterEnvelope, pAmpEnvelope);
 
-        voices[i] = voice;
+        voices[i] = std::move(voice);
     }
 
     //Create noise ambiant sound
@@ -153,14 +153,14 @@ void VoiceManager::createVoices()
                                                                 , m_pFilterEnvelopeReleaseTime
                                                                 , m_pFilterEnvelopeSustainAmplitude);
 
-    noise = new Noise(filter,m_pLfo, pFilterEnvelope);
+    noise = std::make_unique<Noise>(filter,m_pLfo, pFilterEnvelope);
 }
 
 void VoiceManager::setOscillator1(std::shared_ptr<IOscillatorFunction> func)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
 
         if(pVoice)
         {
@@ -173,7 +173,7 @@ void VoiceManager::setOscillator2(std::shared_ptr<IOscillatorFunction> func)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
         
         if(pVoice)
         {
@@ -206,7 +206,7 @@ void VoiceManager::setFilter(FilterType type)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
         
         if(pVoice)
         {
@@ -220,7 +220,7 @@ void VoiceManager::setCutOffFrequency(int frequency)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
         
         if(pVoice)
         {
@@ -234,7 +234,7 @@ void VoiceManager::setResonance(int resonance)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
         
         if(pVoice)
         {   
@@ -247,7 +247,7 @@ void VoiceManager::setOscillatorMix(int mix)
 {
     for (int i = 0; i < NumberOfVoices; i++)
     {
-        IVoice* pVoice = voices[i];
+        IVoice* pVoice = voices[i].get();
         
         if(pVoice)
         {   

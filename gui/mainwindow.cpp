@@ -146,6 +146,7 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
 
     // LogZone Initialize
     ui->m_LogZone->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->m_LogZone, &QPlainTextEdit::customContextMenuRequested, this, &MainWindow::onLogContextMenuRequested);
     QPalette p = ui->m_LogZone->palette();
     p.setColor(QPalette::Text,Qt::darkBlue);
     ui->m_LogZone->setPalette(p);

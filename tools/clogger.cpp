@@ -27,7 +27,6 @@
 ****************************************************************************/
 
 #include "clogger.h"
-#include "singleton.h"
 
 ///
 /// \brief CLogger::CLogger
@@ -47,15 +46,6 @@ CLogger::CLogger(QObject* parent):
 }
 
 ///
-/// \brief CLogger::createInstance
-/// \return
-///
-CLogger* CLogger::createInstance()
-{
-    return new CLogger();
-}
-
-///
 /// \brief CLogger::~CLogger
 ///
 CLogger::~CLogger()
@@ -72,7 +62,9 @@ CLogger::~CLogger()
 ///
 CLogger* CLogger::instance()
 {
-    return Singleton<CLogger>::instance(CLogger::createInstance);
+    // Initialisation of a function static is thread-safe since C++11
+    static CLogger logger;
+    return &logger;
 }
 
 ///

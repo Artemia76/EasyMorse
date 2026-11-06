@@ -71,11 +71,11 @@ public:
     void setNoiseRatio(double dGain);
 private:
 
-    IVoice* voices[NumberOfVoices];
+    std::unique_ptr<IVoice> voices[NumberOfVoices];
 
     IVoice* findFreeVoice();
 
-    INoise* noise;
+    std::unique_ptr<INoise> noise;
 
     double noiseRatio;
 
