@@ -37,6 +37,7 @@ qt_add_library(easymorse_core STATIC
     morse/sequencer.cpp morse/sequencer.h
 
     net/jitterbuffer.cpp net/jitterbuffer.h
+    net/peerlink.cpp net/peerlink.h
     net/protocol.cpp net/protocol.h
     net/remotekeyer.h
     net/securechannel.cpp net/securechannel.h
@@ -57,6 +58,7 @@ target_link_libraries(easymorse_core
     PRIVATE
         EasyMorse::miniaudio
         EasyMorse::monocypher
+        EasyMorse::juice
 )
 
 target_include_directories(easymorse_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
