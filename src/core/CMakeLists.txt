@@ -36,6 +36,8 @@ qt_add_library(easymorse_core STATIC
     morse/morsecodec.cpp morse/morsecodec.h
     morse/sequencer.cpp morse/sequencer.h
 
+    settings/settings.cpp settings/settings.h
+
     tools/clogger.cpp tools/clogger.h
     tools/spscqueue.h
 )
