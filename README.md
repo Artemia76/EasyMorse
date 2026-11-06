@@ -88,6 +88,16 @@ Useful options:
 a `.zip` on Windows, and a `.dmg` on macOS. The same packages are built by the
 GitHub Actions workflow for every push.
 
+## Source layout
+
+| Path | Content |
+|------|---------|
+| `src/core/` | `easymorse_core` library, no user interface: audio engine (`audio/`), Morse codec, sequencer and streaming decoder (`morse/`), keys (`keyer/`), `Settings` and `Trainer`, the application logic used by the interfaces |
+| `src/app/` | Qt Widgets desktop application |
+| `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
+| `3rdparty/` | Bundled libraries (miniaudio) |
+| `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |
+
 ## Translations
 
 Translation sources live in `intl/*.ts`. They are compiled and embedded into
