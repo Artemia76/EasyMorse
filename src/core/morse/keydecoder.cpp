@@ -100,7 +100,6 @@ namespace
 KeyDecoder::KeyDecoder(QObject* parent)
     : QObject(parent)
 {
-    m_clock.start();
     m_gapTimer.setSingleShot(true);
     connect(&m_gapTimer, &QTimer::timeout, this, [this] { advanceTo(now()); });
     setSpeed(12.0);

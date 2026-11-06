@@ -29,6 +29,9 @@ qt_add_library(easymorse_core STATIC
     audio/voicemanager/Param.cpp audio/voicemanager/Param.h
     audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
 
+    keyer/keyerinput.cpp keyer/keyerinput.h
+    keyer/monotonicclock.h
+
     morse/keydecoder.cpp morse/keydecoder.h
     morse/morsecodec.cpp morse/morsecodec.h
     morse/sequencer.cpp morse/sequencer.h
@@ -47,3 +50,10 @@ target_link_libraries(easymorse_core
 )
 
 target_include_directories(easymorse_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Serial port keys are not available on every platform (iOS)
+if(TARGET Qt6::SerialPort)
+    target_sources(easymorse_core PRIVATE keyer/serialkeyer.cpp keyer/serialkeyer.h)
+    target_link_libraries(easymorse_core PUBLIC Qt6::SerialPort)
+    target_compile_definitions(easymorse_core PUBLIC EASYMORSE_HAS_SERIALPORT)
+endif()

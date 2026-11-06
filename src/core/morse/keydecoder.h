@@ -31,11 +31,12 @@
 #ifndef KEYDECODER_H
 #define KEYDECODER_H
 
-#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
 #include <QString>
 #include <QTimer>
+
+#include "keyer/monotonicclock.h"
 
 class KeyDecoder : public QObject
 {
@@ -80,9 +81,9 @@ public:
     double  wordGapThreshold() const;
 
     ///
-    /// \brief milliseconds on the decoder monotonic clock
+    /// \brief current time on the clock used by the keyers, see MonotonicClock
     ///
-    qint64  now() const { return m_clock.elapsed(); }
+    qint64  now() const { return MonotonicClock::nowMs(); }
 
 public slots:
     ///
@@ -118,7 +119,6 @@ private:
     void    armTimer();
     double  unit() const;
 
-    QElapsedTimer   m_clock;
     QTimer          m_gapTimer;
     bool            m_autoTimer = true;
     bool            m_autoAdapt = true;

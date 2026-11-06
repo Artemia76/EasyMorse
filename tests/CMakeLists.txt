@@ -16,3 +16,4 @@ easymorse_add_test(tst_morsecodec SOURCES tst_morsecodec.cpp LIBRARIES easymorse
 easymorse_add_test(tst_sequencer SOURCES tst_sequencer.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_playback SOURCES tst_playback.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_keydecoder SOURCES tst_keydecoder.cpp LIBRARIES easymorse_core)
+easymorse_add_test(tst_keyer SOURCES tst_keyer.cpp LIBRARIES easymorse_core)
