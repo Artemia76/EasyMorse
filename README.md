@@ -32,6 +32,8 @@ The audio synthesizer is derived from
 - Qt >= 6.7: Qt Base, Qt Declarative (Qt Quick, Quick Controls), Qt Linguist tools,
   and optionally Qt Serial Port for a serial key
 - Audio uses [miniaudio](https://miniaud.io), bundled in `3rdparty/`: nothing to install
+- Network sessions use [libjuice](https://github.com/paullouisageneau/libjuice) (installed, e.g.
+  `libjuice` on Arch, or downloaded and built automatically) and the bundled Monocypher
 
 ### Arch Linux
 
@@ -96,6 +98,23 @@ phone size and fails on QML warnings (it runs in `ctest`).
 a `.zip` on Windows, and a `.dmg` on macOS. The same packages are built by the
 GitHub Actions workflow for every push.
 
+## Practising with a correspondent
+
+The *Network* tab connects two EasyMorse directly over the Internet:
+
+1. Each operator clicks *Prepare my invitation* and sends the code to the
+   other (mail, chat...).
+2. Each pastes the code received and clicks *Connect*.
+3. Read the *security code* to each other: it must be the same on both sides.
+
+The key is sent as key events, not audio: each side hears the other with its
+own tone and the rhythm is restored on reception. By default the received Morse
+is not decoded on screen, to learn by ear; it can be shown after each message
+or live. Links go through most Internet boxes (ICE / STUN hole punching, using
+the STUN server set in the options); a relay server for the remaining cases
+and automatic match-making will come with the EasyMorse server. Sessions are
+encrypted end to end (X25519, XChaCha20-Poly1305).
+
 ## Source layout
 
 | Path | Content |
@@ -103,7 +122,7 @@ GitHub Actions workflow for every push.
 | `src/core/` | `easymorse_core` library, no user interface: audio engine (`audio/`), Morse codec, sequencer and streaming decoder (`morse/`), keys (`keyer/`), `Settings` and `Trainer`, the application logic used by the interfaces |
 | `src/app/` | Application: QML interface (`qml/`, desktop and phone layouts) and the models it uses |
 | `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
-| `3rdparty/` | Bundled libraries (miniaudio) |
+| `3rdparty/` | Bundled libraries (miniaudio, Monocypher); libjuice is used from the system or downloaded |
 | `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |
 
 ## Translations
