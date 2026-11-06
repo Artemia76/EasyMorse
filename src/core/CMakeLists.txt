@@ -38,6 +38,7 @@ qt_add_library(easymorse_core STATIC
 
     net/jitterbuffer.cpp net/jitterbuffer.h
     net/peerlink.cpp net/peerlink.h
+    net/peersession.cpp net/peersession.h
     net/protocol.cpp net/protocol.h
     net/remotekeyer.h
     net/securechannel.cpp net/securechannel.h
