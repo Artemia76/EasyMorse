@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
+    <name>AudioEngine</name>
+    <message>
+        <location filename="../audio/AudioEngine.cpp" line="66"/>
+        <source>Audio: no audio system available</source>
+        <translation>Audio : aucun système audio disponible</translation>
+    </message>
+    <message>
+        <location filename="../audio/AudioEngine.cpp" line="132"/>
+        <source>Audio: device &quot;%1&quot; not found, using default output</source>
+        <translation>Audio : périphérique « %1 » introuvable, sortie par défaut utilisée</translation>
+    </message>
+    <message>
+        <location filename="../audio/AudioEngine.cpp" line="137"/>
+        <source>Audio: failed to open the output device</source>
+        <translation>Audio : impossible d&apos;ouvrir la sortie son</translation>
+    </message>
+    <message>
+        <location filename="../audio/AudioEngine.cpp" line="143"/>
+        <source>Audio: failed to start the output device</source>
+        <translation>Audio : impossible de démarrer la sortie son</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <location filename="../gui/mainwindow.ui" line="20"/>
@@ -9,61 +32,65 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="51"/>
-        <location filename="../gui/mainwindow.cpp" line="465"/>
+        <location filename="../gui/mainwindow.ui" line="55"/>
+        <location filename="../gui/mainwindow.cpp" line="489"/>
         <source>Play</source>
         <translation>Jouer</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="68"/>
+        <location filename="../gui/mainwindow.ui" line="72"/>
         <source>toolBar</source>
         <translation>Barre d&apos;Outils</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="90"/>
+        <location filename="../gui/mainwindow.ui" line="94"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="296"/>
+        <location filename="../gui/mainwindow.ui" line="300"/>
         <source>Morse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="519"/>
-        <location filename="../gui/mainwindow.ui" line="791"/>
-        <location filename="../gui/mainwindow.ui" line="794"/>
+        <location filename="../gui/mainwindow.ui" line="517"/>
+        <location filename="../gui/mainwindow.ui" line="812"/>
+        <location filename="../gui/mainwindow.ui" line="815"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="535"/>
+        <location filename="../gui/mainwindow.ui" line="661"/>
+        <location filename="../gui/mainwindow.cpp" line="377"/>
+        <source>Low Pass Filter = %1 Hz</source>
+        <translation>Filtre passe-bas = %1 Hz</translation>
+    </message>
+    <message>
         <source>Output Sound Card</source>
-        <translation>Sortie Carte Son</translation>
+        <translation type="vanished">Sortie Carte Son</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="545"/>
         <source>Serial Port</source>
-        <translation>Port Série</translation>
+        <translation type="vanished">Port Série</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="555"/>
-        <location filename="../gui/mainwindow.cpp" line="63"/>
-        <location filename="../gui/mainwindow.cpp" line="327"/>
+        <location filename="../gui/mainwindow.ui" line="527"/>
+        <location filename="../gui/mainwindow.cpp" line="101"/>
+        <location filename="../gui/mainwindow.cpp" line="323"/>
         <source>Sound Freq=%1 Hz</source>
         <translation>Fréquence Note=%1 Hz</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="593"/>
-        <location filename="../gui/mainwindow.cpp" line="68"/>
-        <location filename="../gui/mainwindow.cpp" line="305"/>
+        <location filename="../gui/mainwindow.ui" line="565"/>
+        <location filename="../gui/mainwindow.cpp" line="108"/>
+        <location filename="../gui/mainwindow.cpp" line="312"/>
         <source>Sound Level = %1 %</source>
         <translation>Volume Sonore = %1 %</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="622"/>
-        <location filename="../gui/mainwindow.cpp" line="93"/>
-        <location filename="../gui/mainwindow.cpp" line="334"/>
+        <location filename="../gui/mainwindow.ui" line="594"/>
+        <location filename="../gui/mainwindow.cpp" line="134"/>
+        <location filename="../gui/mainwindow.cpp" line="333"/>
         <source>Word Speed = %1 WPM</source>
         <translation>Vitesse Mot = %1 WPM</translation>
     </message>
@@ -72,61 +99,98 @@
         <translation type="vanished">Mixage Bruit Blanc = %1</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="689"/>
-        <location filename="../gui/mainwindow.cpp" line="80"/>
-        <location filename="../gui/mainwindow.cpp" line="367"/>
+        <location filename="../gui/mainwindow.cpp" line="120"/>
         <source>Low Pass Filter = %1 %</source>
         <translation>Filtre Passe Bas = %1 %</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="724"/>
+        <location filename="../gui/mainwindow.ui" line="696"/>
         <source>Use Farnsworth</source>
         <translation>Utiliser la méthode Farnsworth</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="731"/>
-        <location filename="../gui/mainwindow.cpp" line="99"/>
-        <location filename="../gui/mainwindow.cpp" line="341"/>
+        <location filename="../gui/mainwindow.ui" line="703"/>
+        <location filename="../gui/mainwindow.cpp" line="139"/>
+        <location filename="../gui/mainwindow.cpp" line="343"/>
         <source>Char Speed = %1 WPM</source>
         <translation>Vitesse des caractères = %1 WPM</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="772"/>
+        <location filename="../gui/mainwindow.ui" line="744"/>
         <source>Morse Decode</source>
-        <translation type="unfinished"></translation>
+        <translation>Décodage morse</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="803"/>
-        <location filename="../gui/mainwindow.ui" line="806"/>
+        <location filename="../gui/mainwindow.ui" line="763"/>
+        <source>Debug</source>
+        <translation>Débogage</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="773"/>
+        <source>None</source>
+        <translation>Aucun</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="780"/>
+        <source>Normal</source>
+        <translation>Normal</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="787"/>
+        <source>Verbose</source>
+        <translation>Détaillé</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="798"/>
+        <source>*</source>
+        <translation>*</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="824"/>
+        <location filename="../gui/mainwindow.ui" line="827"/>
         <source>About</source>
         <translation>A Propos</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="138"/>
+        <location filename="../gui/mainwindow.cpp" line="154"/>
         <source>Welcome to EasyMorse</source>
         <translation>Bienvenue sur EasyMorse</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="292"/>
+        <location filename="../gui/mainwindow.cpp" line="269"/>
         <source>Failed to open Serial port...</source>
         <translation>Impossible d&apos;ouvrie le port série...</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="421"/>
         <source>Error occured on audio device</source>
-        <translation>Une erreur est survenir sur la carte audio</translation>
+        <translation type="vanished">Une erreur est survenir sur la carte audio</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="663"/>
-        <location filename="../gui/mainwindow.cpp" line="74"/>
-        <location filename="../gui/mainwindow.cpp" line="360"/>
+        <location filename="../gui/mainwindow.ui" line="635"/>
+        <location filename="../gui/mainwindow.cpp" line="114"/>
+        <location filename="../gui/mainwindow.cpp" line="366"/>
         <source>Noise Mixing = %1 %</source>
         <translation>Mixage Bruit Blanc = %1</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="144"/>
+        <location filename="../gui/mainwindow.cpp" line="157"/>
         <source>Failed to load font</source>
         <translation>Impossible de charger la police de caractère</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="276"/>
+        <source>Serial port %1 not found</source>
+        <translation>Port série %1 introuvable</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="301"/>
+        <source>No sound output, check the audio options</source>
+        <translation>Pas de sortie son, vérifiez les options audio</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="449"/>
+        <source>Nothing to play, or no sound output</source>
+        <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="460"/>
@@ -134,24 +198,34 @@
         <translation>Arrêter</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="550"/>
+        <location filename="../gui/mainwindow.cpp" line="518"/>
         <source>Clear</source>
         <translation>Vider</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="551"/>
+        <location filename="../gui/mainwindow.cpp" line="519"/>
         <source>Save</source>
         <translation>Sauvergarder</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="573"/>
+        <location filename="../gui/mainwindow.cpp" line="541"/>
         <source>Web File (*.htm *.html)</source>
         <translation>Fichier Web (*.htm *html)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="583"/>
+        <location filename="../gui/mainwindow.cpp" line="551"/>
         <source>An Error occur while opening </source>
         <translation>Une erreur est survenue lors de l&apos;ouverture de </translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="661"/>
+        <source>Decoder: %1 WPM%2  %3</source>
+        <translation>Décodeur : %1 WPM%2  %3</translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="663"/>
+        <source> (locked)</source>
+        <translation> (verrouillé)</translation>
     </message>
 </context>
 <context>
@@ -159,62 +233,98 @@
     <message>
         <location filename="../gui/options.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Options</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="20"/>
+        <location filename="../gui/options.ui" line="30"/>
+        <source>Morse Key</source>
+        <translation>Manipulateur</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="36"/>
+        <source>Enable</source>
+        <translation>Activer</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="53"/>
+        <source>When unchecked, the decoder expects the character speed set in the main window</source>
+        <translation>Si décoché, le décodeur attend la vitesse des caractères réglée dans la fenêtre principale</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="56"/>
+        <source>Decoder adapts to the sender speed</source>
+        <translation>Le décodeur s&apos;adapte à la vitesse de l&apos;opérateur</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="69"/>
+        <source>Morse</source>
+        <translation>Morse</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="171"/>
         <source>Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="32"/>
+        <location filename="../gui/options.ui" line="183"/>
         <source>Output Sound Card</source>
-        <translation type="unfinished">Sortie Carte Son</translation>
+        <translation>Carte son de sortie</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="48"/>
+        <location filename="../gui/options.ui" line="193"/>
+        <source>Buffer size (keyer latency)</source>
+        <translation>Taille du tampon (latence du manipulateur)</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="200"/>
+        <source>Smaller is more responsive. Increase it if you hear crackles.</source>
+        <translation>Plus petit = plus réactif. Augmentez-le si vous entendez des craquements.</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.ui" line="203"/>
+        <source> ms</source>
+        <translation> ms</translation>
+    </message>
+    <message>
         <source>Sound Level = %1 %</source>
-        <translation type="unfinished">Volume Sonore = %1 %</translation>
+        <translation type="obsolete">Volume Sonore = %1 %</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="71"/>
         <source>Sound Freq=%1 Hz</source>
-        <translation type="unfinished">Fréquence Note=%1 Hz</translation>
+        <translation type="obsolete">Fréquence Note=%1 Hz</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="103"/>
         <source>Noise Mixing = %1 %</source>
-        <translation type="unfinished">Mixage Bruit Blanc = %1</translation>
+        <translation type="obsolete">Mixage Bruit Blanc = %1</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="129"/>
         <source>Low Pass Filter = %1 %</source>
-        <translation type="unfinished">Filtre Passe Bas = %1 %</translation>
+        <translation type="obsolete">Filtre Passe Bas = %1 %</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="180"/>
-        <source>GroupBox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/options.ui" line="186"/>
+        <location filename="../gui/options.ui" line="43"/>
         <source>Serial Port</source>
-        <translation type="unfinished">Port Série</translation>
+        <translation>Port série</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="196"/>
+        <location filename="../gui/options.ui" line="75"/>
         <source>Char Speed = %1 WPM</source>
-        <translation type="unfinished">Vitesse des caractères = %1 WPM</translation>
+        <translation>Vitesse des caractères = %1 WPM</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="228"/>
+        <location filename="../gui/options.ui" line="107"/>
         <source>Word Speed = %1 WPM</source>
-        <translation type="unfinished">Vitesse Mot = %1 WPM</translation>
+        <translation>Vitesse des mots = %1 WPM</translation>
     </message>
     <message>
-        <location filename="../gui/options.ui" line="269"/>
+        <location filename="../gui/options.ui" line="148"/>
         <source>Use Farnsworth</source>
-        <translation type="unfinished">Utiliser la méthode Farnsworth</translation>
+        <translation>Utiliser la méthode Farnsworth</translation>
+    </message>
+    <message>
+        <location filename="../gui/options.cpp" line="40"/>
+        <source>System default</source>
+        <translation>Par défaut du système</translation>
     </message>
 </context>
 </TS>
