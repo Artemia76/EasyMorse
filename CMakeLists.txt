@@ -44,6 +44,7 @@ else()
     set(_deploy_qt_default OFF)
 endif()
 option(EASYMORSE_DEPLOY_QT "Bundle Qt libraries and plugins when installing" ${_deploy_qt_default})
+option(EASYMORSE_BUILD_TESTS "Build the unit tests" ON)
 
 # =======================================================================
 # Dependencies
@@ -165,6 +166,14 @@ qt_add_translations(easymorse
     TS_FILES intl/easymorse_fr_FR.ts
     RESOURCE_PREFIX /i18n
 )
+
+# =======================================================================
+# Tests
+
+if(EASYMORSE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 # =======================================================================
 # Installation
