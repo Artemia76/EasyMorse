@@ -61,7 +61,7 @@ void AudioHal::initialize()
 
     deviceInfo = Pa_GetDeviceInfo( m_sDefaultDeviceNumber );
 
-    if( m_sDefaultDeviceNumber == Pa_GetHostApiInfo( deviceInfo->hostApi )->defaultOutputDevice )
+    if( deviceInfo != nullptr && m_sDefaultDeviceNumber == Pa_GetHostApiInfo( deviceInfo->hostApi )->defaultOutputDevice )
     {
         const PaHostApiInfo *hostInfo = Pa_GetHostApiInfo( deviceInfo->hostApi );
         m_log->log(hostInfo->name, Qt::darkGreen,LEVEL_NORMAL);
@@ -85,6 +85,7 @@ void AudioHal::open()
     if (outputParameters.device == paNoDevice) {
       m_log->log("Error: No default output device", Qt::red);
       terminate();
+      return;
     }
     outputParameters.channelCount = 2;       /* stereo output */
     outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
