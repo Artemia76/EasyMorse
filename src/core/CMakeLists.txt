@@ -1,0 +1,49 @@
+# EasyMorse core library: audio engine, Morse coding/decoding and settings.
+# No widgets: shared by the application(s) and the tests.
+
+qt_add_library(easymorse_core STATIC
+    audio/AudioEngine.cpp audio/AudioEngine.h
+    audio/DefaultParameters.h
+    audio/IOscillatorFunction.h
+    audio/Saw.cpp
+    audio/Sine.cpp
+    audio/Square.cpp
+    audio/Triangle.cpp
+    audio/envelope/Envelope.cpp audio/envelope/Envelope.h
+    audio/envelope/IEnvelope.h
+    audio/envelope/NoEnvelope.h
+    audio/filter/BandpassFilter.cpp audio/filter/BandpassFilter.h
+    audio/filter/FilterTypes.h
+    audio/filter/HighpassFilter.cpp audio/filter/HighpassFilter.h
+    audio/filter/IFilter.h
+    audio/filter/LowpassFilter.cpp audio/filter/LowpassFilter.h
+    audio/filter/NoFilter.h
+    audio/modulation/ModulationValue.cpp audio/modulation/ModulationValue.h
+    audio/oscillator/ILfo.h
+    audio/oscillator/Lfo.cpp audio/oscillator/Lfo.h
+    audio/oscillator/NoOscillator.h
+    audio/voice/INoise.h
+    audio/voice/IVoice.h
+    audio/voice/Noise.cpp audio/voice/Noise.h
+    audio/voice/Voice.cpp audio/voice/Voice.h
+    audio/voicemanager/Param.cpp audio/voicemanager/Param.h
+    audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
+
+    morse/keydecoder.cpp morse/keydecoder.h
+    morse/morsecodec.cpp morse/morsecodec.h
+    morse/sequencer.cpp morse/sequencer.h
+
+    tools/clogger.cpp tools/clogger.h
+    tools/spscqueue.h
+)
+
+target_link_libraries(easymorse_core
+    PUBLIC
+        easymorse_settings
+        Qt6::Core
+        Qt6::Gui
+    PRIVATE
+        EasyMorse::miniaudio
+)
+
+target_include_directories(easymorse_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

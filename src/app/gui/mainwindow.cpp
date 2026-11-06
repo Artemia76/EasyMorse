@@ -37,7 +37,7 @@
 #include <QSerialPortInfo>
 #include <QStatusBar>
 
-#include <tools/version.h>
+#include "version.h"
 #include <gui/options.h>
 
 MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
