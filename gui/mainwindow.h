@@ -30,12 +30,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 #include <QTableWidgetItem>
 #include <QTimer>
 #include <QtSerialPort>
 #include "morse/sequencer.h"
 #include "tools/clogger.h"
-#include "morse/analyze.h"
+#include "morse/keydecoder.h"
 
 #include "audio/AudioEngine.h"
 
@@ -74,7 +75,8 @@ private slots:
     void    onCharSpeedChanged(int value);
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
     void    on_timer();
-    void    onMorseMessage(QString pMessage);
+    void    onCharDecoded(const QString& pText, const QString& pPattern);
+    void    updateDecoderStatus();
     void    onPlaybackFinished();
     void    onCharPlayed(int pIndex);
     void    onActionAFOptionsTriggered();
@@ -99,7 +101,9 @@ private:
     bool                            m_playing_phrase;
     bool                            m_playing_key;
     CLogger*                        m_log;
-    CAnalyze*                       m_analyzer;
+    KeyDecoder                      m_decoder;
+    QLabel*                         m_decoderStatus;
+    QString                         m_decoderPattern;
     QSettings                       m_settings;
     int                             m_maxLine;
     int                             m_frequency;
@@ -118,6 +122,7 @@ private:
     void                            initialize();
     void                            initializeSerial(const QString& pSerialPortName);
     void                            loadDeviceSettings();
+    void                            loadDecoderSettings(bool pRestoreEstimates);
     void                            startAudio();
     void                            closeEvent(QCloseEvent* pEvent);
 };

@@ -47,6 +47,19 @@
       <item>
        <widget class="QComboBox" name="m_serialBox"/>
       </item>
+      <item>
+       <widget class="QCheckBox" name="m_autoAdapt">
+        <property name="toolTip">
+         <string>When unchecked, the decoder expects the character speed set in the main window</string>
+        </property>
+        <property name="text">
+         <string>Decoder adapts to the sender speed</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

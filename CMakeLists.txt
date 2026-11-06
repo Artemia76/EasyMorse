@@ -119,12 +119,12 @@ qt_add_library(easymorse_core STATIC
     audio/voicemanager/Param.cpp audio/voicemanager/Param.h
     audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
 
+    morse/keydecoder.cpp morse/keydecoder.h
     morse/morsecodec.cpp morse/morsecodec.h
     morse/sequencer.cpp morse/sequencer.h
 
     tools/call_once.h
     tools/clogger.cpp tools/clogger.h
-    tools/datetime.cpp tools/datetime.h
     tools/singleton.h
     tools/spscqueue.h
     "${CMAKE_BINARY_DIR}/generated/tools/version.h"
@@ -147,8 +147,6 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
 
     gui/mainwindow.cpp gui/mainwindow.h gui/mainwindow.ui
     gui/options.cpp gui/options.h gui/options.ui
-
-    morse/analyze.cpp morse/analyze.h
 
     resources.qrc
 )

@@ -50,6 +50,9 @@ Options::Options(const QStringList& pAudioDevices, QWidget *parent)
     ui->m_enableSerial->setChecked(m_settings.value("PortEnable",false).toBool());
     m_serialPortName = m_settings.value("PortName").toString();
     m_settings.endGroup();
+    m_settings.beginGroup("decoder");
+    ui->m_autoAdapt->setChecked(m_settings.value("AutoAdapt",true).toBool());
+    m_settings.endGroup();
     // Iterat available serial ports
     for (auto& serialPort : QSerialPortInfo::availablePorts())
     {
@@ -74,6 +77,9 @@ void Options::on_buttonBox_accepted()
     m_settings.beginGroup("serial");
     m_settings.setValue("PortName", m_serialPortName);
     m_settings.setValue("PortEnable", ui->m_enableSerial->isChecked());
+    m_settings.endGroup();
+    m_settings.beginGroup("decoder");
+    m_settings.setValue("AutoAdapt", ui->m_autoAdapt->isChecked());
     m_settings.endGroup();
 }
 

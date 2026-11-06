@@ -35,9 +35,9 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QSerialPortInfo>
+#include <QStatusBar>
 
 #include <tools/version.h>
-#include <morse/morsecodec.h>
 #include <gui/options.h>
 
 MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
@@ -171,9 +171,21 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
 
     m_playing_phrase=false;
     m_playing_key=false;
-    m_analyzer = new CAnalyze(this);
-    connect(this, &MainWindow::Keyer, m_analyzer, &CAnalyze::on_keyer);
-    connect(m_analyzer, &CAnalyze::fire_message, this, &MainWindow::onMorseMessage);
+    // Streaming decoder of the local key
+    m_decoderStatus = new QLabel(this);
+    statusBar()->addPermanentWidget(m_decoderStatus);
+    connect(this, &MainWindow::Keyer, &m_decoder, &KeyDecoder::keyEdgeNow);
+    connect(&m_decoder, &KeyDecoder::charDecoded, this, &MainWindow::onCharDecoded);
+    connect(&m_decoder, &KeyDecoder::wordGap, this, [this] {
+        ui->m_MorseZone->moveCursor(QTextCursor::End);
+        ui->m_MorseZone->insertPlainText(" ");
+    });
+    connect(&m_decoder, &KeyDecoder::symbolProgress, this, [this](const QString& pPattern) {
+        m_decoderPattern = pPattern;
+        updateDecoderStatus();
+    });
+    connect(&m_decoder, &KeyDecoder::speedChanged, this, &MainWindow::updateDecoderStatus);
+    loadDecoderSettings(true);
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 
@@ -210,6 +222,11 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("WordSpeed", m_wordSpeed);
     m_settings.setValue("FarnsWorth",m_farnsWorth);
     m_settings.setValue("CharSpeed", m_charSpeed);
+    m_settings.endGroup();
+    m_settings.beginGroup("decoder");
+    m_settings.setValue("DotMs", m_decoder.dotMs());
+    m_settings.setValue("DashMs", m_decoder.dashMs());
+    m_settings.setValue("GapMs", m_decoder.gapMs());
     m_settings.endGroup();
 }
 
@@ -323,6 +340,9 @@ void MainWindow::onCharSpeedChanged(int value)
 {
     m_charSpeed = value;
     ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
+    // A decoder locked on the set speed follows the slider
+    if (!m_decoder.autoAdapt())
+        m_decoder.setSpeed(m_charSpeed);
 }
 
 ///
@@ -612,6 +632,7 @@ void MainWindow::onActionAFOptionsTriggered()
     m_DSR = false;
     if (m_serialEnable)
         initializeSerial(m_serialPortName);
+    loadDecoderSettings(false);
     // Sound card
     StopMorseMessage();
     if ((m_audioDeviceName != oldDevice) || (m_audioPeriodMs != oldPeriod) || !m_audio->isRunning())
@@ -622,20 +643,47 @@ void MainWindow::onActionAFOptionsTriggered()
 /// \brief MainWindow::onMorseMessage
 /// \param pMessage
 ///
-void MainWindow::onMorseMessage(QString pMessage)
+void MainWindow::onCharDecoded(const QString& pText, const QString& pPattern)
 {
-    // The analyzer gives P (dot) and T (dash), '/' between characters and ' ' between words
-    QString text;
-    for (const QString& word : pMessage.split(u' ', Qt::SkipEmptyParts))
+    // Unknown patterns are shown as received to help the learner
+    ui->m_MorseZone->moveCursor(QTextCursor::End);
+    ui->m_MorseZone->insertPlainText(pText.isEmpty() ? "[" + pPattern + "]" : pText);
+    m_decoderPattern.clear();
+    updateDecoderStatus();
+}
+
+///
+/// \brief MainWindow::updateDecoderStatus shows the estimated speed and the character being keyed
+///
+void MainWindow::updateDecoderStatus()
+{
+    m_decoderStatus->setText(tr("Decoder: %1 WPM%2  %3")
+                             .arg(qRound(m_decoder.speed()))
+                             .arg(m_decoder.autoAdapt() ? QString() : tr(" (locked)"))
+                             .arg(m_decoderPattern));
+}
+
+///
+/// \brief MainWindow::loadDecoderSettings
+/// \param pRestoreEstimates start from the speed learnt in the previous session
+///
+void MainWindow::loadDecoderSettings(bool pRestoreEstimates)
+{
+    m_settings.beginGroup("decoder");
+    const bool autoAdapt = m_settings.value("AutoAdapt",true).toBool();
+    const double dot = m_settings.value("DotMs",0.0).toDouble();
+    const double dash = m_settings.value("DashMs",0.0).toDouble();
+    const double gap = m_settings.value("GapMs",0.0).toDouble();
+    m_settings.endGroup();
+    m_decoder.setAutoAdapt(autoAdapt);
+    if (!autoAdapt)
+        m_decoder.setSpeed(m_charSpeed);
+    else if (pRestoreEstimates)
     {
-        for (QString symbol : word.split(u'/', Qt::SkipEmptyParts))
-        {
-            symbol.replace(u'P', u'.').replace(u'T', u'-');
-            text += MorseCodec::decode(symbol);
-        }
-        text += u' ';
+        m_decoder.setSpeed(m_charSpeed);
+        m_decoder.setEstimates(dot, dash, gap);
     }
-    ui->m_MorseZone->insertPlainText(text);
+    updateDecoderStatus();
 }
 
 ///
