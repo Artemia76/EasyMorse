@@ -57,6 +57,8 @@ qt_standard_project_setup(REQUIRES 6.7 I18N_SOURCE_LANGUAGE en I18N_TRANSLATED_L
 set(CMAKE_AUTORCC ON)
 
 add_subdirectory(3rdparty/miniaudio)
+add_subdirectory(3rdparty/monocypher)
+include(cmake/LibJuice.cmake)
 
 # =======================================================================
 # Common compile settings
