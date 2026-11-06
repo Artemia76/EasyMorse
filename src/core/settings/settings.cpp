@@ -43,6 +43,10 @@ namespace Key
     constexpr const char* SerialPort = "serial/PortName";
     constexpr const char* DecoderAutoAdapt = "decoder/AutoAdapt";
     constexpr const char* DecoderReactivity = "decoder/Reactivity";
+    constexpr const char* Callsign = "network/Callsign";
+    constexpr const char* StunServer = "network/StunServer";
+    constexpr const char* JitterDelayMs = "network/JitterDelayMs";
+    constexpr const char* ReceiveDecodeMode = "network/ReceiveDecodeMode";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
     constexpr const char* DecoderGapMs = "decoder/GapMs";
@@ -66,6 +70,10 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_serialPort = m_store->value(Key::SerialPort).toString();
     m_decoderAutoAdapt = m_store->value(Key::DecoderAutoAdapt, true).toBool();
     m_decoderReactivity = qBound(0, m_store->value(Key::DecoderReactivity, 1).toInt(), 2);
+    m_callsign = m_store->value(Key::Callsign).toString();
+    m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
+    m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
+    m_receiveDecodeMode = qBound(0, m_store->value(Key::ReceiveDecodeMode, 0).toInt(), 2);
 }
 
 Settings::~Settings() = default;
@@ -156,6 +164,30 @@ void Settings::setDecoderReactivity(int pReactivity)
 {
     if (store(Key::DecoderReactivity, m_decoderReactivity, qBound(0, pReactivity, 2)))
         emit decoderReactivityChanged();
+}
+
+void Settings::setCallsign(const QString& pCallsign)
+{
+    if (store(Key::Callsign, m_callsign, pCallsign.trimmed().toUpper().left(16)))
+        emit callsignChanged();
+}
+
+void Settings::setStunServer(const QString& pServer)
+{
+    if (store(Key::StunServer, m_stunServer, pServer.trimmed()))
+        emit stunServerChanged();
+}
+
+void Settings::setJitterDelayMs(int pMs)
+{
+    if (store(Key::JitterDelayMs, m_jitterDelayMs, qBound(0, pMs, 2000)))
+        emit jitterDelayMsChanged();
+}
+
+void Settings::setReceiveDecodeMode(int pMode)
+{
+    if (store(Key::ReceiveDecodeMode, m_receiveDecodeMode, qBound(0, pMode, 2)))
+        emit receiveDecodeModeChanged();
 }
 
 void Settings::decoderEstimates(double& pDotMs, double& pDashMs, double& pGapMs) const

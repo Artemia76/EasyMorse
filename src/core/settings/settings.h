@@ -59,6 +59,12 @@ class Settings : public QObject
     Q_PROPERTY(bool decoderAutoAdapt READ decoderAutoAdapt WRITE setDecoderAutoAdapt NOTIFY decoderAutoAdaptChanged)
     // 0 fast, 1 normal, 2 stable: see KeyDecoder::Reactivity
     Q_PROPERTY(int decoderReactivity READ decoderReactivity WRITE setDecoderReactivity NOTIFY decoderReactivityChanged)
+    // Network
+    Q_PROPERTY(QString callsign READ callsign WRITE setCallsign NOTIFY callsignChanged)
+    Q_PROPERTY(QString stunServer READ stunServer WRITE setStunServer NOTIFY stunServerChanged)
+    Q_PROPERTY(int jitterDelayMs READ jitterDelayMs WRITE setJitterDelayMs NOTIFY jitterDelayMsChanged)
+    // What is shown of the received Morse: 0 nothing (listen), 1 after the message, 2 live
+    Q_PROPERTY(int receiveDecodeMode READ receiveDecodeMode WRITE setReceiveDecodeMode NOTIFY receiveDecodeModeChanged)
 
 public:
     static constexpr int MinFrequency = 200;
@@ -66,6 +72,7 @@ public:
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
+    static constexpr const char* DefaultStunServer = "stun.l.google.com:19302";
 
     ///
     /// \param pIniFile settings file, empty for the platform default location
@@ -86,6 +93,10 @@ public:
     QString serialPort() const { return m_serialPort; }
     bool    decoderAutoAdapt() const { return m_decoderAutoAdapt; }
     int     decoderReactivity() const { return m_decoderReactivity; }
+    QString callsign() const { return m_callsign; }
+    QString stunServer() const { return m_stunServer; }
+    int     jitterDelayMs() const { return m_jitterDelayMs; }
+    int     receiveDecodeMode() const { return m_receiveDecodeMode; }
 
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
@@ -100,6 +111,10 @@ public:
     void    setSerialPort(const QString& pName);
     void    setDecoderAutoAdapt(bool pOn);
     void    setDecoderReactivity(int pReactivity);
+    void    setCallsign(const QString& pCallsign);
+    void    setStunServer(const QString& pServer);
+    void    setJitterDelayMs(int pMs);
+    void    setReceiveDecodeMode(int pMode);
 
     ///
     /// \brief decoder estimates learnt in the previous session (0 when unknown)
@@ -121,6 +136,10 @@ signals:
     void    serialPortChanged();
     void    decoderAutoAdaptChanged();
     void    decoderReactivityChanged();
+    void    callsignChanged();
+    void    stunServerChanged();
+    void    jitterDelayMsChanged();
+    void    receiveDecodeModeChanged();
 
 private:
     template <typename T>
@@ -140,6 +159,10 @@ private:
     QString     m_serialPort;
     bool        m_decoderAutoAdapt;
     int         m_decoderReactivity;
+    QString     m_callsign;
+    QString     m_stunServer;
+    int         m_jitterDelayMs;
+    int         m_receiveDecodeMode;
 };
 
 #endif // SETTINGS_H

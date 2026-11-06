@@ -83,6 +83,7 @@ public:
     /// \brief the remote station key, played back with its rhythm
     ///
     RemoteKeyer* remoteKeyer() { return &m_remoteKeyer; }
+    const RemoteKeyer* remoteKeyer() const { return &m_remoteKeyer; }
 
     State   state() const { return m_state; }
     QString invitation() const { return m_invitation; }

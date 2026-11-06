@@ -119,6 +119,49 @@ private slots:
         QCOMPARE(trainer.decoder()->reactivity(), KeyDecoder::Reactivity::Stable);
     }
 
+    void remoteStationIsHeardAndDecoded()
+    {
+        Settings aliceSettings(newSettingsFile()), bobSettings(newSettingsFile());
+        aliceSettings.setCallsign("f4ikz");
+        aliceSettings.setStunServer(QString());
+        bobSettings.setStunServer(QString());
+        bobSettings.setJitterDelayMs(100);
+        aliceSettings.setCharSpeed(20);
+        bobSettings.setCharSpeed(20);
+        Trainer alice(&aliceSettings), bob(&bobSettings);
+        alice.start();
+        bob.start();
+        QCOMPARE(aliceSettings.callsign(), QString("F4IKZ"));
+
+        alice.session()->start();
+        bob.session()->start();
+        QTRY_COMPARE_WITH_TIMEOUT(alice.session()->state(), PeerSession::State::Inviting, 5000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.session()->state(), PeerSession::State::Inviting, 5000);
+        QCOMPARE(alice.session()->join(bob.session()->invitation()), QString());
+        QCOMPARE(bob.session()->join(alice.session()->invitation()), QString());
+        QTRY_COMPARE_WITH_TIMEOUT(bob.session()->state(), PeerSession::State::Connected, 10000);
+        QTRY_COMPARE_WITH_TIMEOUT(alice.session()->state(), PeerSession::State::Connected, 10000);
+        QCOMPARE(bob.session()->peerCallsign(), QString("F4IKZ"));
+
+        QSignalSpy decoded(&bob, &Trainer::remoteCharDecoded);
+        QSignalSpy remoteKey(&bob, &Trainer::remoteKeyDownChanged);
+        // "N" at 20 WPM on Alice's key
+        alice.manualKeyer()->press();
+        QTest::qWait(180);
+        alice.manualKeyer()->release();
+        QTest::qWait(60);
+        alice.manualKeyer()->press();
+        QTest::qWait(60);
+        alice.manualKeyer()->release();
+
+        QTRY_VERIFY_WITH_TIMEOUT(bob.isRemoteActive(), 2000);
+        QVERIFY(decoded.wait(2000));
+        QCOMPARE(decoded.at(0).at(0).toString(), QString("N"));
+        QCOMPARE(remoteKey.count(), 4);
+        // Bob's own decoder did not see Alice's key
+        QVERIFY(bob.decoderPattern().isEmpty());
+    }
+
     void decoderEstimatesAreSaved()
     {
         const QString file = newSettingsFile();

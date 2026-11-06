@@ -50,6 +50,7 @@ enum class KeySource : int
 {
     Local = 0,      // keyboard, serial key
     Sequencer = 1,  // text played by the application
+    Remote = 2,     // station connected through the network
     Count
 };
 
