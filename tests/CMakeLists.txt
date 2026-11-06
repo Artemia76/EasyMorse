@@ -19,6 +19,8 @@ easymorse_add_test(tst_keydecoder SOURCES tst_keydecoder.cpp LIBRARIES easymorse
 easymorse_add_test(tst_keyer SOURCES tst_keyer.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_settings SOURCES tst_settings.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_trainer SOURCES tst_trainer.cpp LIBRARIES easymorse_core)
+easymorse_add_test(tst_protocol SOURCES tst_protocol.cpp LIBRARIES easymorse_core)
+easymorse_add_test(tst_jitterbuffer SOURCES tst_jitterbuffer.cpp LIBRARIES easymorse_core)
 
 # The QML interface loads every page at desktop and phone size without
 # QML warnings (silent audio, settings in the build tree)
