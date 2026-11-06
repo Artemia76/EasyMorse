@@ -1,8 +1,14 @@
-#EasyMorse build instruction
+# EasyMorse
 
-Easy Morse is QT5 based application to learn Morse code by earing and produce. In future version it will could used in association with SDR or RADIO to decode and produce morse code.
+EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
+play any text in Morse (with Farnsworth timing, background noise and filter),
+key Morse yourself with the keyboard (Alt key) or a straight key wired to a
+serial port, and watch it being decoded.
 
-EasyMorse will be designed on open source project model and will be writted in C++ with portable library (Qt)
+Future versions will add peer-to-peer practice sessions between EasyMorse
+users and Android/iOS support.
+
+## License
 
 EasyMorse is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -11,50 +17,83 @@ the Free Software Foundation; either version 3 of the License, or
 
 EasyMorse is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details: [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
+and the `LICENSE.GPLv3` file.
 
-The license is as published by the Free Software
-Foundation and appearing in the file LICENSE.GPL3
-included in the packaging of this software. Please review the following
-information to ensure the GNU General Public License requirements will
-be met: [GPLv3 licence ](https://www.gnu.org/licenses/gpl-3.0.html)
+The audio synthesizer is derived from
+[qt-port-synth](https://github.com/rluedek/qt-port-synth) by Rico Luedeke.
 
-1. DEPENDENCIES
+## Dependencies
 
-	- Qt : >=5.9
+- CMake >= 3.21 (3.27+ to build the Windows Inno Setup installer) and Ninja
+- A C++20 compiler (GCC 11+, Clang 14+, MSVC 2022)
+- Qt >= 6.7 with the *Qt Serial Port* module (and *Qt Linguist tools*)
+- PortAudio v19 (optional: it is downloaded and built automatically when not found)
 
-1. Build on Linux
-	1. UBUNTU
+### Arch Linux
 
-		On ubuntu you can enter this command line how provide you all dependencies needed to build ffs2play:
+    sudo pacman -S base-devel cmake ninja qt6-base qt6-serialport qt6-tools portaudio
 
-			sudo apt-get install build-essential qt5-default pkg-config
+### Debian 13+ / Ubuntu 25.04+
 
-	1. Gentoo / Calculate Linux
+    sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-serialport-dev \
+        qt6-tools-dev qt6-l10n-tools portaudio19-dev
 
-		Prepare dependencies on terminal as superuser:
+Older distributions ship a Qt that is too old: install Qt 6.7+ with the
+[Qt online installer](https://www.qt.io/download-qt-installer-oss) or
+[aqtinstall](https://github.com/miurahr/aqtinstall).
 
-			emerge @qt5-essentials
+### Fedora
 
-	1. Arch Linux
+    sudo dnf install gcc-c++ cmake ninja-build qt6-qtbase-devel qt6-qtserialport-devel \
+        qt6-qttools-devel portaudio-devel
 
-		Prepare dependencies on terminal :
+### macOS
 
-			sudo yaourt -S base-devel gdb qt5-base
+Install Qt 6.7+ (Qt online installer or `brew install qt`), then:
 
-	1. Final build:
+    brew install cmake ninja pkg-config portaudio
 
-		on git root :
+### Windows
 
-			qmake CONFIG+=release
-			make -j3
-			./EasyMorse
+Install Visual Studio 2022 (C++ workload), CMake, Ninja and Qt 6.7+ for MSVC 2022 64-bit.
+PortAudio is built automatically by the `windows-release` preset.
+[Inno Setup 6](https://jrsoftware.org/isinfo.php) is needed only to build the installer.
 
-	1. Update
+## Build
 
-		repeat previous commands after git pull
+From the repository root (on Windows, in a *x64 Native Tools Command Prompt*):
 
-1. WIN(Visual studio community edition)
+    cmake --preset release          # or: debug, windows-release
+    cmake --build --preset release
+    ./out/build/release/easymorse
 
-	coming ...
+If Qt is not found automatically, add `-DCMAKE_PREFIX_PATH=/path/to/Qt/6.x.y/<compiler>`
+to the configure command. Qt Creator and VS Code open the project directly
+through `CMakeLists.txt` / `CMakePresets.json`.
+
+Useful options:
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `EASYMORSE_FETCH_PORTAUDIO` | `OFF` | Always download and build PortAudio statically |
+| `EASYMORSE_DEPLOY_QT` | `ON` on Windows/macOS | Bundle Qt libraries and plugins when installing |
+
+## Install and packages
+
+    cmake --install out/build/release --prefix /usr/local     # Linux
+    cd out/build/release && cpack                             # create packages
+
+`cpack` produces a `.deb` and a `.tar.gz` on Linux, an Inno Setup installer and
+a `.zip` on Windows, and a `.dmg` on macOS. The same packages are built by the
+GitHub Actions workflow for every push.
+
+## Translations
+
+Translation sources live in `intl/*.ts`. They are compiled and embedded into
+the application at build time. After changing user-visible strings, refresh
+the `.ts` files and translate them with Qt Linguist:
+
+    cmake --build --preset release --target update_translations
+    linguist intl/easymorse_fr_FR.ts
