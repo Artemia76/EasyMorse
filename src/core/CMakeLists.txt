@@ -38,6 +38,8 @@ qt_add_library(easymorse_core STATIC
 
     settings/settings.cpp settings/settings.h
 
+    trainer.cpp trainer.h
+
     tools/clogger.cpp tools/clogger.h
     tools/spscqueue.h
 )
