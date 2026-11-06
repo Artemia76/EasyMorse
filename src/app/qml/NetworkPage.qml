@@ -233,14 +233,20 @@ Page {
                         }
                         Label {
                             text: root.connected ? qsTr("Correspondent at %1 WPM").arg(Math.round(Trainer.remoteDecoderSpeed)) : qsTr("Nothing received yet")
+                            elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
+                    }
+                    // Own row: the labels are long once translated
+                    RowLayout {
+                        Layout.fillWidth: true
                         Label { text: qsTr("Show") }
                         ComboBox {
                             model: [qsTr("Nothing, listen"), qsTr("After the message"), qsTr("Live")]
                             currentIndex: MorseSettings.receiveDecodeMode
                             onActivated: (index) => MorseSettings.receiveDecodeMode = index
                             implicitContentWidthPolicy: ComboBox.WidestText
+                            Layout.fillWidth: true
                         }
                     }
 
