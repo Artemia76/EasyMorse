@@ -37,9 +37,7 @@
 #include "tools/clogger.h"
 #include "morse/analyze.h"
 
-#include "audio/Audio.h"
-#include "audio/voicemanager/VoiceManager.h"
-#include "audio/IOscillatorFunction.h"
+#include "audio/AudioEngine.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -50,7 +48,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-            MainWindow(QWidget *parent = nullptr, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr);
+            MainWindow(AudioEngine* pAudio, QWidget *parent = nullptr);
             ~MainWindow();
     bool    PlayMorseMessage(const QString& pMessage);
     void    StopMorseMessage();
@@ -90,15 +88,7 @@ private:
     Ui::MainWindow*                 ui;
 
     //AUDIO
-    AudioHal*                       m_hal;
-    VoiceManager*                   m_manager;
-    double m_dBaseFrequencyOsc1;
-    double m_dBaseFrequencyOsc2;
-    double m_dOctaveOsc;
-
-    Square m_square;
-    Sine m_sine;
-    Triangle m_triangle;
+    AudioEngine*                    m_audio;
 
     //Morse
     CMorse                          m_morse;
@@ -109,7 +99,6 @@ private:
     QSettings                       m_settings;
     int                             m_maxLine;
     int                             m_frequency;
-    int                             m_afrequency;
     int                             m_volume;
     qreal                           m_noiseCorrelation;
     QSerialPort                     m_serial;
@@ -119,11 +108,13 @@ private:
     bool                            m_serialEnable;
     QString                         m_serialPortName;
     QString                         m_audioDeviceName;
+    int                             m_audioPeriodMs;
     QTimer                          m_timer;
-    bool                            m_CTS;
     bool                            m_DSR;
     void                            initialize();
     void                            initializeSerial(const QString& pSerialPortName);
+    void                            loadDeviceSettings();
+    void                            startAudio();
     void                            closeEvent(QCloseEvent* pEvent);
 };
 #endif // MAINWINDOW_H

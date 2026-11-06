@@ -29,16 +29,16 @@ The audio synthesizer is derived from
 - CMake >= 3.21 (3.27+ to build the Windows Inno Setup installer) and Ninja
 - A C++20 compiler (GCC 11+, Clang 14+, MSVC 2022)
 - Qt >= 6.7 with the *Qt Serial Port* module (and *Qt Linguist tools*)
-- PortAudio v19 (optional: it is downloaded and built automatically when not found)
+- Audio uses [miniaudio](https://miniaud.io), bundled in `3rdparty/`: nothing to install
 
 ### Arch Linux
 
-    sudo pacman -S base-devel cmake ninja qt6-base qt6-serialport qt6-tools portaudio
+    sudo pacman -S base-devel cmake ninja qt6-base qt6-serialport qt6-tools
 
 ### Debian 13+ / Ubuntu 25.04+
 
     sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-serialport-dev \
-        qt6-tools-dev qt6-l10n-tools portaudio19-dev
+        qt6-tools-dev qt6-l10n-tools
 
 Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 [Qt online installer](https://www.qt.io/download-qt-installer-oss) or
@@ -47,18 +47,17 @@ Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 ### Fedora
 
     sudo dnf install gcc-c++ cmake ninja-build qt6-qtbase-devel qt6-qtserialport-devel \
-        qt6-qttools-devel portaudio-devel
+        qt6-qttools-devel
 
 ### macOS
 
 Install Qt 6.7+ (Qt online installer or `brew install qt`), then:
 
-    brew install cmake ninja pkg-config portaudio
+    brew install cmake ninja
 
 ### Windows
 
 Install Visual Studio 2022 (C++ workload), CMake, Ninja and Qt 6.7+ for MSVC 2022 64-bit.
-PortAudio is built automatically by the `windows-release` preset.
 [Inno Setup 6](https://jrsoftware.org/isinfo.php) is needed only to build the installer.
 
 ## Build
@@ -77,7 +76,7 @@ Useful options:
 
 | Option | Default | Meaning |
 |--------|---------|---------|
-| `EASYMORSE_FETCH_PORTAUDIO` | `OFF` | Always download and build PortAudio statically |
+| `EASYMORSE_BUILD_TESTS` | `ON` | Build the unit tests (run them with `ctest --preset ...` or `ctest --test-dir out/build/<preset>`) |
 | `EASYMORSE_DEPLOY_QT` | `ON` on Windows/macOS | Bundle Qt libraries and plugins when installing |
 
 ## Install and packages

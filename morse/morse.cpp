@@ -31,10 +31,9 @@
 
 #include <utility>
 
-CMorse::CMorse(QObject *parent,AudioHal* hal, VoiceManager* pVoiceManager) :
+CMorse::CMorse(QObject *parent, AudioEngine* pAudio) :
     QObject(parent)
-    , m_hal(hal)
-    , m_manager(pVoiceManager)
+    , m_audio(pAudio)
 {
     m_wordSpeed = 12;
     m_charSpeed = 18;
@@ -143,16 +142,16 @@ void CMorse::code(const QString& pMessage)
         {
             if (MorseChar=='P')
             {
-                m_hal->play(m_frequency);
+                m_audio->keyDown(KeySource::Sequencer);
                 QThread::usleep(DotDuration);
-                m_hal->stop(m_frequency);
+                m_audio->keyUp(KeySource::Sequencer);
                 QThread::usleep(DotDuration);
             }
             if (MorseChar=='T')
             {
-                m_hal->play(m_frequency);
+                m_audio->keyDown(KeySource::Sequencer);
                 QThread::usleep(DotDuration*3);
-                m_hal->stop(m_frequency);
+                m_audio->keyUp(KeySource::Sequencer);
                 QThread::usleep(DotDuration);
             }
             if (MorseChar=='S')

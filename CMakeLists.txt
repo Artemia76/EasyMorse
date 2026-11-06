@@ -36,7 +36,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # =======================================================================
 # Options
 
-option(EASYMORSE_FETCH_PORTAUDIO "Download and build PortAudio instead of using the system one" OFF)
 if(WIN32 OR APPLE)
     set(_deploy_qt_default ON)
 else()
@@ -53,7 +52,6 @@ find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Widgets SerialPort LinguistToo
 qt_standard_project_setup(REQUIRES 6.7 I18N_SOURCE_LANGUAGE en I18N_TRANSLATED_LANGUAGES fr_FR)
 set(CMAKE_AUTORCC ON)
 
-include(cmake/PortAudio.cmake)
 add_subdirectory(3rdparty/miniaudio)
 
 # =======================================================================
@@ -79,7 +77,7 @@ configure_file(tools/version.h.in "${CMAKE_BINARY_DIR}/generated/tools/version.h
 qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     main.cpp
 
-    audio/Audio.cpp audio/Audio.h
+    audio/AudioEngine.cpp audio/AudioEngine.h
     audio/DefaultParameters.h
     audio/IOscillatorFunction.h
     audio/Saw.cpp
@@ -116,6 +114,7 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     tools/clogger.cpp tools/clogger.h
     tools/datetime.cpp tools/datetime.h
     tools/singleton.h
+    tools/spscqueue.h
     "${CMAKE_BINARY_DIR}/generated/tools/version.h"
 
     resources.qrc
@@ -131,7 +130,7 @@ target_link_libraries(easymorse PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::SerialPort
-    EasyMorse::PortAudio
+    EasyMorse::miniaudio
 )
 
 target_compile_definitions(easymorse PRIVATE

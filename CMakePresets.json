@@ -26,9 +26,8 @@
         },
         {
             "name": "windows-release",
-            "displayName": "Windows Release (MSVC, PortAudio built from source)",
+            "displayName": "Windows Release (MSVC)",
             "inherits": "release",
-            "cacheVariables": { "EASYMORSE_FETCH_PORTAUDIO": "ON" },
             "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
         }
     ],

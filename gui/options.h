@@ -43,7 +43,10 @@ class Options : public QDialog
     Q_OBJECT
 
 public:
-    Options(QWidget *parent = nullptr);
+    static constexpr int DefaultAudioPeriodMs = 10;
+
+    Options(const QStringList& pAudioDevices, QWidget *parent = nullptr);
+    ~Options();
 private slots:
     void on_buttonBox_accepted();
 

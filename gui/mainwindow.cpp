@@ -39,13 +39,12 @@
 #include <tools/version.h>
 #include <gui/options.h>
 
-MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManager)
+MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_hal(hal)
-    , m_manager(pVoiceManager)
-    , m_dOctaveOsc(0.0)
-    , m_morse(nullptr, hal, pVoiceManager)
+    , m_audio(pAudio)
+    , m_morse(nullptr, pAudio)
+    , m_DSR(false)
 {
     ui->setupUi(this);
     connect(ui->actionafOptions, &QAction::triggered, this, &MainWindow::onActionAFOptionsTriggered);
@@ -97,29 +96,27 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
     m_frequency = m_settings.value("SoundFreq",900).toInt();
     m_morse.setFrequency(m_frequency);
+    m_audio->setFrequency(m_frequency);
 
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_frequency));
 
     //Set Sound Volume
     connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
     m_volume = m_settings.value("SoundLevel", 100).toInt();
-    //m_generator->setVolume(m_volume);
-    m_manager->setGain(m_volume);
+    m_audio->setGain(m_volume);
 
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume));
 
     //Set NoiseCorrelation
     connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
     m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
-    m_manager->setNoiseRatio(m_noiseCorrelation);
-    //m_generator->setNoiseCorrelation(m_noiseCorrelation);
+    m_audio->setNoiseRatio(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(m_noiseCorrelation*100));
-    m_hal->startNoise();
+    m_audio->noiseOn();
     //Set noise Filter
-    m_manager->setFilter(FilterType::LOWPASS);
     connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
     m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
-    m_manager->setCutOffFrequency(m_noiseFilter);
+    m_audio->setNoiseCutoff(m_noiseFilter);
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(m_noiseFilter));
 
     m_settings.endGroup();
@@ -142,25 +139,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
     m_settings.endGroup();
 
-    m_settings.beginGroup("serial");
-    m_serialEnable = m_settings.value("PortEnable",false).toBool();
-    m_serialPortName = m_settings.value("PortName",
-#ifdef Q_OS_LINUX
-    "tty0"
-#else
-#ifdef Q_OS_WIN
-    "COM1"
-#else
-#ifdef Q_OS_MAC
-    "tty0"
-#endif
-#endif
-#endif
-    ).toString();
-    m_settings.endGroup();
-    m_settings.beginGroup("audio");
-    m_audioDeviceName = m_settings.value("DeviceName","").toString();
-    m_settings.endGroup();
+    loadDeviceSettings();
     connect(&m_timer, &QTimer::timeout, this, &MainWindow::on_timer);
     m_timer.setSingleShot(false);
     m_timer.start(10);
@@ -190,7 +169,6 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
     if (m_serialEnable)
         initializeSerial(m_serialPortName);
 
-    m_CTS=false;
     m_playing_phrase=false;
     m_playing_key=false;
     m_analyzer = new CAnalyze(this);
@@ -199,7 +177,7 @@ MainWindow::MainWindow(QWidget *parent, AudioHal* hal, VoiceManager* pVoiceManag
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
 
-    m_hal->getAudioDeviceList();
+    startAudio();
 }
 
 MainWindow::~MainWindow()
@@ -212,10 +190,8 @@ MainWindow::~MainWindow()
 ///
 void MainWindow::closeEvent(QCloseEvent*)
 {
-    //if (m_audioOutput != nullptr) m_audioOutput->stop();
     if (m_serial.isOpen()) m_serial.close();
-    //m_generator->stop();
-    m_hal->terminate();
+    m_audio->stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());
@@ -229,7 +205,6 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("SoundLevel", m_volume);
     m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
     m_settings.setValue("NoiseFilter",m_noiseFilter);
-    //m_settings.setValue("Device",QMediaDevices::defaultAudioOutput().description());
     m_settings.endGroup();
     m_settings.beginGroup("Morse");
     m_settings.setValue("WordSpeed", m_wordSpeed);
@@ -278,7 +253,34 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
         m_serial.setDataTerminalReady(true);
         m_serial.setRequestToSend(false);
     }
+    else
+    {
+        m_log->log(tr("Serial port %1 not found").arg(pSerialPortName),Qt::darkMagenta);
+    }
+}
 
+///
+/// \brief MainWindow::loadDeviceSettings reads the serial key and sound card settings
+///
+void MainWindow::loadDeviceSettings()
+{
+    m_settings.beginGroup("serial");
+    m_serialEnable = m_settings.value("PortEnable",false).toBool();
+    m_serialPortName = m_settings.value("PortName").toString();
+    m_settings.endGroup();
+    m_settings.beginGroup("audio");
+    m_audioDeviceName = m_settings.value("DeviceName").toString();
+    m_audioPeriodMs = m_settings.value("PeriodMs",Options::DefaultAudioPeriodMs).toInt();
+    m_settings.endGroup();
+}
+
+///
+/// \brief MainWindow::startAudio (re)opens the sound card
+///
+void MainWindow::startAudio()
+{
+    if (!m_audio->start(m_audioDeviceName, m_audioPeriodMs))
+        m_log->log(tr("No sound output, check the audio options"),Qt::red);
 }
 
 ///
@@ -288,8 +290,7 @@ void MainWindow::initializeSerial(const QString &pSerialPortName)
 void MainWindow::onVolumeChanged(int value)
 {
     m_volume = value;
-    //m_generator->setVolume(value);
-    m_manager->setGain(m_volume);
+    m_audio->setGain(m_volume);
     ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
 }
 
@@ -301,6 +302,7 @@ void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
     m_morse.setFrequency(value);
+    m_audio->setFrequency(value);
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
 }
 
@@ -342,7 +344,7 @@ void MainWindow::onFarnsWorthChanged(bool value)
 void MainWindow::onNoiseCorChanged(int index)
 {
     m_noiseCorrelation = static_cast<qreal>(index / 100.0);
-    m_manager->setNoiseRatio(m_noiseCorrelation);
+    m_audio->setNoiseRatio(m_noiseCorrelation);
     ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
 }
 
@@ -353,7 +355,7 @@ void MainWindow::onNoiseCorChanged(int index)
 void MainWindow::onNoiseFilterChanged(int index)
 {
     m_noiseFilter = index;
-    m_manager->setCutOffFrequency(m_noiseFilter);
+    m_audio->setNoiseCutoff(m_noiseFilter);
     ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 Hz")).arg(index));
 }
 
@@ -566,8 +568,7 @@ void MainWindow::keyerOn()
     if (m_playing_phrase) return;
     if (!m_playing_key)
     {
-        m_afrequency = m_frequency;
-        m_hal->play(m_afrequency);
+        m_audio->keyDown(KeySource::Local);
         m_playing_key=true;
         emit Keyer(true);
     }
@@ -581,7 +582,7 @@ void MainWindow::keyerOff()
     if (m_playing_phrase) return;
     if (m_playing_key)
     {
-        m_hal->stop(m_afrequency);
+        m_audio->keyUp(KeySource::Local);
         m_playing_key=false;
         emit Keyer(false);
     }
@@ -592,12 +593,20 @@ void MainWindow::keyerOff()
 ///
 void MainWindow::onActionAFOptionsTriggered()
 {
-    Options* DlgOptions= new Options(this);
-    DlgOptions->show();
-    if (DlgOptions->result()==QDialog::Accepted)
-    {
-        initialize();
-    }
+    Options DlgOptions(m_audio->outputDevices(), this);
+    if (DlgOptions.exec()!=QDialog::Accepted)
+        return;
+    const QString oldDevice = m_audioDeviceName;
+    const int oldPeriod = m_audioPeriodMs;
+    loadDeviceSettings();
+    // Serial key
+    if (m_serial.isOpen()) m_serial.close();
+    m_DSR = false;
+    if (m_serialEnable)
+        initializeSerial(m_serialPortName);
+    // Sound card
+    if ((m_audioDeviceName != oldDevice) || (m_audioPeriodMs != oldPeriod) || !m_audio->isRunning())
+        startAudio();
 }
 
 ///

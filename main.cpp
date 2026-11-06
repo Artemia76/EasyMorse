@@ -34,22 +34,10 @@
 #include <QDir>
 #include <QLibraryInfo>
 
-
-#include "audio/Audio.h"
-#include "audio/voicemanager/VoiceManager.h"
+#include "audio/AudioEngine.h"
 
 int main(int argc, char *argv[])
 {
-    //create audio interface
-    AudioHal audio;
-
-    //create a voice manager
-    VoiceManager manager;
-
-    audio.setVoiceManager(&manager);
-    audio.initialize();
-    audio.open();
-
     QSettings::setDefaultFormat(QSettings::NativeFormat);
     QCoreApplication::setOrganizationName("EasyMorse");
     QCoreApplication::setOrganizationDomain("");
@@ -79,7 +67,9 @@ int main(int argc, char *argv[])
         a.setStyleSheet(styleFile.readAll());
         styleFile.close();
     }
-    MainWindow w(nullptr, &audio, &manager);
+    // The main window opens the sound card chosen in the options
+    AudioEngine audio;
+    MainWindow w(&audio);
     w.show();
     return a.exec();
 }

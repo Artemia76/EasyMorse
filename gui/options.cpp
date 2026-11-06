@@ -29,29 +29,26 @@
 #include "options.h"
 #include "ui_options.h"
 
-Options::Options(QWidget *parent)
+Options::Options(const QStringList& pAudioDevices, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Options)
 {
     ui->setupUi(this);
     m_settings.beginGroup("audio");
-    //Populate Controls
+    m_audioDeviceName = m_settings.value("DeviceName").toString();
+    // Empty name means the system default output
+    ui->m_deviceBox->addItem(tr("System default"), QString());
+    for (const QString& device : pAudioDevices)
+    {
+        ui->m_deviceBox->addItem(device, device);
+    }
+    const int deviceIndex = ui->m_deviceBox->findData(m_audioDeviceName);
+    ui->m_deviceBox->setCurrentIndex(deviceIndex >= 0 ? deviceIndex : 0);
+    ui->m_periodBox->setValue(m_settings.value("PeriodMs",DefaultAudioPeriodMs).toInt());
     m_settings.endGroup();
     m_settings.beginGroup("serial");
     ui->m_enableSerial->setChecked(m_settings.value("PortEnable",false).toBool());
-    m_serialPortName = m_settings.value("PortName",
-#ifdef Q_OS_LINUX
-    "tty0"
-#else
-#ifdef Q_OS_WIN
-    "COM1"
-#else
-#ifdef Q_OS_MAC
-    "tty0"
-#endif
-#endif
-#endif
-    ).toString();
+    m_serialPortName = m_settings.value("PortName").toString();
     m_settings.endGroup();
     // Iterat available serial ports
     for (auto& serialPort : QSerialPortInfo::availablePorts())
@@ -61,8 +58,18 @@ Options::Options(QWidget *parent)
     ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
 }
 
+Options::~Options()
+{
+    delete ui;
+}
+
 void Options::on_buttonBox_accepted()
 {
+    m_audioDeviceName = ui->m_deviceBox->currentData().toString();
+    m_settings.beginGroup("audio");
+    m_settings.setValue("DeviceName", m_audioDeviceName);
+    m_settings.setValue("PeriodMs", ui->m_periodBox->value());
+    m_settings.endGroup();
     m_serialPortName = ui->m_serialBox->currentText();
     m_settings.beginGroup("serial");
     m_settings.setValue("PortName", m_serialPortName);

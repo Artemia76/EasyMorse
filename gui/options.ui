@@ -175,6 +175,32 @@
        <widget class="QComboBox" name="m_deviceBox"/>
       </item>
       <item>
+       <widget class="QLabel" name="m_labelPeriod">
+        <property name="text">
+         <string>Buffer size (keyer latency)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="m_periodBox">
+        <property name="toolTip">
+         <string>Smaller is more responsive. Increase it if you hear crackles.</string>
+        </property>
+        <property name="suffix">
+         <string> ms</string>
+        </property>
+        <property name="minimum">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>

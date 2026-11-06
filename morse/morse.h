@@ -32,14 +32,13 @@
 #include <QObject>
 #include <QMap>
 
-#include "audio/Audio.h"
-#include "audio/voicemanager/VoiceManager.h"
+#include "audio/AudioEngine.h"
 
 class CMorse : public QObject
 {
     Q_OBJECT
 public:
-    explicit CMorse(QObject *parent = nullptr, AudioHal* hal = nullptr, VoiceManager* pVoiceManager = nullptr );
+    explicit CMorse(QObject *parent = nullptr, AudioEngine* pAudio = nullptr);
     enum Code
     {
         American,
@@ -62,8 +61,7 @@ public:
 private:
 
     //AUDIO
-    AudioHal*                   m_hal;
-    VoiceManager*               m_manager;
+    AudioEngine*                m_audio;
     int                         m_frequency;
     bool                        m_farnsWorth;
     qreal                       m_noiseCorrelation;
