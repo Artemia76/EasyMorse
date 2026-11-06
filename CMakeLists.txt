@@ -53,6 +53,7 @@ qt_standard_project_setup(REQUIRES 6.7 I18N_SOURCE_LANGUAGE en I18N_TRANSLATED_L
 set(CMAKE_AUTORCC ON)
 
 include(cmake/PortAudio.cmake)
+add_subdirectory(3rdparty/miniaudio)
 
 # =======================================================================
 # Version
