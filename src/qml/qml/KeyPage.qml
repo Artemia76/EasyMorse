@@ -92,6 +92,8 @@ Page {
                         text: qsTr("Decoded text appears here as you key")
                         wrapMode: Text.WordWrap
                         opacity: 0.5
+                        // Not the large monospace font of the text area
+                        font: Qt.application.font
                     }
                 }
             }

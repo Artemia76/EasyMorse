@@ -26,7 +26,8 @@ Page {
 
                 GridLayout {
                     anchors.fill: parent
-                    columns: 2
+                    // One column on phones: labels can be long once translated
+                    columns: root.width < 560 ? 1 : 2
                     columnSpacing: 12
 
                     Label { text: qsTr("Output sound card") }
@@ -76,7 +77,8 @@ Page {
 
                 GridLayout {
                     anchors.fill: parent
-                    columns: 2
+                    // One column on phones: labels can be long once translated
+                    columns: root.width < 560 ? 1 : 2
                     columnSpacing: 12
 
                     Label { text: qsTr("Enabled") }
@@ -140,7 +142,8 @@ Page {
 
                 GridLayout {
                     anchors.fill: parent
-                    columns: 2
+                    // One column on phones: labels can be long once translated
+                    columns: root.width < 560 ? 1 : 2
                     columnSpacing: 12
 
                     Label { text: qsTr("Language") }

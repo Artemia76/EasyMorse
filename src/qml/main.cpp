@@ -44,6 +44,7 @@
 #include "keyboardkeyer.h"
 #include "logmodel.h"
 #include "qmltypes.h"
+#include "tools/clogger.h"
 #include "uisettings.h"
 #include "version.h"
 
@@ -143,6 +144,7 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return 1;
 
+    CLogger::instance()->log(QCoreApplication::translate("main", "Welcome to EasyMorse %1").arg(VER_PRODUCTVERSION_STR), Qt::blue);
     // Sound card and serial key chosen in the options
     trainer.start();
 

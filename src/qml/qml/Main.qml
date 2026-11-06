@@ -1,5 +1,6 @@
 // This file is part of EasyMorse - GPLv3 - https://github.com/Artemia76/EasyMorse
 
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
@@ -27,6 +28,13 @@ ApplicationWindow {
     property int currentPage: 0
 
     onCurrentPageChanged: tabs.currentIndex = currentPage
+
+    // Window size is kept between sessions
+    Settings {
+        category: "MainWindow"
+        property alias width: window.width
+        property alias height: window.height
+    }
     onWideChanged: if (wide && currentPage >= pageCount) currentPage = 0
 
     header: ToolBar {
