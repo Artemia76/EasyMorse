@@ -519,32 +519,57 @@
         <translation>Désactivé, le décodeur attend la vitesse des caractères.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="137"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="136"/>
+        <source>Reactivity</source>
+        <translation>Réactivité</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <source>Fast</source>
+        <translation>Rapide</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <source>Normal</source>
+        <translation>Normale</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <source>Stable</source>
+        <translation>Stable</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="145"/>
+        <source>Fast follows speed changes sooner, Stable is less disturbed by clumsy keying. Large speed changes are always followed.</source>
+        <translation>Rapide suit plus tôt les changements de vitesse, Stable est moins perturbé par les maladresses de manipulation. Les grands changements de vitesse sont toujours suivis.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="154"/>
         <source>Interface</source>
         <translation>Interface</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="149"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="166"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="159"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="176"/>
         <source>Theme</source>
         <translation>Thème</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="162"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="179"/>
         <source>System</source>
         <translation>Système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="162"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="179"/>
         <source>Light</source>
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="162"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="179"/>
         <source>Dark</source>
         <translation>Sombre</translation>
     </message>
@@ -593,17 +618,17 @@
 <context>
     <name>Trainer</name>
     <message>
-        <location filename="../src/core/trainer.cpp" line="163"/>
+        <location filename="../src/core/trainer.cpp" line="164"/>
         <source>Nothing to play, or no sound output</source>
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="227"/>
+        <location filename="../src/core/trainer.cpp" line="228"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="240"/>
+        <location filename="../src/core/trainer.cpp" line="241"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>

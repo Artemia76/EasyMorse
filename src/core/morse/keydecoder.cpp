@@ -36,20 +36,57 @@
 
 namespace
 {
-    // Number of recent elements used to find the dot and dash durations
-    constexpr qsizetype HistorySize = 12;
-    // Smoothing when only one kind of element was received recently
-    constexpr double DriftRate = 0.3;
+    ///
+    /// \brief How fast the estimates follow the sender, see KeyDecoder::Reactivity
+    ///
+    struct Adaptation
+    {
+        qsizetype   historySize;    // recent elements or silences considered
+        double      smoothing;      // share of a new estimate taken at each element
+        double      driftRate;      // same, when only one kind of element was received
+        bool        median;         // median of each group (robust) or mean (moves faster)
+    };
+
+    constexpr Adaptation Adaptations[] = {
+        {12, 1.0, 0.30, false},     // Fast: the behaviour of version 1.0
+        {20, 0.35, 0.15, true},     // Normal
+        {32, 0.15, 0.08, true},     // Stable
+    };
+
+    // A new estimate this far from the current one is a new sender or a
+    // real change of speed: it is taken at once instead of being smoothed
+    constexpr double JumpRatio = 1.5;
+    // Recent elements checked for a change of speed: when both their dots and
+    // their dashes (at least 2 of each) are JumpRatio faster or slower than
+    // expected, the older history is dropped to lock on the new speed. One
+    // clumsy element cannot move both groups.
+    constexpr qsizetype RecentElements = 4;
+    // Until this many elements are known (start, after a relock) the decoder
+    // adapts as fast as possible to lock on the sender, smoothing comes after
+    constexpr qsizetype WarmUpElements = 8;
+    constexpr qsizetype MinRecentPerGroup = 2;
     // Dashes are nominally 3 dots, accept from 2
     constexpr double MinDashDotRatio = 2.0;
     // Word gaps are nominally 7/3 of character gaps
     constexpr double MinWordCharRatio = 1.6;
 
+    double median(QList<double> pValues)
+    {
+        std::sort(pValues.begin(), pValues.end());
+        const qsizetype middle = pValues.size() / 2;
+        return (pValues.size() % 2) ? pValues[middle] : (pValues[middle - 1] + pValues[middle]) / 2.0;
+    }
+
     ///
     /// \brief splitTwo finds two groups of values (two-means clustering)
+    /// \param pLow typical short value: median (a single clumsy value barely
+    /// moves it) or mean of the short group
+    /// \param pHigh typical long value
+    /// \param pSmallest number of values in the smaller group
     /// \return true if both groups exist and are at least pMinRatio apart
     ///
-    bool splitTwo(const QList<double>& pValues, double pMinRatio, double& pLow, double& pHigh)
+    bool splitTwo(const QList<double>& pValues, double pMinRatio, double& pLow, double& pHigh,
+                  qsizetype& pSmallest, bool pMedian = true)
     {
         if (pValues.isEmpty())
             return false;
@@ -73,9 +110,35 @@ namespace
         }
         if (high < pMinRatio * low)
             return false;
-        pLow = low;
-        pHigh = high;
+        const double threshold = (low + high) / 2.0;
+        QList<double> lows, highs;
+        for (double value : pValues)
+            (value < threshold ? lows : highs).append(value);
+        pLow = pMedian ? median(lows) : low;
+        pHigh = pMedian ? median(highs) : high;
+        pSmallest = qMin(lows.size(), highs.size());
         return true;
+    }
+
+    // A group of elements needs this many values before a large change is
+    // trusted: a single clumsy element must not be taken as a new speed.
+    // Word gaps are rare, a single one is enough for the silences.
+    constexpr qsizetype MinElementsForJump = 3;
+    constexpr qsizetype MinSilencesForJump = 1;
+
+    ///
+    /// \brief follow moves both estimates toward new values: at once when the
+    /// change is large and trusted, smoothly otherwise
+    ///
+    void follow(double& pShort, double& pLong, double pNewShort, double pNewLong,
+                bool pTrusted, double pSmoothing)
+    {
+        const bool jump = pTrusted
+                       && (pNewShort > JumpRatio * pShort || pNewShort * JumpRatio < pShort
+                           || pNewLong > JumpRatio * pLong || pNewLong * JumpRatio < pLong);
+        const double rate = jump ? 1.0 : pSmoothing;
+        pShort += rate * (pNewShort - pShort);
+        pLong += rate * (pNewLong - pLong);
     }
 
     ///
@@ -199,8 +262,18 @@ void KeyDecoder::keyEdge(bool pDown, qint64 pTimeMs)
         armTimer();
         return;
     }
-    learnElement(duration);
-    m_pattern += (duration < dotDashThreshold()) ? u'.' : u'-';
+    m_patternDurations.append(duration);
+    if (learnElement(duration))
+    {
+        // New speed: the elements already keyed are classified again
+        m_pattern.clear();
+        for (double element : std::as_const(m_patternDurations))
+            m_pattern += (element < dotDashThreshold()) ? u'.' : u'-';
+    }
+    else
+    {
+        m_pattern += (duration < dotDashThreshold()) ? u'.' : u'-';
+    }
     m_lastUp = pTimeMs;
     emit symbolProgress(m_pattern);
     const double wpm = speed();
@@ -221,6 +294,7 @@ void KeyDecoder::advanceTo(qint64 pTimeMs)
     {
         const QString pattern = m_pattern;
         m_pattern.clear();
+        m_patternDurations.clear();
         m_wordPending = true;
         emit charDecoded(MorseCodec::decode(pattern), pattern);
     }
@@ -235,6 +309,7 @@ void KeyDecoder::advanceTo(qint64 pTimeMs)
 void KeyDecoder::clear()
 {
     m_pattern.clear();
+    m_patternDurations.clear();
     m_wordPending = false;
     m_gapTimer.stop();
 }
@@ -246,28 +321,60 @@ void KeyDecoder::clear()
 /// enough to lock on a new speed. Otherwise the matching estimate drifts and
 /// the other one follows with the nominal 1:3 ratio.
 ///
-void KeyDecoder::learnElement(double pDuration)
+bool KeyDecoder::learnElement(double pDuration)
 {
     if (!m_autoAdapt)
-        return;
+        return false;
     // A very long press is the key held down, not a dash
     if (pDuration > 5.0 * m_dash)
-        return;
+        return false;
+    const Adaptation& adaptation = Adaptations[static_cast<int>(m_reactivity)];
     m_history.append(pDuration);
-    if (m_history.size() > HistorySize)
+    while (m_history.size() > adaptation.historySize)
         m_history.removeFirst();
 
-    const double previousUnit = unit();
-    double low, high;
-    if (splitTwo(m_history, MinDashDotRatio, low, high))
+    // The recent elements show another speed: older ones would only slow
+    // down the new lock
+    bool relock = false;
+    const QList<double> recent = m_history.mid(qMax(0, m_history.size() - RecentElements));
+    double recentDot, recentDash;
+    qsizetype recentSmallest;
+    if (splitTwo(recent, MinDashDotRatio, recentDot, recentDash, recentSmallest)
+        && recentSmallest >= MinRecentPerGroup)
     {
-        m_dot = low;
-        m_dash = high;
+        const bool faster = recentDot * JumpRatio < m_dot && recentDash * JumpRatio < m_dash;
+        const bool slower = recentDot > JumpRatio * m_dot && recentDash > JumpRatio * m_dash;
+        if (faster || slower)
+        {
+            relock = true;
+            m_history = recent;
+        }
+    }
+
+    const double previousUnit = unit();
+    const bool warmingUp = relock || m_history.size() < WarmUpElements;
+    const Adaptation& fast = Adaptations[static_cast<int>(Reactivity::Fast)];
+    double low, high;
+    qsizetype smallest;
+    if (splitTwo(m_history, MinDashDotRatio, low, high, smallest, adaptation.median))
+    {
+        follow(m_dot, m_dash, low, high, smallest >= MinElementsForJump || warmingUp || !adaptation.median,
+               warmingUp ? fast.smoothing : adaptation.smoothing);
     }
     else
     {
         // Only one kind of element lately
-        drift(pDuration, m_dot, m_dash, 3.0, DriftRate);
+        drift(pDuration, m_dot, m_dash, 3.0, warmingUp ? fast.driftRate : adaptation.driftRate);
+    }
+    if (relock)
+    {
+        // Silences learnt before the lock were measured with the old speed,
+        // some of them wrongly: start again from the nominal spacing
+        m_gap = unit();
+        m_charGap = 3.0 * unit();
+        m_wordGap = 7.0 * unit();
+        m_silences.clear();
+        return true;
     }
     // The same sender spaces characters and words in proportion
     const double scale = unit() / previousUnit;
@@ -275,13 +382,14 @@ void KeyDecoder::learnElement(double pDuration)
     m_wordGap *= scale;
     for (double& silence : m_silences)
         silence *= scale;
+    return false;
 }
 
 void KeyDecoder::learnGap(double pDuration)
 {
     if (!m_autoAdapt)
         return;
-    m_gap += DriftRate * (pDuration - m_gap);
+    m_gap += Adaptations[static_cast<int>(m_reactivity)].driftRate * (pDuration - m_gap);
     // Keep the gap consistent with the element speed
     m_gap = std::clamp(m_gap, 0.6 * unit(), 1.4 * unit());
 }
@@ -297,19 +405,16 @@ void KeyDecoder::learnSilence(double pDuration)
     // Pause in the conversation, not a word gap
     if (pDuration > qMax(5.0 * m_wordGap, 3000.0))
         return;
+    const Adaptation& adaptation = Adaptations[static_cast<int>(m_reactivity)];
     m_silences.append(pDuration);
-    if (m_silences.size() > HistorySize)
+    while (m_silences.size() > adaptation.historySize)
         m_silences.removeFirst();
     double low, high;
-    if (splitTwo(m_silences, MinWordCharRatio, low, high))
-    {
-        m_charGap = low;
-        m_wordGap = high;
-    }
+    qsizetype smallest;
+    if (splitTwo(m_silences, MinWordCharRatio, low, high, smallest))
+        follow(m_charGap, m_wordGap, low, high, smallest >= MinSilencesForJump, adaptation.smoothing);
     else
-    {
-        drift(pDuration, m_charGap, m_wordGap, 7.0 / 3.0, DriftRate);
-    }
+        drift(pDuration, m_charGap, m_wordGap, 7.0 / 3.0, adaptation.driftRate);
 }
 
 ///

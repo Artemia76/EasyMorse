@@ -130,6 +130,23 @@ Page {
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
+                    RowLayout {
+                        enabled: MorseSettings.decoderAutoAdapt
+                        Layout.fillWidth: true
+                        Label { text: qsTr("Reactivity") }
+                        ComboBox {
+                            model: [qsTr("Fast"), qsTr("Normal"), qsTr("Stable")]
+                            currentIndex: MorseSettings.decoderReactivity
+                            onActivated: (index) => MorseSettings.decoderReactivity = index
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Label {
+                        text: qsTr("Fast follows speed changes sooner, Stable is less disturbed by clumsy keying. Large speed changes are always followed.")
+                        opacity: 0.7
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
                 }
             }
 

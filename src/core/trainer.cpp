@@ -108,6 +108,7 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     }
     applyDecoderMode();
     connect(m_settings, &Settings::decoderAutoAdaptChanged, this, &Trainer::applyDecoderMode);
+    connect(m_settings, &Settings::decoderReactivityChanged, this, &Trainer::applyDecoderMode);
     connect(m_settings, &Settings::charSpeedChanged, this, &Trainer::applyDecoderMode);
 }
 
@@ -248,6 +249,7 @@ void Trainer::applyDecoderMode()
 {
     const bool autoAdapt = m_settings->decoderAutoAdapt();
     m_decoder.setAutoAdapt(autoAdapt);
+    m_decoder.setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
     // A locked decoder expects the character speed
     if (!autoAdapt)
         m_decoder.setSpeed(m_settings->charSpeed());

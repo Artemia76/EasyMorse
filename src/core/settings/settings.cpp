@@ -42,6 +42,7 @@ namespace Key
     constexpr const char* SerialEnabled = "serial/PortEnable";
     constexpr const char* SerialPort = "serial/PortName";
     constexpr const char* DecoderAutoAdapt = "decoder/AutoAdapt";
+    constexpr const char* DecoderReactivity = "decoder/Reactivity";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
     constexpr const char* DecoderGapMs = "decoder/GapMs";
@@ -64,6 +65,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_serialEnabled = m_store->value(Key::SerialEnabled, false).toBool();
     m_serialPort = m_store->value(Key::SerialPort).toString();
     m_decoderAutoAdapt = m_store->value(Key::DecoderAutoAdapt, true).toBool();
+    m_decoderReactivity = qBound(0, m_store->value(Key::DecoderReactivity, 1).toInt(), 2);
 }
 
 Settings::~Settings() = default;
@@ -148,6 +150,12 @@ void Settings::setDecoderAutoAdapt(bool pOn)
 {
     if (store(Key::DecoderAutoAdapt, m_decoderAutoAdapt, pOn))
         emit decoderAutoAdaptChanged();
+}
+
+void Settings::setDecoderReactivity(int pReactivity)
+{
+    if (store(Key::DecoderReactivity, m_decoderReactivity, qBound(0, pReactivity, 2)))
+        emit decoderReactivityChanged();
 }
 
 void Settings::decoderEstimates(double& pDotMs, double& pDashMs, double& pGapMs) const

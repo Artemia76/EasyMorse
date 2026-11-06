@@ -93,11 +93,71 @@ namespace
         decoder->setSpeed(pWpm);
         return decoder;
     }
+
+    ///
+    /// \brief clumsy keying: random timing errors plus a badly timed element or
+    /// silence every 6 to 8 elements (dot too long, dash too short, long pause)
+    ///
+    QList<Edge> clumsyKeying(const QString& pText, int pWpm, quint32 pSeed)
+    {
+        QList<Edge> edges = keying(pText, MorseTiming::fromSpeed(pWpm, pWpm, false), 0.2, 0.0, pSeed);
+        QRandomGenerator random(pSeed + 1000);
+        QList<Edge> result;
+        double shift = 0.0;
+        int next = 6 + random.bounded(3);
+        for (qsizetype i = 0; i < edges.size(); ++i)
+        {
+            Edge edge = edges[i];
+            edge.time += shift;
+            if (!edge.down && i > 0 && --next == 0)
+            {
+                // Stretch or shrink this element by 40 to 70 %
+                const double duration = edges[i].time - edges[i - 1].time;
+                const double factor = random.bounded(2) ? 1.4 + 0.3 * random.generateDouble()
+                                                        : 0.6 - 0.1 * random.generateDouble();
+                const double change = duration * (factor - 1.0);
+                edge.time += change;
+                shift += change;
+                next = 6 + random.bounded(3);
+            }
+            result.append(edge);
+        }
+        return result;
+    }
+
+    ///
+    /// \brief largest relative error of the speed estimate after the first word
+    ///
+    double worstSpeedError(KeyDecoder::Reactivity pReactivity, int pWpm, quint32 pSeed)
+    {
+        auto decoder = makeDecoder(pWpm);
+        decoder->setReactivity(pReactivity);
+        const QList<Edge> edges = clumsyKeying("PARIS CQ CQ DE F4IKZ F4IKZ PSE K TNX FER QSO 73", pWpm, pSeed);
+        const double warmUp = edges.size() / 8.0;
+        double worst = 0.0;
+        int count = 0;
+        QObject context;
+        QObject::connect(decoder.get(), &KeyDecoder::symbolProgress, &context, [&] {
+            if (++count > warmUp)
+                worst = qMax(worst, qAbs(decoder->speed() - pWpm) / pWpm);
+        });
+        decode(*decoder, edges);
+        return worst;
+    }
 }
 
 class TestKeyDecoder : public QObject
 {
     Q_OBJECT
+
+private:
+    static void reactivities()
+    {
+        QTest::addColumn<KeyDecoder::Reactivity>("reactivity");
+        QTest::newRow("fast") << KeyDecoder::Reactivity::Fast;
+        QTest::newRow("normal") << KeyDecoder::Reactivity::Normal;
+        QTest::newRow("stable") << KeyDecoder::Reactivity::Stable;
+    }
 
 private slots:
     void decodesAtNominalSpeed()
@@ -120,25 +180,34 @@ private slots:
             QVERIFY2(latency <= 3.0 * unit + 5.0, qPrintable(QString("latency %1 ms").arg(latency)));
     }
 
+    void locksOnAFasterSender_data() { reactivities(); }
     void locksOnAFasterSender()
     {
+        QFETCH(KeyDecoder::Reactivity, reactivity);
         auto decoder = makeDecoder(12);
+        decoder->setReactivity(reactivity);
         const auto result = decode(*decoder, keying("PARIS PARIS PARIS", MorseTiming::fromSpeed(30, 30, false)));
         QCOMPARE(result.text, QString("PARIS PARIS PARIS"));
         QVERIFY2(qAbs(decoder->speed() - 30.0) < 2.0, qPrintable(QString::number(decoder->speed())));
     }
 
+    void locksOnASlowerSender_data() { reactivities(); }
     void locksOnASlowerSender()
     {
+        QFETCH(KeyDecoder::Reactivity, reactivity);
         auto decoder = makeDecoder(25);
+        decoder->setReactivity(reactivity);
         const auto result = decode(*decoder, keying("PARIS PARIS PARIS", MorseTiming::fromSpeed(8, 8, false)));
         QVERIFY2(result.text.endsWith("PARIS PARIS"), qPrintable(result.text));
         QVERIFY2(qAbs(decoder->speed() - 8.0) < 1.0, qPrintable(QString::number(decoder->speed())));
     }
 
+    void followsASpeedChangeInsideAMessage_data() { reactivities(); }
     void followsASpeedChangeInsideAMessage()
     {
+        QFETCH(KeyDecoder::Reactivity, reactivity);
         auto decoder = makeDecoder(15);
+        decoder->setReactivity(reactivity);
         QList<Edge> edges = keying("PARIS PARIS", MorseTiming::fromSpeed(15, 15, false));
         edges += keying("PARIS PARIS", MorseTiming::fromSpeed(25, 25, false), 0.0, edges.last().time + 1000.0);
         const auto result = decode(*decoder, edges);
@@ -193,6 +262,21 @@ private slots:
         edges.insert(3, {false, edges[1].time + 23.0});
         const auto result = decode(*decoder, edges);
         QCOMPARE(result.text, QString("EE"));
+    }
+
+    void clumsyKeyingBarelyMovesTheSpeed()
+    {
+        // Average over several keyings of the worst speed error after warm up
+        double total[3] = {};
+        constexpr int Runs = 10;
+        for (quint32 seed = 1; seed <= Runs; ++seed)
+            for (int r = 0; r < 3; ++r)
+                total[r] += worstSpeedError(static_cast<KeyDecoder::Reactivity>(r), 15, seed);
+        const double fast = total[0] / Runs, normal = total[1] / Runs, stable = total[2] / Runs;
+        qInfo("worst speed error: fast %.1f %%, normal %.1f %%, stable %.1f %%",
+              100 * fast, 100 * normal, 100 * stable);
+        QVERIFY(normal < fast);
+        QVERIFY(stable < normal);
     }
 
     void unknownPatternIsReported()

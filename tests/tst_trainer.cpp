@@ -115,6 +115,8 @@ private slots:
         QVERIFY(!trainer.decoder()->autoAdapt());
         settings.setDecoderAutoAdapt(true);
         QVERIFY(trainer.decoder()->autoAdapt());
+        settings.setDecoderReactivity(2);
+        QCOMPARE(trainer.decoder()->reactivity(), KeyDecoder::Reactivity::Stable);
     }
 
     void decoderEstimatesAreSaved()

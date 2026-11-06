@@ -30,6 +30,7 @@ private slots:
         QVERIFY(settings.audioDevice().isEmpty());
         QVERIFY(!settings.serialEnabled());
         QVERIFY(settings.decoderAutoAdapt());
+        QCOMPARE(settings.decoderReactivity(), 1);
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 0.0);
@@ -56,6 +57,8 @@ private slots:
         QCOMPARE(settings.noiseLevel(), 0.0);
         settings.setCharSpeed(1000);
         QCOMPARE(settings.charSpeed(), Settings::MaxSpeed);
+        settings.setDecoderReactivity(7);
+        QCOMPARE(settings.decoderReactivity(), 2);
     }
 
     void persists()

@@ -57,6 +57,8 @@ class Settings : public QObject
     Q_PROPERTY(QString serialPort READ serialPort WRITE setSerialPort NOTIFY serialPortChanged)
     // Decoder
     Q_PROPERTY(bool decoderAutoAdapt READ decoderAutoAdapt WRITE setDecoderAutoAdapt NOTIFY decoderAutoAdaptChanged)
+    // 0 fast, 1 normal, 2 stable: see KeyDecoder::Reactivity
+    Q_PROPERTY(int decoderReactivity READ decoderReactivity WRITE setDecoderReactivity NOTIFY decoderReactivityChanged)
 
 public:
     static constexpr int MinFrequency = 200;
@@ -83,6 +85,7 @@ public:
     bool    serialEnabled() const { return m_serialEnabled; }
     QString serialPort() const { return m_serialPort; }
     bool    decoderAutoAdapt() const { return m_decoderAutoAdapt; }
+    int     decoderReactivity() const { return m_decoderReactivity; }
 
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
@@ -96,6 +99,7 @@ public:
     void    setSerialEnabled(bool pOn);
     void    setSerialPort(const QString& pName);
     void    setDecoderAutoAdapt(bool pOn);
+    void    setDecoderReactivity(int pReactivity);
 
     ///
     /// \brief decoder estimates learnt in the previous session (0 when unknown)
@@ -116,6 +120,7 @@ signals:
     void    serialEnabledChanged();
     void    serialPortChanged();
     void    decoderAutoAdaptChanged();
+    void    decoderReactivityChanged();
 
 private:
     template <typename T>
@@ -134,6 +139,7 @@ private:
     bool        m_serialEnabled;
     QString     m_serialPort;
     bool        m_decoderAutoAdapt;
+    int         m_decoderReactivity;
 };
 
 #endif // SETTINGS_H

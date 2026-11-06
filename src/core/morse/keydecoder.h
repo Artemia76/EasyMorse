@@ -46,6 +46,19 @@ public:
     // Shorter key presses are contact bounces and are ignored
     static constexpr qint64 MinElementMs = 10;
 
+    ///
+    /// \brief How fast the speed estimate follows the sender. Faster follows
+    /// speed changes sooner, slower is less disturbed by clumsy keying. Large
+    /// speed changes are always followed at once.
+    ///
+    enum class Reactivity
+    {
+        Fast,
+        Normal,
+        Stable
+    };
+    Q_ENUM(Reactivity)
+
     explicit KeyDecoder(QObject* parent = nullptr);
 
     ///
@@ -68,6 +81,9 @@ public:
     ///
     void    setAutoAdapt(bool pAutoAdapt) { m_autoAdapt = pAutoAdapt; }
     bool    autoAdapt() const { return m_autoAdapt; }
+
+    void        setReactivity(Reactivity pReactivity) { m_reactivity = pReactivity; }
+    Reactivity  reactivity() const { return m_reactivity; }
 
     ///
     /// \brief when on (default), an internal timer ends characters and words
@@ -113,7 +129,10 @@ signals:
     void    speedChanged(double pWpm);
 
 private:
-    void    learnElement(double pDuration);
+    ///
+    /// \return true if the decoder relocked on a new speed
+    ///
+    bool    learnElement(double pDuration);
     void    learnGap(double pDuration);
     void    learnSilence(double pDuration);
     void    armTimer();
@@ -122,11 +141,13 @@ private:
     QTimer          m_gapTimer;
     bool            m_autoTimer = true;
     bool            m_autoAdapt = true;
+    Reactivity      m_reactivity = Reactivity::Normal;
     bool            m_down = false;
     bool            m_wordPending = false;
     qint64          m_lastDown = 0;
     qint64          m_lastUp = -1;
     QString         m_pattern;
+    QList<double>   m_patternDurations; // elements of the character being keyed
     QList<double>   m_history;      // last element durations
     double          m_dot = 100.0;
     double          m_dash = 300.0;
