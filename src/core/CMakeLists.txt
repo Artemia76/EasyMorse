@@ -61,3 +61,6 @@ if(TARGET Qt6::SerialPort)
     target_link_libraries(easymorse_core PUBLIC Qt6::SerialPort)
     target_compile_definitions(easymorse_core PUBLIC EASYMORSE_HAS_SERIALPORT)
 endif()
+
+# Metatypes let the QML application expose the core classes (QML_FOREIGN)
+qt_extract_metatypes(easymorse_core)

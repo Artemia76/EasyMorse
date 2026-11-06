@@ -1,23 +1,6 @@
 # EasyMorse desktop application (Qt Widgets)
 
 # =======================================================================
-# Version
-
-set(EASYMORSE_GIT_REVISION "unknown")
-find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    execute_process(
-        COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
-        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-        OUTPUT_VARIABLE EASYMORSE_GIT_REVISION
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-    )
-endif()
-
-configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h" @ONLY)
-
-# =======================================================================
 # Executable
 
 qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
@@ -27,12 +10,11 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     gui/options.cpp gui/options.h gui/options.ui
 
     "${PROJECT_SOURCE_DIR}/resources.qrc"
-    "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h"
 )
 
 target_include_directories(easymorse PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_BINARY_DIR}/generated"
+    "${PROJECT_BINARY_DIR}/generated"
 )
 
 target_link_libraries(easymorse PRIVATE
@@ -61,7 +43,7 @@ endif()
 
 # Translations are compiled and embedded under :/i18n
 qt_add_translations(easymorse
-    SOURCE_TARGETS easymorse easymorse_core
+    SOURCE_TARGETS easymorse easymorse_core easymorse-qml
     TS_FILES "${PROJECT_SOURCE_DIR}/intl/easymorse_fr_FR.ts"
     RESOURCE_PREFIX /i18n
 )

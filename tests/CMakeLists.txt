@@ -19,3 +19,11 @@ easymorse_add_test(tst_keydecoder SOURCES tst_keydecoder.cpp LIBRARIES easymorse
 easymorse_add_test(tst_keyer SOURCES tst_keyer.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_settings SOURCES tst_settings.cpp LIBRARIES easymorse_core)
 easymorse_add_test(tst_trainer SOURCES tst_trainer.cpp LIBRARIES easymorse_core)
+
+# The QML interface loads every page at desktop and phone size without
+# QML warnings (silent audio, settings in the build tree)
+add_test(NAME qml_self_test COMMAND easymorse-qml --self-test)
+set_tests_properties(qml_self_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;EASYMORSE_AUDIO_BACKEND=null;XDG_CONFIG_HOME=${CMAKE_CURRENT_BINARY_DIR}/qml-self-test-config"
+    TIMEOUT 120
+)

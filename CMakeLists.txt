@@ -48,7 +48,7 @@ option(EASYMORSE_BUILD_TESTS "Build the unit tests" ON)
 # =======================================================================
 # Dependencies
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Widgets LinguistTools
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Widgets Qml Quick QuickControls2 LinguistTools
                     OPTIONAL_COMPONENTS SerialPort)
 if(NOT TARGET Qt6::SerialPort)
     message(STATUS "Qt Serial Port not found: serial port keys disabled")
@@ -72,10 +72,28 @@ else()
 endif()
 
 # =======================================================================
+# Version
+
+set(EASYMORSE_GIT_REVISION "unknown")
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+        OUTPUT_VARIABLE EASYMORSE_GIT_REVISION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+endif()
+
+configure_file(src/app/version.h.in "${PROJECT_BINARY_DIR}/generated/version.h" @ONLY)
+
+# =======================================================================
 # Components
 
 add_subdirectory(src/core)  # audio, Morse logic, settings: no user interface
-add_subdirectory(src/app)   # desktop application
+add_subdirectory(src/qml)   # QML application (desktop and mobile)
+add_subdirectory(src/app)   # Qt Widgets application, being replaced by the QML one
 
 if(EASYMORSE_BUILD_TESTS)
     enable_testing()
