@@ -38,8 +38,6 @@
 #include <QTimer>
 
 #include <cstdio>
-#include <functional>
-#include <memory>
 
 #include "keyboardkeyer.h"
 #include "logmodel.h"
@@ -65,38 +63,60 @@ namespace
     }
 
     ///
-    /// \brief selfTest shows every page at desktop and phone sizes, optionally
+    /// \brief SelfTest shows every page at desktop and phone sizes, optionally
     /// saving screenshots, then quits with the number of QML warnings
     ///
-    void selfTest(QQuickWindow* pWindow, const QString& pScreenshotDir)
+    class SelfTest : public QObject
     {
-        struct Step { int width; int height; int page; };
-        auto steps = std::make_shared<QList<Step>>();
-        const int pages = pWindow->property("pageCount").toInt();
-        for (const auto& [width, height] : {std::pair{1100, 720}, std::pair{400, 820}})
-            for (int page = 0; page < pages + (width < 800 ? 1 : 0); ++page)
-                steps->append({width, height, page});
-        auto next = std::make_shared<std::function<void(qsizetype)>>();
-        *next = [=](qsizetype pIndex) {
-            if (pIndex > 0 && !pScreenshotDir.isEmpty())
+    public:
+        SelfTest(QQuickWindow* pWindow, const QString& pScreenshotDir)
+            : QObject(pWindow)
+            , m_window(pWindow)
+            , m_screenshotDir(pScreenshotDir)
+        {
+            const int pages = pWindow->property("pageCount").toInt();
+            for (const auto& [width, height] : {std::pair{1100, 720}, std::pair{400, 820}})
             {
-                const Step& shown = steps->at(pIndex - 1);
-                pWindow->grabWindow().save(QDir(pScreenshotDir).filePath(
+                // Phones have an extra page for the sound and speed controls
+                for (int page = 0; page < pages + (width < 800 ? 1 : 0); ++page)
+                    m_steps.append({width, height, page});
+            }
+            QTimer::singleShot(500, this, [this] { next(); });
+        }
+
+    private:
+        struct Step
+        {
+            int width;
+            int height;
+            int page;
+        };
+
+        void next()
+        {
+            if (m_index > 0 && !m_screenshotDir.isEmpty())
+            {
+                const Step& shown = m_steps.at(m_index - 1);
+                m_window->grabWindow().save(QDir(m_screenshotDir).filePath(
                     QString("%1-page%2.png").arg(shown.width < 800 ? "phone" : "desktop").arg(shown.page)));
             }
-            if (pIndex == steps->size())
+            if (m_index == m_steps.size())
             {
                 std::printf("self test: %d QML warning(s)\n", s_qmlWarnings);
                 QCoreApplication::exit(s_qmlWarnings);
                 return;
             }
-            const Step& step = steps->at(pIndex);
-            pWindow->resize(step.width, step.height);
-            pWindow->setProperty("currentPage", step.page);
-            QTimer::singleShot(400, pWindow, [=] { (*next)(pIndex + 1); });
-        };
-        QTimer::singleShot(500, pWindow, [=] { (*next)(0); });
-    }
+            const Step& step = m_steps.at(m_index++);
+            m_window->resize(step.width, step.height);
+            m_window->setProperty("currentPage", step.page);
+            QTimer::singleShot(400, this, [this] { next(); });
+        }
+
+        QQuickWindow*   m_window;
+        QString         m_screenshotDir;
+        QList<Step>     m_steps;
+        qsizetype       m_index = 0;
+    };
 }
 
 int main(int argc, char *argv[])
@@ -149,6 +169,6 @@ int main(int argc, char *argv[])
     trainer.start();
 
     if (selfTesting)
-        selfTest(qobject_cast<QQuickWindow*>(engine.rootObjects().constFirst()), parser.value(screenshotOption));
+        new SelfTest(qobject_cast<QQuickWindow*>(engine.rootObjects().constFirst()), parser.value(screenshotOption));
     return app.exec();
 }
