@@ -1,15 +1,37 @@
-# EasyMorse desktop application (Qt Widgets)
+# EasyMorse application: QML user interface for desktop and mobile
+
+# QML files live in the qml/ subdirectory
+if(QT_KNOWN_POLICY_QTP0004)
+    qt_policy(SET QTP0004 NEW)
+endif()
 
 # =======================================================================
 # Executable
 
 qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     main.cpp
-
-    gui/mainwindow.cpp gui/mainwindow.h gui/mainwindow.ui
-    gui/options.cpp gui/options.h gui/options.ui
-
     "${PROJECT_SOURCE_DIR}/resources.qrc"
+)
+
+qt_add_qml_module(easymorse
+    URI EasyMorse
+    VERSION 1.0
+    QML_FILES
+        qml/Main.qml
+        qml/ControlsPanel.qml
+        qml/LabeledSlider.qml
+        qml/KeyPad.qml
+        qml/SendPage.qml
+        qml/KeyPage.qml
+        qml/GlossaryPage.qml
+        qml/LogPage.qml
+        qml/OptionsPage.qml
+    SOURCES
+        qmltypes.h
+        glossarymodel.cpp glossarymodel.h
+        keyboardkeyer.cpp keyboardkeyer.h
+        logmodel.cpp logmodel.h
+        uisettings.cpp uisettings.h
 )
 
 target_include_directories(easymorse PRIVATE
@@ -19,7 +41,9 @@ target_include_directories(easymorse PRIVATE
 
 target_link_libraries(easymorse PRIVATE
     easymorse_core
-    Qt6::Widgets
+    Qt6::Qml
+    Qt6::Quick
+    Qt6::QuickControls2
 )
 
 set_target_properties(easymorse PROPERTIES
@@ -43,7 +67,7 @@ endif()
 
 # Translations are compiled and embedded under :/i18n
 qt_add_translations(easymorse
-    SOURCE_TARGETS easymorse easymorse_core easymorse-qml
+    SOURCE_TARGETS easymorse easymorse_core
     TS_FILES "${PROJECT_SOURCE_DIR}/intl/easymorse_fr_FR.ts"
     RESOURCE_PREFIX /i18n
 )
@@ -69,7 +93,8 @@ endif()
 install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/README.md" DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 if(EASYMORSE_DEPLOY_QT)
-    qt_generate_deploy_app_script(
+    # Also deploys the QML modules used by the interface
+    qt_generate_deploy_qml_app_script(
         TARGET easymorse
         OUTPUT_SCRIPT EASYMORSE_DEPLOY_SCRIPT
     )

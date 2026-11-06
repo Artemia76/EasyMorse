@@ -2,8 +2,9 @@
 
 EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
 play any text in Morse (with Farnsworth timing, background noise and filter),
-key Morse yourself with the keyboard (Alt key) or a straight key wired to a
-serial port, and watch it being decoded.
+key Morse yourself with the keyboard (Alt key), the on-screen key (mouse or
+touch) or a straight key wired to a serial port, and watch it being decoded
+in real time, whatever your speed.
 
 Future versions will add peer-to-peer practice sessions between EasyMorse
 users and Android/iOS support.
@@ -28,17 +29,21 @@ The audio synthesizer is derived from
 
 - CMake >= 3.21 (3.27+ to build the Windows Inno Setup installer) and Ninja
 - A C++20 compiler (GCC 11+, Clang 14+, MSVC 2022)
-- Qt >= 6.7 with the *Qt Serial Port* module (and *Qt Linguist tools*)
+- Qt >= 6.7: Qt Base, Qt Declarative (Qt Quick, Quick Controls), Qt Linguist tools,
+  and optionally Qt Serial Port for a serial key
 - Audio uses [miniaudio](https://miniaud.io), bundled in `3rdparty/`: nothing to install
 
 ### Arch Linux
 
-    sudo pacman -S base-devel cmake ninja qt6-base qt6-serialport qt6-tools
+    sudo pacman -S base-devel cmake ninja qt6-base qt6-declarative qt6-serialport qt6-tools
 
 ### Debian 13+ / Ubuntu 25.04+
 
-    sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-serialport-dev \
-        qt6-tools-dev qt6-l10n-tools
+    sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-declarative-dev \
+        qt6-serialport-dev qt6-tools-dev qt6-l10n-tools \
+        qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
+        qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript \
+        qml6-module-qtcore
 
 Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 [Qt online installer](https://www.qt.io/download-qt-installer-oss) or
@@ -46,8 +51,8 @@ Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 
 ### Fedora
 
-    sudo dnf install gcc-c++ cmake ninja-build qt6-qtbase-devel qt6-qtserialport-devel \
-        qt6-qttools-devel
+    sudo dnf install gcc-c++ cmake ninja-build qt6-qtbase-devel qt6-qtdeclarative-devel \
+        qt6-qtserialport-devel qt6-qttools-devel
 
 ### macOS
 
@@ -84,6 +89,9 @@ Useful options:
     cmake --install out/build/release --prefix /usr/local     # Linux
     cd out/build/release && cpack                             # create packages
 
+`easymorse --self-test [--screenshots <dir>]` shows every page at desktop and
+phone size and fails on QML warnings (it runs in `ctest`).
+
 `cpack` produces a `.deb` and a `.tar.gz` on Linux, an Inno Setup installer and
 a `.zip` on Windows, and a `.dmg` on macOS. The same packages are built by the
 GitHub Actions workflow for every push.
@@ -93,7 +101,7 @@ GitHub Actions workflow for every push.
 | Path | Content |
 |------|---------|
 | `src/core/` | `easymorse_core` library, no user interface: audio engine (`audio/`), Morse codec, sequencer and streaming decoder (`morse/`), keys (`keyer/`), `Settings` and `Trainer`, the application logic used by the interfaces |
-| `src/app/` | Qt Widgets desktop application |
+| `src/app/` | Application: QML interface (`qml/`, desktop and phone layouts) and the models it uses |
 | `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
 | `3rdparty/` | Bundled libraries (miniaudio) |
 | `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |
