@@ -34,7 +34,8 @@
 #include <QDir>
 #include <QLibraryInfo>
 
-#include "audio/AudioEngine.h"
+#include "settings/settings.h"
+#include "trainer.h"
 
 int main(int argc, char *argv[])
 {
@@ -67,9 +68,11 @@ int main(int argc, char *argv[])
         a.setStyleSheet(styleFile.readAll());
         styleFile.close();
     }
-    // The main window opens the sound card chosen in the options
-    AudioEngine audio;
-    MainWindow w(&audio);
+    Settings settings;
+    Trainer trainer(&settings);
+    MainWindow w(&trainer);
     w.show();
+    // Sound card and serial key chosen in the options
+    trainer.start();
     return a.exec();
 }

@@ -48,7 +48,11 @@ option(EASYMORSE_BUILD_TESTS "Build the unit tests" ON)
 # =======================================================================
 # Dependencies
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Widgets SerialPort LinguistTools)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Widgets LinguistTools
+                    OPTIONAL_COMPONENTS SerialPort)
+if(NOT TARGET Qt6::SerialPort)
+    message(STATUS "Qt Serial Port not found: serial port keys disabled")
+endif()
 qt_standard_project_setup(REQUIRES 6.7 I18N_SOURCE_LANGUAGE en I18N_TRANSLATED_LANGUAGES fr_FR)
 set(CMAKE_AUTORCC ON)
 

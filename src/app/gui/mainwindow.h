@@ -31,14 +31,13 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QSettings>
 #include <QTableWidgetItem>
-#include <QTimer>
-#include <QtSerialPort>
-#include "morse/sequencer.h"
-#include "tools/clogger.h"
-#include "morse/keydecoder.h"
 
-#include "audio/AudioEngine.h"
+#include "tools/clogger.h"
+
+class Settings;
+class Trainer;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,7 +48,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-            MainWindow(AudioEngine* pAudio, QWidget *parent = nullptr);
+            MainWindow(Trainer* pTrainer, QWidget *parent = nullptr);
             ~MainWindow();
     bool    PlayMorseMessage(const QString& pMessage);
     void    StopMorseMessage();
@@ -57,8 +56,6 @@ public:
 protected:
     void    keyPressEvent(QKeyEvent* event);
     void    keyReleaseEvent(QKeyEvent* event);
-    void    keyerOn();
-    void    keyerOff();
 
 private slots:
     void    onLog(const QString& pMessage,QColor pColor, CL_DEBUG_LEVEL pLevel);
@@ -66,18 +63,10 @@ private slots:
     void    clearLog();
     void    saveLog();
     void    on_m_pbSend_clicked();
-    void    onFrequencyChanged(int value);
-    void    onVolumeChanged(int value);
-    void    onWordSpeedChanged(int value);
-    void    onNoiseCorChanged(int value);
-    void    onNoiseFilterChanged(int value);
-    void    onFarnsWorthChanged(bool value);
-    void    onCharSpeedChanged(int value);
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
-    void    on_timer();
     void    onCharDecoded(const QString& pText, const QString& pPattern);
     void    updateDecoderStatus();
-    void    onPlaybackFinished();
+    void    onPlayingChanged();
     void    onCharPlayed(int pIndex);
     void    onActionAFOptionsTriggered();
     void    on_rb_filterNone_toggled(bool checked);
@@ -85,45 +74,19 @@ private slots:
     void    on_rb_filterVerbose_toggled(bool checked);
     void    on_cb_filter_currentTextChanged(const QString &arg1);
 
-signals:
-    void    Keyer(bool value);
-
 private:
+    void    bindSettings();
+    void    updateLabels();
+    void    closeEvent(QCloseEvent* pEvent);
+
     Ui::MainWindow*                 ui;
-
-    //AUDIO
-    AudioEngine*                    m_audio;
-
-    //Morse
-    MorseSequencer                  m_sequencer;
-    bool                            m_farnsWorth;
-    QString                         m_playedText;
-    bool                            m_playing_phrase;
-    bool                            m_playing_key;
+    Trainer*                        m_trainer;
+    Settings*                       m_morseSettings;
     CLogger*                        m_log;
-    KeyDecoder                      m_decoder;
     QLabel*                         m_decoderStatus;
-    QString                         m_decoderPattern;
+    QString                         m_playedText;
+    // Window and log settings, specific to this user interface
     QSettings                       m_settings;
     int                             m_maxLine;
-    int                             m_frequency;
-    int                             m_volume;
-    qreal                           m_noiseCorrelation;
-    QSerialPort                     m_serial;
-    int                             m_noiseFilter;
-    int                             m_wordSpeed;
-    int                             m_charSpeed;
-    bool                            m_serialEnable;
-    QString                         m_serialPortName;
-    QString                         m_audioDeviceName;
-    int                             m_audioPeriodMs;
-    QTimer                          m_timer;
-    bool                            m_DSR;
-    void                            initialize();
-    void                            initializeSerial(const QString& pSerialPortName);
-    void                            loadDeviceSettings();
-    void                            loadDecoderSettings(bool pRestoreEstimates);
-    void                            startAudio();
-    void                            closeEvent(QCloseEvent* pEvent);
 };
 #endif // MAINWINDOW_H

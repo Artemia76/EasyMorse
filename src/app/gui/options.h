@@ -23,16 +23,15 @@
 /****************************************************************************
 * options.h is part of EasyMorse project
 *
-* This class define the main window of the application
+* Options dialog: sound card, serial key, decoder and Morse speeds
 * **************************************************************************/
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
 #include <QDialog>
-#include <QSettings>
-#include <QSerialPort>
-#include <QSerialPortInfo>
+
+class Trainer;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Options; }
@@ -43,18 +42,16 @@ class Options : public QDialog
     Q_OBJECT
 
 public:
-    static constexpr int DefaultAudioPeriodMs = 10;
-
-    Options(const QStringList& pAudioDevices, QWidget *parent = nullptr);
+    Options(Trainer* pTrainer, QWidget *parent = nullptr);
     ~Options();
+
 private slots:
     void on_buttonBox_accepted();
+    void updateSpeedLabels();
 
 private:
     Ui::Options*                 ui;
-    QSettings                    m_settings;
-    QString                      m_audioDeviceName;
-    QString                      m_serialPortName;
+    Trainer*                     m_trainer;
 };
 
 #endif // OPTIONS_H

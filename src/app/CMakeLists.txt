@@ -38,7 +38,6 @@ target_include_directories(easymorse PRIVATE
 target_link_libraries(easymorse PRIVATE
     easymorse_core
     Qt6::Widgets
-    Qt6::SerialPort
 )
 
 set_target_properties(easymorse PROPERTIES

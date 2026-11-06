@@ -29,30 +29,28 @@
 #include <gui/mainwindow.h>
 #include "ui_mainwindow.h"
 
-#include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QFileDialog>
-#include <QSerialPortInfo>
 #include <QStatusBar>
 
 #include "version.h"
+#include "settings/settings.h"
+#include "trainer.h"
 #include <gui/options.h>
 
-MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
+MainWindow::MainWindow(Trainer* pTrainer, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_audio(pAudio)
-    , m_sequencer(pAudio)
-    , m_DSR(false)
+    , m_trainer(pTrainer)
+    , m_morseSettings(pTrainer->settings())
 {
     ui->setupUi(this);
     connect(ui->actionafOptions, &QAction::triggered, this, &MainWindow::onActionAFOptionsTriggered);
     // Init window position and size
     m_settings.beginGroup("MainWindow");
     restoreGeometry(m_settings.value("Geometry").toByteArray());
-    //restoreState(m_settings.value("State").toByteArray());
     m_settings.endGroup();
     // Setting Log
     m_log = CLogger::instance();
@@ -91,59 +89,6 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
     m_maxLine = m_settings.value("MaxLine",200).toInt();
     m_settings.endGroup();
 
-    m_settings.beginGroup("Synth");
-
-    //Set Sound Frequency
-    connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
-    m_frequency = m_settings.value("SoundFreq",900).toInt();
-    m_audio->setFrequency(m_frequency);
-
-    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_frequency));
-
-    //Set Sound Volume
-    connect(ui->m_volumeSlider, &QSlider::valueChanged, this, &MainWindow::onVolumeChanged);
-    m_volume = m_settings.value("SoundLevel", 100).toInt();
-    m_audio->setGain(m_volume);
-
-    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_volume));
-
-    //Set NoiseCorrelation
-    connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, &MainWindow::onNoiseCorChanged);
-    m_noiseCorrelation = m_settings.value("NoiseCorrelation",0.0).toReal();
-    m_audio->setNoiseRatio(m_noiseCorrelation);
-    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(m_noiseCorrelation*100));
-    m_audio->noiseOn();
-    //Set noise Filter
-    connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, this, &MainWindow::onNoiseFilterChanged);
-    m_noiseFilter = m_settings.value("NoiseFilter",0).toInt();
-    m_audio->setNoiseCutoff(m_noiseFilter);
-    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 %")).arg(m_noiseFilter));
-
-    m_settings.endGroup();
-    m_settings.beginGroup("Morse");
-
-    //Set FarnsWorth Option
-    connect(ui->m_UseFarnsWorth, &QCheckBox::checkStateChanged, this, &MainWindow::onFarnsWorthChanged);
-    m_farnsWorth = m_settings.value("FarnsWorth",true).toBool();
-    connect(&m_sequencer, &MorseSequencer::finished, this, &MainWindow::onPlaybackFinished);
-    connect(&m_sequencer, &MorseSequencer::charPlayed, this, &MainWindow::onCharPlayed);
-
-    //Set Word Speed
-    connect(ui->m_WordSpeed, &QSlider::valueChanged, this, &MainWindow::onWordSpeedChanged);
-    m_wordSpeed = m_settings.value("WordSpeed", 12).toInt();
-    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
-
-    //Set Char Speed
-    connect(ui->m_CharSpeed, &QSlider::valueChanged, this, &MainWindow::onCharSpeedChanged);
-    m_charSpeed = m_settings.value("CharSpeed", 18).toInt();
-    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
-    m_settings.endGroup();
-
-    loadDeviceSettings();
-    connect(&m_timer, &QTimer::timeout, this, &MainWindow::on_timer);
-    m_timer.setSingleShot(false);
-    m_timer.start(10);
-
     // LogZone Initialize
     ui->m_LogZone->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->m_LogZone, &QPlainTextEdit::customContextMenuRequested, this, &MainWindow::onLogContextMenuRequested);
@@ -164,33 +109,26 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
         ui->m_TableGlossaire->item(i,0)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     }
 
-    // Initialize
-    initialize();
+    bindSettings();
 
-    if (m_serialEnable)
-        initializeSerial(m_serialPortName);
+    // Playback
+    connect(m_trainer, &Trainer::playingChanged, this, &MainWindow::onPlayingChanged);
+    connect(m_trainer, &Trainer::charPlayed, this, &MainWindow::onCharPlayed);
 
-    m_playing_phrase=false;
-    m_playing_key=false;
     // Streaming decoder of the local key
     m_decoderStatus = new QLabel(this);
     statusBar()->addPermanentWidget(m_decoderStatus);
-    connect(this, &MainWindow::Keyer, &m_decoder, &KeyDecoder::keyEdgeNow);
-    connect(&m_decoder, &KeyDecoder::charDecoded, this, &MainWindow::onCharDecoded);
-    connect(&m_decoder, &KeyDecoder::wordGap, this, [this] {
+    connect(m_trainer, &Trainer::charDecoded, this, &MainWindow::onCharDecoded);
+    connect(m_trainer, &Trainer::wordGap, this, [this] {
         ui->m_MorseZone->moveCursor(QTextCursor::End);
         ui->m_MorseZone->insertPlainText(" ");
     });
-    connect(&m_decoder, &KeyDecoder::symbolProgress, this, [this](const QString& pPattern) {
-        m_decoderPattern = pPattern;
-        updateDecoderStatus();
-    });
-    connect(&m_decoder, &KeyDecoder::speedChanged, this, &MainWindow::updateDecoderStatus);
-    loadDecoderSettings(true);
+    connect(m_trainer, &Trainer::decoderPatternChanged, this, &MainWindow::updateDecoderStatus);
+    connect(m_trainer, &Trainer::decoderSpeedChanged, this, &MainWindow::updateDecoderStatus);
+    connect(m_morseSettings, &Settings::decoderAutoAdaptChanged, this, &MainWindow::updateDecoderStatus);
+    updateDecoderStatus();
 
     setWindowTitle(QString(VER_PRODUCTNAME_STR) + " " + QString(VER_PRODUCTVERSION_STR));
-
-    startAudio();
 }
 
 MainWindow::~MainWindow()
@@ -199,12 +137,53 @@ MainWindow::~MainWindow()
 }
 
 ///
+/// \brief MainWindow::bindSettings keeps the sound and speed controls in sync with the settings
+///
+void MainWindow::bindSettings()
+{
+    ui->m_frequencySlider->setValue(m_morseSettings->toneFrequency());
+    ui->m_volumeSlider->setValue(m_morseSettings->volume());
+    ui->m_NoiseCorr->setValue(qRound(m_morseSettings->noiseLevel()*100));
+    ui->m_NoiseFilterSlider->setValue(m_morseSettings->noiseFilter());
+    ui->m_WordSpeed->setValue(m_morseSettings->wordSpeed());
+    ui->m_CharSpeed->setValue(m_morseSettings->charSpeed());
+    ui->m_UseFarnsWorth->setChecked(m_morseSettings->farnsworth());
+    updateLabels();
+
+    connect(ui->m_frequencySlider, &QSlider::valueChanged, m_morseSettings, &Settings::setToneFrequency);
+    connect(ui->m_volumeSlider, &QSlider::valueChanged, m_morseSettings, &Settings::setVolume);
+    connect(ui->m_NoiseCorr, &QSlider::valueChanged, this, [this](int pValue) {
+        m_morseSettings->setNoiseLevel(pValue / 100.0);
+    });
+    connect(ui->m_NoiseFilterSlider, &QSlider::valueChanged, m_morseSettings, &Settings::setNoiseFilter);
+    connect(ui->m_WordSpeed, &QSlider::valueChanged, m_morseSettings, &Settings::setWordSpeed);
+    connect(ui->m_CharSpeed, &QSlider::valueChanged, m_morseSettings, &Settings::setCharSpeed);
+    connect(ui->m_UseFarnsWorth, &QCheckBox::toggled, m_morseSettings, &Settings::setFarnsworth);
+
+    for (auto signal : {&Settings::toneFrequencyChanged, &Settings::volumeChanged, &Settings::noiseLevelChanged,
+                        &Settings::noiseFilterChanged, &Settings::wordSpeedChanged, &Settings::charSpeedChanged})
+        connect(m_morseSettings, signal, this, &MainWindow::updateLabels);
+}
+
+///
+/// \brief MainWindow::updateLabels
+///
+void MainWindow::updateLabels()
+{
+    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_morseSettings->toneFrequency()));
+    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(m_morseSettings->volume()));
+    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(qRound(m_morseSettings->noiseLevel()*100)));
+    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 Hz")).arg(m_morseSettings->noiseFilter()));
+    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_morseSettings->wordSpeed()));
+    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_morseSettings->charSpeed()));
+}
+
+///
 /// \brief MainWindow::closeEvent
 ///
 void MainWindow::closeEvent(QCloseEvent*)
 {
-    if (m_serial.isOpen()) m_serial.close();
-    m_audio->stop();
+    m_trainer->stop();
     m_settings.beginGroup("MainWindow");
     m_settings.setValue("Geometry",saveGeometry());
     m_settings.setValue("State",saveState());
@@ -213,168 +192,6 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.setValue("Level", m_log->DebugLevel);
     m_settings.setValue("MaxLine",m_maxLine);
     m_settings.endGroup();
-    m_settings.beginGroup("Synth");
-    m_settings.setValue("SoundFreq",m_frequency);
-    m_settings.setValue("SoundLevel", m_volume);
-    m_settings.setValue("NoiseCorrelation",m_noiseCorrelation);
-    m_settings.setValue("NoiseFilter",m_noiseFilter);
-    m_settings.endGroup();
-    m_settings.beginGroup("Morse");
-    m_settings.setValue("WordSpeed", m_wordSpeed);
-    m_settings.setValue("FarnsWorth",m_farnsWorth);
-    m_settings.setValue("CharSpeed", m_charSpeed);
-    m_settings.endGroup();
-    m_settings.beginGroup("decoder");
-    m_settings.setValue("DotMs", m_decoder.dotMs());
-    m_settings.setValue("DashMs", m_decoder.dashMs());
-    m_settings.setValue("GapMs", m_decoder.gapMs());
-    m_settings.endGroup();
-}
-
-///
-/// \brief MainWindow::initialize
-///
-void MainWindow::initialize()
-{
-    ui->m_volumeSlider->setValue(m_volume);
-    ui->m_frequencySlider->setValue(m_frequency);
-    ui->m_WordSpeed->setValue(m_wordSpeed);
-    ui->m_NoiseCorr->setValue(qRound(m_noiseCorrelation*100));
-    ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
-    ui->m_UseFarnsWorth->setChecked(m_farnsWorth);
-    ui->m_CharSpeed->setValue(m_charSpeed);
-}
-
-///
-/// \brief MainWindow::initializeSerial
-/// \param pSerialPortName
-///
-void MainWindow::initializeSerial(const QString &pSerialPortName)
-{
-    QSerialPortInfo portInfo;
-    for (auto& serialPort : QSerialPortInfo::availablePorts())
-    {
-        if (serialPort.portName()==pSerialPortName)
-        {
-            portInfo = serialPort;
-        }
-    }
-    if (!portInfo.isNull())
-    {
-        if (m_serial.isOpen()) m_serial.close();
-        m_serial.setPort(portInfo);
-        m_serial.setFlowControl(QSerialPort::NoFlowControl);
-        if (!m_serial.open(QIODevice::ReadWrite))
-        {
-            m_log->log(tr("Failed to open Serial port..."),Qt::red);
-        }
-        m_serial.setDataTerminalReady(true);
-        m_serial.setRequestToSend(false);
-    }
-    else
-    {
-        m_log->log(tr("Serial port %1 not found").arg(pSerialPortName),Qt::darkMagenta);
-    }
-}
-
-///
-/// \brief MainWindow::loadDeviceSettings reads the serial key and sound card settings
-///
-void MainWindow::loadDeviceSettings()
-{
-    m_settings.beginGroup("serial");
-    m_serialEnable = m_settings.value("PortEnable",false).toBool();
-    m_serialPortName = m_settings.value("PortName").toString();
-    m_settings.endGroup();
-    m_settings.beginGroup("audio");
-    m_audioDeviceName = m_settings.value("DeviceName").toString();
-    m_audioPeriodMs = m_settings.value("PeriodMs",Options::DefaultAudioPeriodMs).toInt();
-    m_settings.endGroup();
-}
-
-///
-/// \brief MainWindow::startAudio (re)opens the sound card
-///
-void MainWindow::startAudio()
-{
-    if (!m_audio->start(m_audioDeviceName, m_audioPeriodMs))
-        m_log->log(tr("No sound output, check the audio options"),Qt::red);
-}
-
-///
-/// \brief MainWindow::onVolumeChanged
-/// \param value
-///
-void MainWindow::onVolumeChanged(int value)
-{
-    m_volume = value;
-    m_audio->setGain(m_volume);
-    ui->m_labelSoundLevel->setText(QString(tr("Sound Level = %1 %")).arg(value));
-}
-
-///
-/// \brief MainWindow::onFrequencyChanged
-/// \param value
-///
-void MainWindow::onFrequencyChanged(int value)
-{
-    m_frequency=value;
-    m_audio->setFrequency(value);
-    ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
-}
-
-///
-/// \brief MainWindow::onWordSpeedChanged
-/// \param value
-///
-void MainWindow::onWordSpeedChanged(int value)
-{
-    m_wordSpeed = value;
-    ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
-}
-
-///
-/// \brief MainWindow::onCharSpeedChanged
-/// \param value
-///
-void MainWindow::onCharSpeedChanged(int value)
-{
-    m_charSpeed = value;
-    ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
-    // A decoder locked on the set speed follows the slider
-    if (!m_decoder.autoAdapt())
-        m_decoder.setSpeed(m_charSpeed);
-}
-
-///
-/// \brief MainWindow::onFarnsWorthChanged
-/// \param value
-///
-void MainWindow::onFarnsWorthChanged(bool value)
-{
-    m_farnsWorth = value;
-}
-
-///
-/// \brief MainWindow::onNoiseCorChanged
-/// \param index
-///
-void MainWindow::onNoiseCorChanged(int index)
-{
-    m_noiseCorrelation = static_cast<qreal>(index / 100.0);
-    m_audio->setNoiseRatio(m_noiseCorrelation);
-    ui->m_labelNoiseMixing->setText(QString(tr("Noise Mixing = %1 %")).arg(index));
-}
-
-///
-/// \brief MainWindow::onNoiseFilterChanged
-/// \param index
-///
-void MainWindow::onNoiseFilterChanged(int index)
-{
-    m_noiseFilter = index;
-    m_audio->setNoiseCutoff(m_noiseFilter);
-    ui->m_LowPassFilter->setText(QString(tr("Low Pass Filter = %1 Hz")).arg(index));
 }
 
 ///
@@ -388,7 +205,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 #ifdef QT_DEBUG
         m_log->log("keyPressEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
 #endif
-        keyerOn();
+        m_trainer->manualKeyer()->press();
         grabKeyboard();
         event->accept();
     }
@@ -409,7 +226,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 #ifdef QT_DEBUG
         m_log->log("keyReleaseEvent occured",Qt::darkMagenta,LEVEL_VERBOSE);
 #endif
-        keyerOff();
+        m_trainer->manualKeyer()->release();
         releaseKeyboard();
         event->accept();
     }
@@ -424,7 +241,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 ///
 void MainWindow::on_m_pbSend_clicked()
 {
-    if (!m_playing_phrase)
+    if (!m_trainer->isPlaying())
     {
         PlayMorseMessage(ui->m_leMessage->text());
     }
@@ -441,26 +258,10 @@ void MainWindow::on_m_pbSend_clicked()
 ///
 bool MainWindow::PlayMorseMessage(const QString& pMessage)
 {
-    if (!m_playing_phrase)
-    {
-        if (pMessage.isEmpty()) return false;
-        if (!m_sequencer.play(pMessage, MorseTiming::fromSpeed(m_wordSpeed, m_charSpeed, m_farnsWorth)))
-        {
-            m_log->log(tr("Nothing to play, or no sound output"),Qt::darkMagenta);
-            return false;
-        }
-        m_playedText = pMessage;
-        m_playing_phrase=true;
-        ui->m_frequencySlider->setDisabled(true);
-        //ui->m_volumeSlider->setDisabled(true);
-        ui->m_WordSpeed->setDisabled(true);
-        ui->m_CharSpeed->setDisabled(true);
-        ui->m_NoiseCorr->setDisabled(true);
-        ui->m_NoiseFilterSlider->setDisabled(true);
-        ui->m_pbSend->setText(tr("Stop"));
-        return true;
-    }
-    return false;
+    if (m_trainer->isPlaying() || pMessage.isEmpty())
+        return false;
+    m_playedText = pMessage;
+    return m_trainer->play(pMessage);
 }
 
 ///
@@ -468,26 +269,21 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
 ///
 void MainWindow::StopMorseMessage()
 {
-    // finished() is emitted, which restores the controls
-    m_sequencer.stop();
+    m_trainer->stop();
 }
 
 ///
-/// \brief MainWindow::onPlaybackFinished
+/// \brief MainWindow::onPlayingChanged locks the controls that would change the text being played
 ///
-void MainWindow::onPlaybackFinished()
+void MainWindow::onPlayingChanged()
 {
-    if (m_playing_phrase)
-    {
-        m_playing_phrase=false;
-        ui->m_frequencySlider->setDisabled(false);
-        //ui->m_volumeSlider->setDisabled(false);
-        ui->m_WordSpeed->setDisabled(false);
-        ui->m_CharSpeed->setDisabled(false);
-        ui->m_NoiseCorr->setDisabled(false);
-        ui->m_NoiseFilterSlider->setDisabled(false);
-        ui->m_pbSend->setText(tr("Play"));
-    }
+    const bool playing = m_trainer->isPlaying();
+    ui->m_frequencySlider->setDisabled(playing);
+    ui->m_WordSpeed->setDisabled(playing);
+    ui->m_CharSpeed->setDisabled(playing);
+    ui->m_NoiseCorr->setDisabled(playing);
+    ui->m_NoiseFilterSlider->setDisabled(playing);
+    ui->m_pbSend->setText(playing ? tr("Stop") : tr("Play"));
 }
 
 ///
@@ -558,147 +354,6 @@ void MainWindow::saveLog()
 }
 
 ///
-/// \brief MainWindow::on_m_TableGlossaire_itemDoubleClicked
-/// \param item
-///
-void MainWindow::on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item)
-{
-    PlayMorseMessage(item->text());
-}
-
-///
-/// \brief MainWindow::on_timer
-///
-void MainWindow::on_timer()
-{
-    if (m_serial.isOpen())
-    {
-        QSerialPort::PinoutSignals state = m_serial.pinoutSignals();
-        //bool CTS = (state & QSerialPort::ClearToSendSignal) != 0;
-        bool DSR = (state & QSerialPort::DataSetReadySignal) != 0;
-        if (m_playing_phrase) return;
-        if (DSR && (!m_DSR) && (!m_playing_key))
-        {
-            keyerOn();
-        }
-        if ((!DSR) && (m_DSR) && (m_playing_key))
-        {
-            keyerOff();
-        }
-        m_DSR=DSR;
-    }
-}
-
-///
-/// \brief MainWindow::keyerOn
-///
-void MainWindow::keyerOn()
-{
-    if (m_playing_phrase) return;
-    if (!m_playing_key)
-    {
-        m_audio->keyDown(KeySource::Local);
-        m_playing_key=true;
-        emit Keyer(true);
-    }
-}
-
-///
-/// \brief MainWindow::keyerOff
-///
-void MainWindow::keyerOff()
-{
-    if (m_playing_phrase) return;
-    if (m_playing_key)
-    {
-        m_audio->keyUp(KeySource::Local);
-        m_playing_key=false;
-        emit Keyer(false);
-    }
-}
-
-///
-/// \brief MainWindow::onActionAFOptionsTriggered
-///
-void MainWindow::onActionAFOptionsTriggered()
-{
-    Options DlgOptions(m_audio->outputDevices(), this);
-    if (DlgOptions.exec()!=QDialog::Accepted)
-        return;
-    const QString oldDevice = m_audioDeviceName;
-    const int oldPeriod = m_audioPeriodMs;
-    loadDeviceSettings();
-    // Serial key
-    if (m_serial.isOpen()) m_serial.close();
-    m_DSR = false;
-    if (m_serialEnable)
-        initializeSerial(m_serialPortName);
-    loadDecoderSettings(false);
-    // Sound card
-    StopMorseMessage();
-    if ((m_audioDeviceName != oldDevice) || (m_audioPeriodMs != oldPeriod) || !m_audio->isRunning())
-        startAudio();
-}
-
-///
-/// \brief MainWindow::onMorseMessage
-/// \param pMessage
-///
-void MainWindow::onCharDecoded(const QString& pText, const QString& pPattern)
-{
-    // Unknown patterns are shown as received to help the learner
-    ui->m_MorseZone->moveCursor(QTextCursor::End);
-    ui->m_MorseZone->insertPlainText(pText.isEmpty() ? "[" + pPattern + "]" : pText);
-    m_decoderPattern.clear();
-    updateDecoderStatus();
-}
-
-///
-/// \brief MainWindow::updateDecoderStatus shows the estimated speed and the character being keyed
-///
-void MainWindow::updateDecoderStatus()
-{
-    m_decoderStatus->setText(tr("Decoder: %1 WPM%2  %3")
-                             .arg(qRound(m_decoder.speed()))
-                             .arg(m_decoder.autoAdapt() ? QString() : tr(" (locked)"))
-                             .arg(m_decoderPattern));
-}
-
-///
-/// \brief MainWindow::loadDecoderSettings
-/// \param pRestoreEstimates start from the speed learnt in the previous session
-///
-void MainWindow::loadDecoderSettings(bool pRestoreEstimates)
-{
-    m_settings.beginGroup("decoder");
-    const bool autoAdapt = m_settings.value("AutoAdapt",true).toBool();
-    const double dot = m_settings.value("DotMs",0.0).toDouble();
-    const double dash = m_settings.value("DashMs",0.0).toDouble();
-    const double gap = m_settings.value("GapMs",0.0).toDouble();
-    m_settings.endGroup();
-    m_decoder.setAutoAdapt(autoAdapt);
-    if (!autoAdapt)
-        m_decoder.setSpeed(m_charSpeed);
-    else if (pRestoreEstimates)
-    {
-        m_decoder.setSpeed(m_charSpeed);
-        m_decoder.setEstimates(dot, dash, gap);
-    }
-    updateDecoderStatus();
-}
-
-///
-/// \brief MainWindow::onCharPlayed highlights the character being played
-/// \param pIndex
-///
-void MainWindow::onCharPlayed(int pIndex)
-{
-    if (ui->m_leMessage->text() == m_playedText)
-        ui->m_leMessage->setSelection(pIndex, 1);
-}
-
-
-///
 /// \brief MainWindow::on_rb_filterNone_toggled
 /// \param checked
 ///
@@ -735,3 +390,54 @@ void MainWindow::on_cb_filter_currentTextChanged(const QString &arg1)
     m_log->setFilter(arg1);
 }
 
+///
+/// \brief MainWindow::on_m_TableGlossaire_itemDoubleClicked
+/// \param item
+///
+void MainWindow::on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item)
+{
+    PlayMorseMessage(item->text());
+}
+
+///
+/// \brief MainWindow::onActionAFOptionsTriggered
+///
+void MainWindow::onActionAFOptionsTriggered()
+{
+    // Options write the settings; the trainer applies them
+    Options DlgOptions(m_trainer, this);
+    DlgOptions.exec();
+}
+
+///
+/// \brief MainWindow::onCharDecoded
+/// \param pText
+/// \param pPattern
+///
+void MainWindow::onCharDecoded(const QString& pText, const QString& pPattern)
+{
+    // Unknown patterns are shown as received to help the learner
+    ui->m_MorseZone->moveCursor(QTextCursor::End);
+    ui->m_MorseZone->insertPlainText(pText.isEmpty() ? "[" + pPattern + "]" : pText);
+}
+
+///
+/// \brief MainWindow::updateDecoderStatus shows the estimated speed and the character being keyed
+///
+void MainWindow::updateDecoderStatus()
+{
+    m_decoderStatus->setText(tr("Decoder: %1 WPM%2  %3")
+                             .arg(qRound(m_trainer->decoderSpeed()))
+                             .arg(m_morseSettings->decoderAutoAdapt() ? QString() : tr(" (locked)"))
+                             .arg(m_trainer->decoderPattern()));
+}
+
+///
+/// \brief MainWindow::onCharPlayed highlights the character being played
+/// \param pIndex
+///
+void MainWindow::onCharPlayed(int pIndex)
+{
+    if (ui->m_leMessage->text() == m_playedText)
+        ui->m_leMessage->setSelection(pIndex, 1);
+}

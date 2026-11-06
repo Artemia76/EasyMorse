@@ -23,42 +23,52 @@
 /****************************************************************************
 * options.cpp is part of EasyMorse project
 *
-* This class define the main window of the application
+* Options dialog: sound card, serial key, decoder and Morse speeds
 * **************************************************************************/
 
 #include "options.h"
 #include "ui_options.h"
 
-Options::Options(const QStringList& pAudioDevices, QWidget *parent)
+#include "settings/settings.h"
+#include "trainer.h"
+
+Options::Options(Trainer* pTrainer, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Options)
+    , m_trainer(pTrainer)
 {
     ui->setupUi(this);
-    m_settings.beginGroup("audio");
-    m_audioDeviceName = m_settings.value("DeviceName").toString();
-    // Empty name means the system default output
+    setWindowTitle(tr("Options"));
+    const Settings* settings = m_trainer->settings();
+
+    // Sound card: an empty name means the system default output
     ui->m_deviceBox->addItem(tr("System default"), QString());
-    for (const QString& device : pAudioDevices)
+    for (const QString& device : m_trainer->audioDevices())
     {
         ui->m_deviceBox->addItem(device, device);
     }
-    const int deviceIndex = ui->m_deviceBox->findData(m_audioDeviceName);
+    const int deviceIndex = ui->m_deviceBox->findData(settings->audioDevice());
     ui->m_deviceBox->setCurrentIndex(deviceIndex >= 0 ? deviceIndex : 0);
-    ui->m_periodBox->setValue(m_settings.value("PeriodMs",DefaultAudioPeriodMs).toInt());
-    m_settings.endGroup();
-    m_settings.beginGroup("serial");
-    ui->m_enableSerial->setChecked(m_settings.value("PortEnable",false).toBool());
-    m_serialPortName = m_settings.value("PortName").toString();
-    m_settings.endGroup();
-    m_settings.beginGroup("decoder");
-    ui->m_autoAdapt->setChecked(m_settings.value("AutoAdapt",true).toBool());
-    m_settings.endGroup();
-    // Iterat available serial ports
-    for (auto& serialPort : QSerialPortInfo::availablePorts())
-    {
-        ui->m_serialBox->addItem(serialPort.portName());
-    }
-    ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(m_serialPortName));
+    ui->m_periodBox->setValue(settings->audioPeriodMs());
+
+    // Serial key
+#ifdef EASYMORSE_HAS_SERIALPORT
+    ui->m_enableSerial->setChecked(settings->serialEnabled());
+    ui->m_serialBox->addItems(m_trainer->serialPorts());
+    ui->m_serialBox->setCurrentIndex(ui->m_serialBox->findText(settings->serialPort()));
+#else
+    ui->m_enableSerial->setEnabled(false);
+    ui->m_serialBox->setEnabled(false);
+#endif
+    ui->m_autoAdapt->setChecked(settings->decoderAutoAdapt());
+
+    // Morse speeds
+    ui->m_WordSpeed->setValue(settings->wordSpeed());
+    ui->m_CharSpeed->setValue(settings->charSpeed());
+    ui->m_UseFarnsWorth->setChecked(settings->farnsworth());
+    connect(ui->m_WordSpeed, &QSlider::valueChanged, this, &Options::updateSpeedLabels);
+    connect(ui->m_CharSpeed, &QSlider::valueChanged, this, &Options::updateSpeedLabels);
+    updateSpeedLabels();
 }
 
 Options::~Options()
@@ -66,20 +76,23 @@ Options::~Options()
     delete ui;
 }
 
-void Options::on_buttonBox_accepted()
+void Options::updateSpeedLabels()
 {
-    m_audioDeviceName = ui->m_deviceBox->currentData().toString();
-    m_settings.beginGroup("audio");
-    m_settings.setValue("DeviceName", m_audioDeviceName);
-    m_settings.setValue("PeriodMs", ui->m_periodBox->value());
-    m_settings.endGroup();
-    m_serialPortName = ui->m_serialBox->currentText();
-    m_settings.beginGroup("serial");
-    m_settings.setValue("PortName", m_serialPortName);
-    m_settings.setValue("PortEnable", ui->m_enableSerial->isChecked());
-    m_settings.endGroup();
-    m_settings.beginGroup("decoder");
-    m_settings.setValue("AutoAdapt", ui->m_autoAdapt->isChecked());
-    m_settings.endGroup();
+    ui->m_labelWordSpeed->setText(tr("Word Speed = %1 WPM").arg(ui->m_WordSpeed->value()));
+    ui->m_labelCharSpeed->setText(tr("Char Speed = %1 WPM").arg(ui->m_CharSpeed->value()));
 }
 
+void Options::on_buttonBox_accepted()
+{
+    Settings* settings = m_trainer->settings();
+    settings->setAudioDevice(ui->m_deviceBox->currentData().toString());
+    settings->setAudioPeriodMs(ui->m_periodBox->value());
+#ifdef EASYMORSE_HAS_SERIALPORT
+    settings->setSerialPort(ui->m_serialBox->currentText());
+    settings->setSerialEnabled(ui->m_enableSerial->isChecked());
+#endif
+    settings->setDecoderAutoAdapt(ui->m_autoAdapt->isChecked());
+    settings->setWordSpeed(ui->m_WordSpeed->value());
+    settings->setCharSpeed(ui->m_CharSpeed->value());
+    settings->setFarnsworth(ui->m_UseFarnsWorth->isChecked());
+}
