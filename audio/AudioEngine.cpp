@@ -51,7 +51,10 @@ AudioEngine::AudioEngine(QObject* parent)
     , m_device(std::make_unique<Device>())
     , m_voices(std::make_unique<VoiceManager>())
 {
-    if (ma_context_init(nullptr, 0, nullptr, &m_device->context) == MA_SUCCESS)
+    // EASYMORSE_AUDIO_BACKEND=null gives a silent device running in real time (tests, headless)
+    const ma_backend nullBackend[] = {ma_backend_null};
+    const bool silent = qEnvironmentVariable("EASYMORSE_AUDIO_BACKEND") == QLatin1String("null");
+    if (ma_context_init(silent ? nullBackend : nullptr, silent ? 1 : 0, nullptr, &m_device->context) == MA_SUCCESS)
     {
         m_device->contextReady = true;
         CLogger::instance()->log(QString("AudioEngine: using %1 backend")

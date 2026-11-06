@@ -33,7 +33,7 @@
 #include <QTableWidgetItem>
 #include <QTimer>
 #include <QtSerialPort>
-#include "morse/morse.h"
+#include "morse/sequencer.h"
 #include "tools/clogger.h"
 #include "morse/analyze.h"
 
@@ -75,6 +75,8 @@ private slots:
     void    on_m_TableGlossaire_itemDoubleClicked(QTableWidgetItem *item);
     void    on_timer();
     void    onMorseMessage(QString pMessage);
+    void    onPlaybackFinished();
+    void    onCharPlayed(int pIndex);
     void    onActionAFOptionsTriggered();
     void    on_rb_filterNone_toggled(bool checked);
     void    on_rb_filterNormal_toggled(bool checked);
@@ -91,7 +93,9 @@ private:
     AudioEngine*                    m_audio;
 
     //Morse
-    CMorse                          m_morse;
+    MorseSequencer                  m_sequencer;
+    bool                            m_farnsWorth;
+    QString                         m_playedText;
     bool                            m_playing_phrase;
     bool                            m_playing_key;
     CLogger*                        m_log;

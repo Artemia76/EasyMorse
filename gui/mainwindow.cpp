@@ -37,13 +37,14 @@
 #include <QSerialPortInfo>
 
 #include <tools/version.h>
+#include <morse/morsecodec.h>
 #include <gui/options.h>
 
 MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_audio(pAudio)
-    , m_morse(nullptr, pAudio)
+    , m_sequencer(pAudio)
     , m_DSR(false)
 {
     ui->setupUi(this);
@@ -95,7 +96,6 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
     //Set Sound Frequency
     connect(ui->m_frequencySlider, &QSlider::valueChanged, this, &MainWindow::onFrequencyChanged);
     m_frequency = m_settings.value("SoundFreq",900).toInt();
-    m_morse.setFrequency(m_frequency);
     m_audio->setFrequency(m_frequency);
 
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(m_frequency));
@@ -124,18 +124,18 @@ MainWindow::MainWindow(AudioEngine* pAudio, QWidget *parent)
 
     //Set FarnsWorth Option
     connect(ui->m_UseFarnsWorth, &QCheckBox::checkStateChanged, this, &MainWindow::onFarnsWorthChanged);
-    m_morse.setFarnsWorth(m_settings.value("FarnsWorth",true).toBool());
+    m_farnsWorth = m_settings.value("FarnsWorth",true).toBool();
+    connect(&m_sequencer, &MorseSequencer::finished, this, &MainWindow::onPlaybackFinished);
+    connect(&m_sequencer, &MorseSequencer::charPlayed, this, &MainWindow::onCharPlayed);
 
     //Set Word Speed
     connect(ui->m_WordSpeed, &QSlider::valueChanged, this, &MainWindow::onWordSpeedChanged);
     m_wordSpeed = m_settings.value("WordSpeed", 12).toInt();
-    m_morse.setWordSpeed(m_wordSpeed);
     ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
 
     //Set Char Speed
     connect(ui->m_CharSpeed, &QSlider::valueChanged, this, &MainWindow::onCharSpeedChanged);
     m_charSpeed = m_settings.value("CharSpeed", 18).toInt();
-    m_morse.setCharSpeed(m_charSpeed);
     ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
     m_settings.endGroup();
 
@@ -208,7 +208,7 @@ void MainWindow::closeEvent(QCloseEvent*)
     m_settings.endGroup();
     m_settings.beginGroup("Morse");
     m_settings.setValue("WordSpeed", m_wordSpeed);
-    m_settings.setValue("FarnsWorth",m_morse.getFarnsWorth());
+    m_settings.setValue("FarnsWorth",m_farnsWorth);
     m_settings.setValue("CharSpeed", m_charSpeed);
     m_settings.endGroup();
 }
@@ -223,7 +223,7 @@ void MainWindow::initialize()
     ui->m_WordSpeed->setValue(m_wordSpeed);
     ui->m_NoiseCorr->setValue(qRound(m_noiseCorrelation*100));
     ui->m_NoiseFilterSlider->setValue(m_noiseFilter);
-    ui->m_UseFarnsWorth->setChecked(m_morse.getFarnsWorth());
+    ui->m_UseFarnsWorth->setChecked(m_farnsWorth);
     ui->m_CharSpeed->setValue(m_charSpeed);
 }
 
@@ -301,7 +301,6 @@ void MainWindow::onVolumeChanged(int value)
 void MainWindow::onFrequencyChanged(int value)
 {
     m_frequency=value;
-    m_morse.setFrequency(value);
     m_audio->setFrequency(value);
     ui->m_labelFreq->setText(QString(tr("Sound Freq=%1 Hz")).arg(value));
 }
@@ -313,7 +312,6 @@ void MainWindow::onFrequencyChanged(int value)
 void MainWindow::onWordSpeedChanged(int value)
 {
     m_wordSpeed = value;
-    m_morse.setWordSpeed(m_wordSpeed);
     ui->m_labelWordSpeed->setText(QString(tr("Word Speed = %1 WPM")).arg(m_wordSpeed));
 }
 
@@ -324,7 +322,6 @@ void MainWindow::onWordSpeedChanged(int value)
 void MainWindow::onCharSpeedChanged(int value)
 {
     m_charSpeed = value;
-    m_morse.setCharSpeed(m_charSpeed);
     ui->m_labelCharSpeed->setText(QString(tr("Char Speed = %1 WPM")).arg(m_charSpeed));
 }
 
@@ -334,7 +331,7 @@ void MainWindow::onCharSpeedChanged(int value)
 ///
 void MainWindow::onFarnsWorthChanged(bool value)
 {
-    m_morse.setFarnsWorth(value);
+    m_farnsWorth = value;
 }
 
 ///
@@ -426,6 +423,12 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
     if (!m_playing_phrase)
     {
         if (pMessage.isEmpty()) return false;
+        if (!m_sequencer.play(pMessage, MorseTiming::fromSpeed(m_wordSpeed, m_charSpeed, m_farnsWorth)))
+        {
+            m_log->log(tr("Nothing to play, or no sound output"),Qt::darkMagenta);
+            return false;
+        }
+        m_playedText = pMessage;
         m_playing_phrase=true;
         ui->m_frequencySlider->setDisabled(true);
         //ui->m_volumeSlider->setDisabled(true);
@@ -434,8 +437,6 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
         ui->m_NoiseCorr->setDisabled(true);
         ui->m_NoiseFilterSlider->setDisabled(true);
         ui->m_pbSend->setText(tr("Stop"));
-        m_morse.code(pMessage);
-        StopMorseMessage();
         return true;
     }
     return false;
@@ -446,10 +447,17 @@ bool MainWindow::PlayMorseMessage(const QString& pMessage)
 ///
 void MainWindow::StopMorseMessage()
 {
+    // finished() is emitted, which restores the controls
+    m_sequencer.stop();
+}
+
+///
+/// \brief MainWindow::onPlaybackFinished
+///
+void MainWindow::onPlaybackFinished()
+{
     if (m_playing_phrase)
     {
-        // Finished playing (no more data)
-        //m_morse->stop();
         m_playing_phrase=false;
         ui->m_frequencySlider->setDisabled(false);
         //ui->m_volumeSlider->setDisabled(false);
@@ -605,6 +613,7 @@ void MainWindow::onActionAFOptionsTriggered()
     if (m_serialEnable)
         initializeSerial(m_serialPortName);
     // Sound card
+    StopMorseMessage();
     if ((m_audioDeviceName != oldDevice) || (m_audioPeriodMs != oldPeriod) || !m_audio->isRunning())
         startAudio();
 }
@@ -615,7 +624,28 @@ void MainWindow::onActionAFOptionsTriggered()
 ///
 void MainWindow::onMorseMessage(QString pMessage)
 {
-    ui->m_MorseZone->insertPlainText(m_morse.decodeMorse(pMessage) + ' ');
+    // The analyzer gives P (dot) and T (dash), '/' between characters and ' ' between words
+    QString text;
+    for (const QString& word : pMessage.split(u' ', Qt::SkipEmptyParts))
+    {
+        for (QString symbol : word.split(u'/', Qt::SkipEmptyParts))
+        {
+            symbol.replace(u'P', u'.').replace(u'T', u'-');
+            text += MorseCodec::decode(symbol);
+        }
+        text += u' ';
+    }
+    ui->m_MorseZone->insertPlainText(text);
+}
+
+///
+/// \brief MainWindow::onCharPlayed highlights the character being played
+/// \param pIndex
+///
+void MainWindow::onCharPlayed(int pIndex)
+{
+    if (ui->m_leMessage->text() == m_playedText)
+        ui->m_leMessage->setSelection(pIndex, 1);
 }
 
 

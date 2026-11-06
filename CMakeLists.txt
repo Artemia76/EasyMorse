@@ -72,11 +72,26 @@ endif()
 configure_file(tools/version.h.in "${CMAKE_BINARY_DIR}/generated/tools/version.h" @ONLY)
 
 # =======================================================================
-# Application
+# Common compile settings
 
-qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
-    main.cpp
+add_library(easymorse_settings INTERFACE)
+target_include_directories(easymorse_settings INTERFACE
+    "${CMAKE_SOURCE_DIR}"
+    "${CMAKE_BINARY_DIR}/generated"
+)
+target_compile_definitions(easymorse_settings INTERFACE
+    QT_DISABLE_DEPRECATED_UP_TO=0x060700
+)
+if(MSVC)
+    target_compile_options(easymorse_settings INTERFACE /W4 /utf-8 /permissive-)
+else()
+    target_compile_options(easymorse_settings INTERFACE -Wall -Wextra)
+endif()
 
+# =======================================================================
+# Core library: audio and Morse logic, no widgets (shared with the tests)
+
+qt_add_library(easymorse_core STATIC
     audio/AudioEngine.cpp audio/AudioEngine.h
     audio/DefaultParameters.h
     audio/IOscillatorFunction.h
@@ -104,11 +119,8 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     audio/voicemanager/Param.cpp audio/voicemanager/Param.h
     audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
 
-    gui/mainwindow.cpp gui/mainwindow.h gui/mainwindow.ui
-    gui/options.cpp gui/options.h gui/options.ui
-
-    morse/analyze.cpp morse/analyze.h
-    morse/morse.cpp morse/morse.h
+    morse/morsecodec.cpp morse/morsecodec.h
+    morse/sequencer.cpp morse/sequencer.h
 
     tools/call_once.h
     tools/clogger.cpp tools/clogger.h
@@ -116,32 +128,36 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     tools/singleton.h
     tools/spscqueue.h
     "${CMAKE_BINARY_DIR}/generated/tools/version.h"
+)
+
+target_link_libraries(easymorse_core
+    PUBLIC
+        easymorse_settings
+        Qt6::Core
+        Qt6::Gui
+    PRIVATE
+        EasyMorse::miniaudio
+)
+
+# =======================================================================
+# Application
+
+qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
+    main.cpp
+
+    gui/mainwindow.cpp gui/mainwindow.h gui/mainwindow.ui
+    gui/options.cpp gui/options.h gui/options.ui
+
+    morse/analyze.cpp morse/analyze.h
 
     resources.qrc
 )
 
-target_include_directories(easymorse PRIVATE
-    "${CMAKE_SOURCE_DIR}"
-    "${CMAKE_BINARY_DIR}/generated"
-)
-
 target_link_libraries(easymorse PRIVATE
-    Qt6::Core
-    Qt6::Gui
+    easymorse_core
     Qt6::Widgets
     Qt6::SerialPort
-    EasyMorse::miniaudio
 )
-
-target_compile_definitions(easymorse PRIVATE
-    QT_DISABLE_DEPRECATED_UP_TO=0x060700
-)
-
-if(MSVC)
-    target_compile_options(easymorse PRIVATE /W4 /utf-8 /permissive-)
-else()
-    target_compile_options(easymorse PRIVATE -Wall -Wextra)
-endif()
 
 set_target_properties(easymorse PROPERTIES
     OUTPUT_NAME easymorse
@@ -162,6 +178,7 @@ endif()
 
 # Translations are compiled and embedded under :/i18n
 qt_add_translations(easymorse
+    SOURCE_TARGETS easymorse easymorse_core
     TS_FILES intl/easymorse_fr_FR.ts
     RESOURCE_PREFIX /i18n
 )
