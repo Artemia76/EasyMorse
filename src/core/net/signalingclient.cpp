@@ -106,8 +106,9 @@ void SignalingClient::authenticate(const QString& pPath, const QString& pCallsig
         const QString token = answer.value("token").toString();
         if (token.isEmpty())
         {
-            const QString message = answer.value("message").toString();
-            return fail(message.isEmpty() ? tr("Server unreachable: %1").arg(reply->errorString()) : message);
+            const QString code = answer.value("error").toString();
+            return fail(code.isEmpty() ? tr("Server unreachable: %1").arg(reply->errorString())
+                                       : errorText(code, answer.value("message").toString()));
         }
         m_token = token;
         emit tokenChanged(m_token);
@@ -250,9 +251,30 @@ void SignalingClient::onMessage(const QString& pText)
             if (code == "bad_token")
                 emit tokenChanged(QString());
         }
-        m_lastError = message.value("message").toString();
+        m_lastError = errorText(code, message.value("message").toString());
         emit errorOccurred(m_lastError);
     }
+}
+
+QString SignalingClient::errorText(const QString& pCode, const QString& pServerMessage) const
+{
+    if (pCode == "invalid_callsign")
+        return tr("Invalid callsign: 2 to 16 letters, digits, '/' or '-'");
+    if (pCode == "weak_password")
+        return tr("The password needs at least 8 characters");
+    if (pCode == "already_exists")
+        return tr("This callsign is already registered");
+    if (pCode == "wrong_credentials")
+        return tr("Wrong callsign or password");
+    if (pCode == "too_many_attempts")
+        return tr("Too many attempts, try again later");
+    if (pCode == "bad_token")
+        return tr("Session expired, log in again");
+    if (pCode == "replaced")
+        return tr("Logged in from somewhere else");
+    if (pCode == "unknown_member")
+        return tr("This operator is no longer in the room");
+    return pServerMessage.isEmpty() ? tr("Server error") : pServerMessage;
 }
 
 void SignalingClient::setState(State pState)

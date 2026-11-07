@@ -15,6 +15,9 @@ GroupBox {
     readonly property bool online: client.state === SignalingClient.Online
     readonly property bool busy: client.state === SignalingClient.LoggingIn
                                  || client.state === SignalingClient.Connecting
+    readonly property bool sessionOpen: Trainer.session.state !== PeerSession.Idle
+                                        && Trainer.session.state !== PeerSession.Disconnected
+                                        && Trainer.session.state !== PeerSession.Failed
 
     title: qsTr("Server")
 
@@ -64,9 +67,11 @@ GroupBox {
             Label { text: qsTr("Callsign") }
             TextField {
                 id: loginCallsign
+                // Also the station callsign of the manual invitations
                 text: MorseSettings.callsign
                 placeholderText: qsTr("Callsign or first name")
-                enabled: !root.busy
+                enabled: !root.busy && !root.sessionOpen
+                onEditingFinished: MorseSettings.callsign = text
                 Layout.fillWidth: true
             }
             Label { text: qsTr("Password") }

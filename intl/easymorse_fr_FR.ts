@@ -177,37 +177,57 @@
         <translation>Décodeur %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="95"/>
+        <location filename="../src/app/qml/Main.qml" line="75"/>
+        <source>Incoming call</source>
+        <translation>Appel entrant</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="76"/>
+        <source>%1 is calling you for a Morse session.</source>
+        <translation>%1 vous appelle pour une session de morse.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="78"/>
+        <source>Accept</source>
+        <translation>Accepter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="79"/>
+        <source>Decline</source>
+        <translation>Refuser</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="120"/>
         <source>Send</source>
         <translation>Émission</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="96"/>
+        <location filename="../src/app/qml/Main.qml" line="121"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="97"/>
+        <location filename="../src/app/qml/Main.qml" line="122"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="98"/>
+        <location filename="../src/app/qml/Main.qml" line="123"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="99"/>
+        <location filename="../src/app/qml/Main.qml" line="124"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="100"/>
+        <location filename="../src/app/qml/Main.qml" line="125"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="102"/>
+        <location filename="../src/app/qml/Main.qml" line="127"/>
         <source>Settings</source>
         <translation>Réglages</translation>
     </message>
@@ -362,214 +382,212 @@
 <context>
     <name>NetworkPage</name>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="26"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="28"/>
         <source>Preparing your invitation…</source>
         <translation>Préparation de votre invitation…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="27"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="29"/>
         <source>Waiting for your correspondent&apos;s invitation</source>
         <translation>En attente de l&apos;invitation de votre correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="28"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="30"/>
         <source>Connecting…</source>
         <translation>Connexion…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="29"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="31"/>
         <source>Connected with %1</source>
         <translation>Connecté avec %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="29"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="31"/>
         <source>your correspondent</source>
         <translation>votre correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="30"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="32"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="31"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="33"/>
         <source>No connection possible between your two networks</source>
         <translation>Aucune connexion possible entre vos deux réseaux</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="32"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="34"/>
         <source>Not connected</source>
         <translation>Non connecté</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="38"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="40"/>
         <source>direct, same local network</source>
         <translation>direct, même réseau local</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="39"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="41"/>
         <source>direct, through the Internet</source>
         <translation>direct, par Internet</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="40"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="42"/>
         <source>through a relay server</source>
         <translation>par un serveur relais</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="64"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="66"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="81"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="90"/>
         <source>Connection</source>
         <translation>Connexion</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="91"/>
         <source>Your callsign</source>
-        <translation>Votre indicatif</translation>
+        <translation type="vanished">Votre indicatif</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="94"/>
         <source>Callsign or first name</source>
-        <translation>Indicatif ou prénom</translation>
+        <translation type="vanished">Indicatif ou prénom</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="110"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="108"/>
         <source>1. Prepare your invitation and send it to your correspondent (mail, chat…).
 2. Paste the invitation they send you and connect. Each of you does both steps.</source>
         <translation>1. Préparez votre invitation et envoyez-la à votre correspondant (mail, messagerie…).
 2. Collez l&apos;invitation qu&apos;il vous envoie et connectez-vous. Chacun fait les deux étapes.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="118"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="116"/>
         <source>Prepare my invitation</source>
         <translation>Préparer mon invitation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="137"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="135"/>
         <source>Copy</source>
         <translation>Copier</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="152"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="150"/>
         <source>Paste your correspondent&apos;s invitation here</source>
         <translation>Collez ici l&apos;invitation de votre correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="161"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="159"/>
         <source>Paste</source>
         <translation>Coller</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="165"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="163"/>
         <source>Connect</source>
         <translation>Se connecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="191"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="189"/>
         <source>Path</source>
         <translation>Chemin</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="193"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="191"/>
         <source>Round trip</source>
         <translation>Aller-retour</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="194"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="192"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="195"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="193"/>
         <source>Security code</source>
         <translation>Code de sécurité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="204"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="202"/>
         <source>Read the security code to each other: if it differs, someone is in the middle.</source>
         <translation>Lisez-vous le code de sécurité : s&apos;il diffère, quelqu&apos;un s&apos;est intercalé entre vous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="211"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="209"/>
         <source>Disconnect</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="211"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="209"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="218"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="216"/>
         <source>Reception</source>
         <translation>Réception</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="235"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="233"/>
         <source>Correspondent at %1 WPM</source>
         <translation>Correspondant à %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="235"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="233"/>
         <source>Nothing received yet</source>
         <translation>Rien reçu pour l&apos;instant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="238"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="241"/>
         <source>Show</source>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="240"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="243"/>
         <source>Nothing, listen</source>
         <translation>Rien, écoutez</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="240"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="243"/>
         <source>After the message</source>
         <translation>Après le message</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="240"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="243"/>
         <source>Live</source>
         <translation>En direct</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="270"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="274"/>
         <source>Listen and copy what you hear. Choose what to show above to check yourself.</source>
         <translation>Écoutez et notez ce que vous entendez. Choisissez ci-dessus quoi afficher pour vous corriger.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="278"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="282"/>
         <source>Reveal now</source>
         <translation>Révéler maintenant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="282"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="286"/>
         <source>Clear</source>
         <translation>Vider</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="291"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="295"/>
         <source>Messages</source>
         <translation>Messages</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="315"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="319"/>
         <source>Text message</source>
         <translation>Message texte</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="322"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="326"/>
         <source>Send</source>
         <translation>Envoyer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="326"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="330"/>
         <source>Me</source>
         <translation>Moi</translation>
     </message>
@@ -845,17 +863,17 @@
         <translation>C&apos;est votre propre invitation : donnez-la à votre correspondant et collez la sienne</translation>
     </message>
     <message>
-        <location filename="../src/core/net/peersession.cpp" line="210"/>
+        <location filename="../src/core/net/peersession.cpp" line="216"/>
         <source>Connection with %1 lost</source>
         <translation>Connexion avec %1 perdue</translation>
     </message>
     <message>
-        <location filename="../src/core/net/peersession.cpp" line="295"/>
+        <location filename="../src/core/net/peersession.cpp" line="301"/>
         <source>%1 left the session</source>
         <translation>%1 a quitté la session</translation>
     </message>
     <message>
-        <location filename="../src/core/net/peersession.cpp" line="309"/>
+        <location filename="../src/core/net/peersession.cpp" line="315"/>
         <source>Connected with %1 (%2)</source>
         <translation>Connecté avec %1 (%2)</translation>
     </message>
@@ -902,19 +920,220 @@
     </message>
 </context>
 <context>
+    <name>ServerPanel</name>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="22"/>
+        <source>Server</source>
+        <translation>Serveur</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="26"/>
+        <source>%1 declined the call</source>
+        <translation>%1 a refusé l&apos;appel</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="27"/>
+        <source>%1 is busy</source>
+        <translation>%1 est occupé</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="28"/>
+        <source>%1 left the room</source>
+        <translation>%1 a quitté le salon</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="29"/>
+        <source>%1 did not answer</source>
+        <translation>%1 n&apos;a pas répondu</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="58"/>
+        <source>Server address</source>
+        <translation>Adresse du serveur</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="67"/>
+        <source>Callsign</source>
+        <translation>Indicatif</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="72"/>
+        <source>Callsign or first name</source>
+        <translation>Indicatif ou prénom</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="77"/>
+        <source>Password</source>
+        <translation>Mot de passe</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="81"/>
+        <source>At least 8 characters</source>
+        <translation>8 caractères au moins</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="91"/>
+        <source>Connecting…</source>
+        <translation>Connexion…</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="91"/>
+        <source>Log in</source>
+        <translation>Se connecter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="100"/>
+        <source>Create account</source>
+        <translation>Créer un compte</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="117"/>
+        <source>No server? Exchange invitations with your correspondent below.</source>
+        <translation>Pas de serveur ? Échangez des invitations avec votre correspondant ci-dessous.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="128"/>
+        <source>Logged in as %1</source>
+        <translation>Connecté en tant que %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="133"/>
+        <source>Log out</source>
+        <translation>Se déconnecter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="149"/>
+        <source>Join</source>
+        <translation>Rejoindre</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="155"/>
+        <source>Leave</source>
+        <translation>Quitter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="162"/>
+        <source>Room %1</source>
+        <translation>Salon %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="163"/>
+        <source>Choose or type a room, then join it</source>
+        <translation>Choisissez ou saisissez un salon, puis rejoignez-le</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="175"/>
+        <source>(you)</source>
+        <translation>(vous)</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="180"/>
+        <source>Call</source>
+        <translation>Appeler</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="192"/>
+        <source>Calling %1…</source>
+        <translation>Appel de %1…</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="193"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="198"/>
+        <source>In a session with %1</source>
+        <translation>En session avec %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="199"/>
+        <source>Hang up</source>
+        <translation>Raccrocher</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="226"/>
+        <source>Message to the room</source>
+        <translation>Message au salon</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="232"/>
+        <source>Send</source>
+        <translation>Envoyer</translation>
+    </message>
+</context>
+<context>
+    <name>SignalingClient</name>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="97"/>
+        <source>Set the server address first</source>
+        <translation>Indiquez d&apos;abord l&apos;adresse du serveur</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="110"/>
+        <source>Server unreachable: %1</source>
+        <translation>Serveur injoignable : %1</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="262"/>
+        <source>Invalid callsign: 2 to 16 letters, digits, &apos;/&apos; or &apos;-&apos;</source>
+        <translation>Indicatif invalide : 2 à 16 lettres, chiffres, « / » ou « - »</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="264"/>
+        <source>The password needs at least 8 characters</source>
+        <translation>Le mot de passe doit faire au moins 8 caractères</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="266"/>
+        <source>This callsign is already registered</source>
+        <translation>Cet indicatif est déjà enregistré</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="268"/>
+        <source>Wrong callsign or password</source>
+        <translation>Indicatif ou mot de passe incorrect</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="270"/>
+        <source>Too many attempts, try again later</source>
+        <translation>Trop de tentatives, réessayez plus tard</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="272"/>
+        <source>Session expired, log in again</source>
+        <translation>Session expirée, reconnectez-vous</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="274"/>
+        <source>Logged in from somewhere else</source>
+        <translation>Connecté depuis un autre poste</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="276"/>
+        <source>This operator is no longer in the room</source>
+        <translation>Cet opérateur n&apos;est plus dans le salon</translation>
+    </message>
+    <message>
+        <location filename="../src/core/net/signalingclient.cpp" line="277"/>
+        <source>Server error</source>
+        <translation>Erreur du serveur</translation>
+    </message>
+</context>
+<context>
     <name>Trainer</name>
     <message>
-        <location filename="../src/core/trainer.cpp" line="194"/>
+        <location filename="../src/core/trainer.cpp" line="220"/>
         <source>Nothing to play, or no sound output</source>
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="308"/>
+        <location filename="../src/core/trainer.cpp" line="335"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="321"/>
+        <location filename="../src/core/trainer.cpp" line="348"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>

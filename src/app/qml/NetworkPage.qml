@@ -96,19 +96,6 @@ Page {
                     anchors.fill: parent
                     spacing: 8
 
-                    RowLayout {
-                        visible: root.manual && Trainer.lobby.client.state !== SignalingClient.Online
-                        Layout.fillWidth: true
-                        Label { text: qsTr("Your callsign") }
-                        TextField {
-                            text: MorseSettings.callsign
-                            placeholderText: qsTr("Callsign or first name")
-                            enabled: !root.busy && !root.connected
-                            onEditingFinished: MorseSettings.callsign = text
-                            Layout.fillWidth: true
-                        }
-                    }
-
                     Label {
                         text: root.stateText()
                         font.bold: true

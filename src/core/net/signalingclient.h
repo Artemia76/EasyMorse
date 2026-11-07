@@ -114,6 +114,10 @@ private:
     void    setState(State pState);
     void    fail(const QString& pMessage);
     QUrl    apiUrl(const QString& pPath) const;
+    ///
+    /// \brief message for an error code of the server, in the user language
+    ///
+    QString errorText(const QString& pCode, const QString& pServerMessage) const;
 
     QNetworkAccessManager*  m_network;
     QWebSocket*             m_socket;
