@@ -100,20 +100,35 @@ GitHub Actions workflow for every push.
 
 ## Practising with a correspondent
 
-The *Network* tab connects two EasyMorse directly over the Internet:
+The *Network* tab connects two EasyMorse directly over the Internet.
+
+**With an EasyMorse server** (see below): enter its address, log in or create
+an account, join a room and click *Call* next to an operator. Once the call is
+accepted the session opens by itself.
+
+**Without a server**, with invitation codes:
 
 1. Each operator clicks *Prepare my invitation* and sends the code to the
    other (mail, chat...).
 2. Each pastes the code received and clicks *Connect*.
-3. Read the *security code* to each other: it must be the same on both sides.
+
+In both cases, read the *security code* to each other: it must be the same on
+both sides.
 
 The key is sent as key events, not audio: each side hears the other with its
 own tone and the rhythm is restored on reception. By default the received Morse
 is not decoded on screen, to learn by ear; it can be shown after each message
-or live. Links go through most Internet boxes (ICE / STUN hole punching, using
-the STUN server set in the options); a relay server for the remaining cases
-and automatic match-making will come with the EasyMorse server. Sessions are
-encrypted end to end (X25519, XChaCha20-Poly1305).
+or live. Links go through most Internet boxes (ICE / STUN hole punching); when
+they cannot go direct, the server relays them (TURN). Sessions are encrypted end
+to end (X25519, XChaCha20-Poly1305): the server never sees the Morse.
+
+## EasyMorse server
+
+`easymorse-server` (in `server/`) hosts accounts, rooms and calls, serves a
+small web page and runs the STUN/TURN relay. It is built with the application
+when Qt 6.8+ HttpServer, WebSockets and Sql are installed, or alone with
+`-DEASYMORSE_BUILD_APP=OFF`. See [server/deploy/README.md](server/deploy/README.md)
+to run it on a VPS with Docker and HTTPS.
 
 ## Source layout
 
@@ -121,6 +136,8 @@ encrypted end to end (X25519, XChaCha20-Poly1305).
 |------|---------|
 | `src/core/` | `easymorse_core` library, no user interface: audio engine (`audio/`), Morse codec, sequencer and streaming decoder (`morse/`), keys (`keyer/`), `Settings` and `Trainer`, the application logic used by the interfaces |
 | `src/app/` | Application: QML interface (`qml/`, desktop and phone layouts) and the models it uses |
+| `src/protocol/` | Messages shared by the application and the server |
+| `server/` | Match-making server, its web page and deployment files |
 | `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
 | `3rdparty/` | Bundled libraries (miniaudio, Monocypher); libjuice is used from the system or downloaded |
 | `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |
