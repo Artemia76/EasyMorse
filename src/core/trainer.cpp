@@ -70,11 +70,14 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     });
     connect(&m_decoder, &KeyDecoder::speedChanged, this, &Trainer::decoderSpeedChanged);
 
-    // Keys
+    // Keys: straight keys, or paddles driving the iambic keyer
     addKeyer(&m_manualKeyer);
+    addKeyer(&m_iambic);
+    addPaddles(&m_manualPaddles);
 #ifdef EASYMORSE_HAS_SERIALPORT
     m_serialKeyer = new SerialKeyer(this);
     addKeyer(m_serialKeyer);
+    addPaddles(m_serialKeyer->paddles());
     connect(m_serialKeyer, &SerialKeyer::errorOccurred, this, [](const QString& pMessage) {
         CLogger::instance()->log(pMessage, Qt::red);
     });
@@ -149,6 +152,13 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     connect(m_settings, &Settings::decoderAutoAdaptChanged, this, &Trainer::applyDecoderMode);
     connect(m_settings, &Settings::decoderReactivityChanged, this, &Trainer::applyDecoderMode);
     connect(m_settings, &Settings::charSpeedChanged, this, &Trainer::applyDecoderMode);
+
+    applyKeyerMode();
+    connect(m_settings, &Settings::keyerModeChanged, this, &Trainer::applyKeyerMode);
+    connect(m_settings, &Settings::iambicModeChanged, this, &Trainer::applyKeyerMode);
+    connect(m_settings, &Settings::paddlesReversedChanged, this, &Trainer::applyKeyerMode);
+    // The keyer times the elements at the character speed
+    connect(m_settings, &Settings::charSpeedChanged, this, [this] { m_iambic.setSpeed(m_settings->charSpeed()); });
 }
 
 Trainer::~Trainer()
@@ -180,6 +190,63 @@ void Trainer::addKeyer(KeyerInput* pKeyer)
         return;
     m_keyers.insert(pKeyer);
     connect(pKeyer, &KeyerInput::keyChanged, this, &Trainer::onKeyChanged);
+}
+
+void Trainer::addPaddles(Paddles* pPaddles)
+{
+    if (m_paddles.contains(pPaddles))
+        return;
+    m_paddles.append(pPaddles);
+    connect(pPaddles, &Paddles::changed, this, &Trainer::onPaddlesChanged);
+}
+
+void Trainer::onPaddlesChanged(qint64 pTimeMs)
+{
+    bool dot = false;
+    bool dash = false;
+    if (m_settings->keyerMode() == 1)
+    {
+        for (const Paddles* paddles : std::as_const(m_paddles))
+        {
+            dot = dot || paddles->dot();
+            dash = dash || paddles->dash();
+        }
+        // Left-handed operators
+        if (m_settings->paddlesReversed())
+            std::swap(dot, dash);
+    }
+    m_iambic.setPaddles(dot, dash, pTimeMs);
+    if (dot != m_dotPaddle || dash != m_dashPaddle)
+    {
+        m_dotPaddle = dot;
+        m_dashPaddle = dash;
+        emit paddlesChanged();
+    }
+}
+
+void Trainer::applyKeyerMode()
+{
+    m_iambic.setSpeed(m_settings->charSpeed());
+    m_iambic.setMode(m_settings->iambicMode() == 0 ? IambicKeyer::Mode::A : IambicKeyer::Mode::B);
+    // Changing mode or side: start again from released contacts
+    m_iambic.reset();
+    onPaddlesChanged(MonotonicClock::nowMs());
+    // The key in use changes: the tone follows the keys of the new mode
+    const bool down = isAnyKeyDown();
+    if (down != m_keyDown && !m_playing)
+        setKeyDown(down, MonotonicClock::nowMs());
+}
+
+bool Trainer::isAnyKeyDown() const
+{
+    // Straight keys, or the iambic keyer, depending on the mode
+    const bool iambic = m_settings->keyerMode() == 1;
+    for (const KeyerInput* keyer : m_pressed)
+    {
+        if ((keyer == &m_iambic) == iambic)
+            return true;
+    }
+    return false;
 }
 
 void Trainer::removeKeyer(KeyerInput* pKeyer)
@@ -266,7 +333,7 @@ void Trainer::onKeyChanged(bool pDown, qint64 pTimeMs)
         m_pressed.remove(keyer);
     if (m_playing)
         return;
-    const bool down = !m_pressed.isEmpty();
+    const bool down = isAnyKeyDown();
     if (down != m_keyDown)
         setKeyDown(down, pTimeMs);
 }

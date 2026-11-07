@@ -43,6 +43,9 @@ namespace Key
     constexpr const char* SerialPort = "serial/PortName";
     constexpr const char* DecoderAutoAdapt = "decoder/AutoAdapt";
     constexpr const char* DecoderReactivity = "decoder/Reactivity";
+    constexpr const char* KeyerMode = "keyer/Mode";
+    constexpr const char* IambicMode = "keyer/IambicMode";
+    constexpr const char* PaddlesReversed = "keyer/PaddlesReversed";
     constexpr const char* Callsign = "network/Callsign";
     constexpr const char* StunServer = "network/StunServer";
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
@@ -72,6 +75,9 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_serialPort = m_store->value(Key::SerialPort).toString();
     m_decoderAutoAdapt = m_store->value(Key::DecoderAutoAdapt, true).toBool();
     m_decoderReactivity = qBound(0, m_store->value(Key::DecoderReactivity, 1).toInt(), 2);
+    m_keyerMode = qBound(0, m_store->value(Key::KeyerMode, 0).toInt(), 1);
+    m_iambicMode = qBound(0, m_store->value(Key::IambicMode, 1).toInt(), 1);
+    m_paddlesReversed = m_store->value(Key::PaddlesReversed, false).toBool();
     m_callsign = m_store->value(Key::Callsign).toString();
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
@@ -168,6 +174,24 @@ void Settings::setDecoderReactivity(int pReactivity)
 {
     if (store(Key::DecoderReactivity, m_decoderReactivity, qBound(0, pReactivity, 2)))
         emit decoderReactivityChanged();
+}
+
+void Settings::setKeyerMode(int pMode)
+{
+    if (store(Key::KeyerMode, m_keyerMode, qBound(0, pMode, 1)))
+        emit keyerModeChanged();
+}
+
+void Settings::setIambicMode(int pMode)
+{
+    if (store(Key::IambicMode, m_iambicMode, qBound(0, pMode, 1)))
+        emit iambicModeChanged();
+}
+
+void Settings::setPaddlesReversed(bool pReversed)
+{
+    if (store(Key::PaddlesReversed, m_paddlesReversed, pReversed))
+        emit paddlesReversedChanged();
 }
 
 void Settings::setCallsign(const QString& pCallsign)

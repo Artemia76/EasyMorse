@@ -23,14 +23,17 @@
 /****************************************************************************
 * keyboardkeyer.h is part of EasyMorse project
 *
-* The Alt key operates the Morse key wherever the focus is, like in the
-* previous versions.
+* The Alt key operates the straight key wherever the focus is, like in the
+* previous versions. Left and right Ctrl are the dot and dash contacts of
+* the paddles, as sent by the USB paddle adapters (VBand).
 * **************************************************************************/
 
 #ifndef KEYBOARDKEYER_H
 #define KEYBOARDKEYER_H
 
 #include <QObject>
+
+#include "keyer/iambickeyer.h"
 
 class ManualKeyer;
 
@@ -41,11 +44,14 @@ class KeyboardKeyer : public QObject
 public:
     explicit KeyboardKeyer(ManualKeyer* pKeyer, QObject* parent = nullptr);
 
+    Paddles* paddles() { return &m_paddles; }
+
 protected:
     bool eventFilter(QObject* pWatched, QEvent* pEvent) override;
 
 private:
     ManualKeyer* m_keyer;
+    Paddles      m_paddles;
 };
 
 #endif // KEYBOARDKEYER_H

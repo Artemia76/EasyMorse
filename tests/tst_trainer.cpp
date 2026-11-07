@@ -205,6 +205,49 @@ private slots:
         QVERIFY(alice.decoderPattern().isEmpty());
     }
 
+    void iambicPaddlesKeyAtTheSpeed()
+    {
+        Settings settings(newSettingsFile());
+        settings.setCharSpeed(30);      // 40 ms dots
+        settings.setDecoderAutoAdapt(false);
+        Trainer trainer(&settings);
+        trainer.start();
+        QSignalSpy decoded(&trainer, &Trainer::charDecoded);
+
+        // Straight mode: the paddles do nothing
+        trainer.manualPaddles()->setDot(true);
+        QTest::qWait(30);
+        QVERIFY(!trainer.isKeyDown());
+        trainer.manualPaddles()->release();
+
+        settings.setKeyerMode(1);
+        // The straight key is ignored in iambic mode
+        trainer.manualKeyer()->press();
+        QVERIFY(!trainer.isKeyDown());
+        trainer.manualKeyer()->release();
+
+        // "A": dot, then dash, from a quick squeeze
+        trainer.manualPaddles()->setDot(true);
+        QVERIFY(trainer.isKeyDown());
+        QVERIFY(trainer.isDotPaddle());
+        QTest::qWait(20);
+        trainer.manualPaddles()->setDash(true);
+        trainer.manualPaddles()->setDot(false);
+        QTest::qWait(90);
+        trainer.manualPaddles()->setDash(false);
+        QVERIFY(decoded.wait(2000));
+        QCOMPARE(decoded.at(0).at(0).toString(), QString("A"));
+
+        // Left-handed: the dot paddle sends dashes
+        settings.setPaddlesReversed(true);
+        trainer.manualPaddles()->setDot(true);
+        QVERIFY(trainer.isDashPaddle());
+        QTest::qWait(60);
+        trainer.manualPaddles()->setDot(false);
+        QVERIFY(decoded.wait(2000));
+        QCOMPARE(decoded.at(1).at(0).toString(), QString("T"));
+    }
+
     void decoderEstimatesAreSaved()
     {
         const QString file = newSettingsFile();

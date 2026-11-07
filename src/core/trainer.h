@@ -40,6 +40,7 @@
 #include <memory>
 
 #include "audio/AudioEngine.h"
+#include "keyer/iambickeyer.h"
 #include "keyer/keyerinput.h"
 #include "morse/keydecoder.h"
 #include "morse/sequencer.h"
@@ -60,6 +61,10 @@ class Trainer : public QObject
     Q_PROPERTY(double decoderSpeed READ decoderSpeed NOTIFY decoderSpeedChanged)
     Q_PROPERTY(QString decoderPattern READ decoderPattern NOTIFY decoderPatternChanged)
     Q_PROPERTY(ManualKeyer* manualKeyer READ manualKeyer CONSTANT)
+    // Paddles of the touch screen, and the contacts closed on any paddle
+    Q_PROPERTY(Paddles* manualPaddles READ manualPaddles CONSTANT)
+    Q_PROPERTY(bool dotPaddle READ isDotPaddle NOTIFY paddlesChanged)
+    Q_PROPERTY(bool dashPaddle READ isDashPaddle NOTIFY paddlesChanged)
     // Remote station
     Q_PROPERTY(PeerSession* session READ session CONSTANT)
     Q_PROPERTY(Lobby* lobby READ lobby CONSTANT)
@@ -81,6 +86,8 @@ public:
     AudioEngine*    audio() { return &m_audio; }
     KeyDecoder*     decoder() { return &m_decoder; }
     ManualKeyer*    manualKeyer() { return &m_manualKeyer; }
+    Paddles*        manualPaddles() { return &m_manualPaddles; }
+    IambicKeyer*    iambicKeyer() { return &m_iambic; }
     PeerSession*    session() { return &m_session; }
     Lobby*          lobby() { return &m_lobby; }
 #ifdef EASYMORSE_HAS_SERIALPORT
@@ -92,6 +99,12 @@ public:
     ///
     void            addKeyer(KeyerInput* pKeyer);
     void            removeKeyer(KeyerInput* pKeyer);
+    ///
+    /// \brief addPaddles listens to the contacts of a paddle (used in iambic mode)
+    ///
+    void            addPaddles(Paddles* pPaddles);
+    bool            isDotPaddle() const { return m_dotPaddle; }
+    bool            isDashPaddle() const { return m_dashPaddle; }
 
     Q_INVOKABLE QStringList audioDevices();
     Q_INVOKABLE QStringList serialPorts() const;
@@ -128,6 +141,7 @@ signals:
     void            charSent(const QString& pText);
     void            audioRunningChanged();
     void            keyDownChanged();
+    void            paddlesChanged();
     void            charDecoded(const QString& pText, const QString& pPattern);
     void            wordGap();
     void            decoderSpeedChanged();
@@ -145,9 +159,12 @@ private slots:
     void            restartAudio();
     void            reopenSerial();
     void            applyDecoderMode();
+    void            applyKeyerMode();
+    void            onPaddlesChanged(qint64 pTimeMs);
 
 private:
     void            setKeyDown(bool pDown, qint64 pTimeMs);
+    bool            isAnyKeyDown() const;
     void            sendKey(bool pDown, qint64 pTimeMs);
     ///
     /// \brief send the key changes of the played text when they are due
@@ -168,6 +185,11 @@ private:
     MorseSequencer          m_sequencer;
     KeyDecoder              m_decoder;
     ManualKeyer             m_manualKeyer;
+    Paddles                 m_manualPaddles;
+    IambicKeyer             m_iambic;
+    QList<Paddles*>         m_paddles;
+    bool                    m_dotPaddle = false;
+    bool                    m_dashPaddle = false;
     PeerSession             m_session;
     Lobby                   m_lobby;
     // One decoder per remote station: each one's speed is learnt separately

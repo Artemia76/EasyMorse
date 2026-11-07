@@ -157,6 +157,7 @@ int main(int argc, char *argv[])
     TrainerForeign::s_instance = &trainer;
     SettingsForeign::s_instance = &settings;
     KeyboardKeyer keyboardKeyer(trainer.manualKeyer());
+    trainer.addPaddles(keyboardKeyer.paddles());
 
     QQmlApplicationEngine engine;
     uiSettings.setEngine(&engine);

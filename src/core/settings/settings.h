@@ -59,6 +59,10 @@ class Settings : public QObject
     Q_PROPERTY(bool decoderAutoAdapt READ decoderAutoAdapt WRITE setDecoderAutoAdapt NOTIFY decoderAutoAdaptChanged)
     // 0 fast, 1 normal, 2 stable: see KeyDecoder::Reactivity
     Q_PROPERTY(int decoderReactivity READ decoderReactivity WRITE setDecoderReactivity NOTIFY decoderReactivityChanged)
+    // Key: 0 straight key, 1 iambic paddles; iambic mode 0 = A, 1 = B
+    Q_PROPERTY(int keyerMode READ keyerMode WRITE setKeyerMode NOTIFY keyerModeChanged)
+    Q_PROPERTY(int iambicMode READ iambicMode WRITE setIambicMode NOTIFY iambicModeChanged)
+    Q_PROPERTY(bool paddlesReversed READ paddlesReversed WRITE setPaddlesReversed NOTIFY paddlesReversedChanged)
     // Network
     Q_PROPERTY(QString callsign READ callsign WRITE setCallsign NOTIFY callsignChanged)
     Q_PROPERTY(QString stunServer READ stunServer WRITE setStunServer NOTIFY stunServerChanged)
@@ -95,6 +99,9 @@ public:
     QString serialPort() const { return m_serialPort; }
     bool    decoderAutoAdapt() const { return m_decoderAutoAdapt; }
     int     decoderReactivity() const { return m_decoderReactivity; }
+    int     keyerMode() const { return m_keyerMode; }
+    int     iambicMode() const { return m_iambicMode; }
+    bool    paddlesReversed() const { return m_paddlesReversed; }
     QString callsign() const { return m_callsign; }
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
@@ -118,6 +125,9 @@ public:
     void    setSerialPort(const QString& pName);
     void    setDecoderAutoAdapt(bool pOn);
     void    setDecoderReactivity(int pReactivity);
+    void    setKeyerMode(int pMode);
+    void    setIambicMode(int pMode);
+    void    setPaddlesReversed(bool pReversed);
     void    setCallsign(const QString& pCallsign);
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
@@ -145,6 +155,9 @@ signals:
     void    serialPortChanged();
     void    decoderAutoAdaptChanged();
     void    decoderReactivityChanged();
+    void    keyerModeChanged();
+    void    iambicModeChanged();
+    void    paddlesReversedChanged();
     void    callsignChanged();
     void    stunServerChanged();
     void    jitterDelayMsChanged();
@@ -169,6 +182,9 @@ private:
     QString     m_serialPort;
     bool        m_decoderAutoAdapt;
     int         m_decoderReactivity;
+    int         m_keyerMode;
+    int         m_iambicMode;
+    bool        m_paddlesReversed;
     QString     m_callsign;
     QString     m_stunServer;
     int         m_jitterDelayMs;

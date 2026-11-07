@@ -32,6 +32,31 @@
 
 #include "keyer/keyerinput.h"
 
+namespace
+{
+    ///
+    /// \return 0 if this is not a Ctrl key, 1 for the left one, 2 for the right one
+    ///
+    int ctrlSide(const QKeyEvent* pEvent)
+    {
+#if defined(Q_OS_MACOS)
+        // Qt::Key_Control is Command on macOS, the Control key is Key_Meta
+        if (pEvent->key() != Qt::Key_Meta)
+            return 0;
+        return pEvent->nativeVirtualKey() == 0x3E ? 2 : 1;     // kVK_RightControl
+#elif defined(Q_OS_WIN)
+        if (pEvent->key() != Qt::Key_Control)
+            return 0;
+        // Right Ctrl is an extended key
+        return (pEvent->nativeScanCode() & 0x100) ? 2 : 1;
+#else
+        if (pEvent->key() != Qt::Key_Control)
+            return 0;
+        return pEvent->nativeScanCode() == 105 ? 2 : 1;         // X11 / Wayland keycode of Control_R
+#endif
+    }
+}
+
 KeyboardKeyer::KeyboardKeyer(ManualKeyer* pKeyer, QObject* parent)
     : QObject(parent)
     , m_keyer(pKeyer)
@@ -40,7 +65,10 @@ KeyboardKeyer::KeyboardKeyer(ManualKeyer* pKeyer, QObject* parent)
     // A key held while the window loses the focus would never be released
     connect(qApp, &QGuiApplication::applicationStateChanged, this, [this](Qt::ApplicationState pState) {
         if (pState != Qt::ApplicationActive)
+        {
             m_keyer->release();
+            m_paddles.release();
+        }
     });
 }
 
@@ -61,6 +89,15 @@ bool KeyboardKeyer::eventFilter(QObject* pWatched, QEvent* pEvent)
             }
             // Alt must not open menus or move the focus while keying
             return true;
+        }
+        // Paddles: not consumed, Ctrl shortcuts keep working
+        if (const int side = ctrlSide(keyEvent); side > 0 && !keyEvent->isAutoRepeat())
+        {
+            const bool down = type == QEvent::KeyPress;
+            if (side == 1)
+                m_paddles.setDot(down);
+            else
+                m_paddles.setDash(down);
         }
     }
     return QObject::eventFilter(pWatched, pEvent);

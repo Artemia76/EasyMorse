@@ -72,9 +72,9 @@ bool SerialKeyer::open(const QString& pPortName)
         emit errorOccurred(tr("Failed to open serial port %1: %2").arg(pPortName, m_port.errorString()));
         return false;
     }
-    // DTR feeds the key, RTS is unused
+    // DTR and RTS feed the contacts (either may be wired)
     m_port.setDataTerminalReady(true);
-    m_port.setRequestToSend(false);
+    m_port.setRequestToSend(true);
     m_pollTimer.start(PollIntervalMs);
     emit openChanged();
     return true;
@@ -87,6 +87,7 @@ void SerialKeyer::close()
         return;
     m_port.close();
     setDown(false);
+    m_paddles.release();
     emit openChanged();
 }
 
@@ -110,7 +111,11 @@ void SerialKeyer::poll()
         return;
     }
     const QSerialPort::PinoutSignals state = m_port.pinoutSignals();
-    const QSerialPort::PinoutSignal line = (m_line == Line::Cts) ? QSerialPort::ClearToSendSignal
-                                                                 : QSerialPort::DataSetReadySignal;
-    setDown(state.testFlag(line));
+    const bool cts = state.testFlag(QSerialPort::ClearToSendSignal);
+    const bool dsr = state.testFlag(QSerialPort::DataSetReadySignal);
+    const bool dcd = state.testFlag(QSerialPort::DataCarrierDetectSignal);
+    const qint64 now = MonotonicClock::nowMs();
+    // Straight key on either line, paddles: dots on CTS or DCD, dashes on DSR
+    setDown(cts || dsr, now);
+    m_paddles.set(cts || dcd, dsr, now);
 }

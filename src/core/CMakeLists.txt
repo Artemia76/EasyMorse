@@ -30,6 +30,7 @@ qt_add_library(easymorse_core STATIC
     audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
 
     keyer/keyerinput.cpp keyer/keyerinput.h
+    keyer/iambickeyer.cpp keyer/iambickeyer.h
     keyer/monotonicclock.h
 
     morse/keydecoder.cpp morse/keydecoder.h

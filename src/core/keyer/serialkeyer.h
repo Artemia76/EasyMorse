@@ -23,8 +23,10 @@
 /****************************************************************************
 * serialkeyer.h is part of EasyMorse project
 *
-* Straight key wired to a serial port control line (DSR or CTS), the other
-* side of the key being on DTR which is kept active.
+* Key wired to the control lines of a serial port. DTR and RTS are kept
+* active to feed the contacts. Usual wiring:
+*   straight key: the contact on CTS or DSR (either one);
+*   paddles: dots on CTS or DCD, dashes on DSR.
 * **************************************************************************/
 
 #ifndef SERIALKEYER_H
@@ -34,6 +36,7 @@
 #include <QStringList>
 #include <QTimer>
 
+#include "keyer/iambickeyer.h"
 #include "keyer/keyerinput.h"
 
 class SerialKeyer : public KeyerInput
@@ -43,13 +46,6 @@ class SerialKeyer : public KeyerInput
     Q_PROPERTY(bool open READ isOpen NOTIFY openChanged)
 
 public:
-    enum class Line
-    {
-        Dsr,
-        Cts
-    };
-    Q_ENUM(Line)
-
     explicit SerialKeyer(QObject* parent = nullptr);
     ~SerialKeyer() override;
 
@@ -65,8 +61,10 @@ public:
     bool    isOpen() const;
     QString portName() const;
 
-    void    setLine(Line pLine) { m_line = pLine; }
-    Line    line() const { return m_line; }
+    ///
+    /// \brief the same lines read as the two contacts of a paddle
+    ///
+    Paddles* paddles() { return &m_paddles; }
 
 signals:
     void    openChanged();
@@ -78,7 +76,7 @@ private slots:
 private:
     QSerialPort m_port;
     QTimer      m_pollTimer;
-    Line        m_line = Line::Dsr;
+    Paddles     m_paddles;
 };
 
 #endif // SERIALKEYER_H
