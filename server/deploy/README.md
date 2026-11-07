@@ -42,6 +42,46 @@ Then use `easymorse-server.service` (systemd, adjust the domain and address)
 behind a reverse proxy doing HTTPS, for instance Caddy with the `Caddyfile`
 of this directory.
 
+## Behind an existing proxy (YunoHost or another nginx)
+
+When ports 80 and 443 already belong to a web server, use `proxy/`: the
+server alone, listening on `127.0.0.1`, behind that server's HTTPS.
+
+1. Build the image on any machine and copy it (the server needs no sources):
+
+   ```sh
+   docker build -f server/deploy/Dockerfile -t easymorse-server:latest .
+   docker save easymorse-server:latest | ssh my-server docker load
+   ```
+
+2. On the server, with YunoHost (the domain points to the server):
+
+   ```sh
+   sudo yunohost domain add easymorse.example.org
+   sudo yunohost domain cert install easymorse.example.org   # Let's Encrypt
+   sudo cp nginx-easymorse.conf /etc/nginx/conf.d/easymorse.example.org.d/
+   sudo nginx -t && sudo systemctl reload nginx
+   sudo yunohost firewall allow UDP 3478
+   sudo yunohost firewall allow UDP 49160:49200
+   ```
+
+   With another nginx, put the two locations of `nginx-easymorse.conf` in the
+   server block of the domain and open the same UDP ports.
+
+3. Start it (`.env` from `.env.example`; the data directory belongs to the
+   `easymorse` user of the image):
+
+   ```sh
+   sudo mkdir -p /var/lib/easymorse
+   sudo chown "$(docker run --rm --entrypoint id easymorse-server -u)" /var/lib/easymorse
+   docker compose up -d
+   curl https://easymorse.example.org/api/v1/status
+   ```
+
+Update: load the new image, then `docker compose up -d`. Undo: `docker compose
+down`, remove the nginx file and reload nginx, close the UDP ports
+(`yunohost firewall disallow ...`), remove the domain.
+
 ## Administration
 
 The page `https://<your domain>/admin.html` lists the accounts (online or not,
@@ -53,7 +93,7 @@ Nobody is an administrator at first: create your account (web page or
 application), then name it from the command line, server running or not:
 
 ```sh
-# Docker
+# Docker (both compose files)
 docker compose exec easymorse easymorse-server --database /data/easymorse.db --grant-admin F4IKZ
 # systemd
 sudo easymorse-server --database /var/lib/easymorse/easymorse.db --grant-admin F4IKZ
