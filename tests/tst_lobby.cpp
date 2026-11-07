@@ -7,8 +7,10 @@
 
 #include "keyer/monotonicclock.h"
 #include "net/lobby.h"
+#include "net/peerlink.h"
 #include "net/peersession.h"
 #include "server.h"
+#include "turnrelay.h"
 
 namespace
 {
@@ -113,6 +115,34 @@ private slots:
         // Cannot call oneself or someone absent
         QVERIFY(!alice.lobby.call("F4IKZ"));
         QVERIFY(!alice.lobby.call("NOBODY"));
+    }
+
+    void relayCredentialsWork()
+    {
+        // The credentials issued by the server open a relay on its TURN server
+        TurnRelay relay;
+        TurnRelay::Config config;
+        config.port = 0;
+        config.bindAddress = "127.0.0.1";
+        config.externalAddress = "127.0.0.1";
+        QVERIFY(relay.start(config));
+        const TurnRelay::Credentials credentials = relay.issueCredentials();
+        QVERIFY(!credentials.username.isEmpty());
+
+        PeerLink link;
+        link.setTurnServer({"127.0.0.1", relay.port(), credentials.username, credentials.password});
+        QSignalSpy gathered(&link, &PeerLink::gatheringDone);
+        QVERIFY(link.start());
+        QVERIFY(gathered.wait(8000));
+        QVERIFY2(link.localDescription().contains(" typ relay "), qPrintable(link.localDescription()));
+
+        // Wrong credentials: no relay
+        PeerLink intruder;
+        intruder.setTurnServer({"127.0.0.1", relay.port(), credentials.username, "wrong"});
+        QSignalSpy intruderGathered(&intruder, &PeerLink::gatheringDone);
+        QVERIFY(intruder.start());
+        QVERIFY(intruderGathered.wait(8000));
+        QVERIFY(!intruder.localDescription().contains(" typ relay "));
     }
 
     void resumesWithTheSavedToken()
