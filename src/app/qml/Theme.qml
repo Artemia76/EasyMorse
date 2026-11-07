@@ -42,6 +42,9 @@ QtObject {
 
     readonly property int radius: 14
 
+    // Phones and tablets: no keyboard keys to mention
+    readonly property bool mobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
+
     // "·−·" from ".-."
     function pattern(pText) {
         return pText.replace(/\./g, "·").replace(/-/g, "−")

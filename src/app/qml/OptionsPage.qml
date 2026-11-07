@@ -133,11 +133,13 @@ Page {
                         ToolTip.text: qsTr("Dashes on the left contact, for left-handed operators")
                     }
 
-                    Label { text: qsTr("Straight key on the keyboard") }
-                    KeyChooser { role: "straight"; value: MorseSettings.straightKey }
+                    // Keyboard keys: not on phones and tablets
+                    Label { text: qsTr("Straight key on the keyboard"); visible: !Theme.mobile }
+                    KeyChooser { role: "straight"; value: MorseSettings.straightKey; visible: !Theme.mobile }
 
-                    Label { text: qsTr("Paddle keys"); enabled: MorseSettings.keyerMode === 1 }
+                    Label { text: qsTr("Paddle keys"); enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
                     Segmented {
+                        visible: !Theme.mobile
                         enabled: MorseSettings.keyerMode === 1
                         model: [qsTr("Right-handed"), qsTr("Left-handed"), qsTr("USB adapter")]
                         // Which ready-made choice the current keys are, if any
@@ -158,14 +160,15 @@ Page {
                         }
                     }
 
-                    Label { text: qsTr("Dot paddle key"); enabled: MorseSettings.keyerMode === 1 }
-                    KeyChooser { role: "dot"; value: MorseSettings.dotKey; enabled: MorseSettings.keyerMode === 1 }
+                    Label { text: qsTr("Dot paddle key"); enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
+                    KeyChooser { role: "dot"; value: MorseSettings.dotKey; enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
 
-                    Label { text: qsTr("Dash paddle key"); enabled: MorseSettings.keyerMode === 1 }
-                    KeyChooser { role: "dash"; value: MorseSettings.dashKey; enabled: MorseSettings.keyerMode === 1 }
+                    Label { text: qsTr("Dash paddle key"); enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
+                    KeyChooser { role: "dash"; value: MorseSettings.dashKey; enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
 
                     Label {
-                        text: qsTr("The keyer sends at the character speed. Ctrl and Alt keys work wherever the focus is; a letter key does not key while you type in a text field.")
+                        text: Theme.mobile ? qsTr("The keyer sends at the character speed.")
+                                           : qsTr("The keyer sends at the character speed. Ctrl and Alt keys work wherever the focus is; a letter key does not key while you type in a text field.")
                         color: Theme.muted
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true

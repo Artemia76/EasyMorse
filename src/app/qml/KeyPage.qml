@@ -70,7 +70,9 @@ Page {
             Layout.maximumHeight: 300
         }
         Label {
-            text: root.iambic ? qsTr("%1: dots · %2: dashes · serial paddles")
+            text: Theme.mobile ? (root.iambic ? qsTr("One finger on each paddle; hold both to alternate.")
+                                              : qsTr("Press the key as long as the sign lasts."))
+                  : root.iambic ? qsTr("%1: dots · %2: dashes · serial paddles")
                                 .arg(Keyboard.keyName(MorseSettings.dotKey)).arg(Keyboard.keyName(MorseSettings.dashKey))
                               : qsTr("Space bar (key focused), %1 or serial key").arg(Keyboard.keyName(MorseSettings.straightKey))
             color: Theme.muted

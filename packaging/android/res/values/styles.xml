@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- EasyMorse window theme: graphite background and system bars, no action bar -->
+<resources>
+    <style name="EasyMorseTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/easymorse_ground</item>
+        <item name="android:statusBarColor">@color/easymorse_chrome</item>
+        <item name="android:navigationBarColor">@color/easymorse_chrome</item>
+    </style>
+    <color name="easymorse_ground">#121418</color>
+    <color name="easymorse_chrome">#16191E</color>
+</resources>

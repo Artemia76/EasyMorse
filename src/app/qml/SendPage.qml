@@ -147,7 +147,8 @@ Page {
                                                          : qsTr("Type a text or choose a phrase, then play it.")
                         // Rich text: styled text has no background color
                         textFormat: root.playedText.length > 0 ? Text.RichText : Text.PlainText
-                        wrapMode: Text.WrapAnywhere
+                        // Morse text may break anywhere, sentences between words
+                        wrapMode: root.playedText.length > 0 ? Text.WrapAnywhere : Text.WordWrap
                         font.family: root.playedText.length > 0 ? Theme.monoFont : Theme.uiFont
                         font.pixelSize: root.playedText.length > 0 ? 34 : 14
                         font.letterSpacing: root.playedText.length > 0 ? 3 : 0
@@ -165,7 +166,8 @@ Page {
             }
 
             Label {
-                text: qsTr("Hold the Alt key or use the Key page to answer.")
+                text: Theme.mobile ? qsTr("Use the Key page to answer.")
+                                   : qsTr("Hold the Alt key or use the Key page to answer.")
                 color: Theme.muted
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true

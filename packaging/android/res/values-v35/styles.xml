@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 15 draws behind the system bars by default; Qt 6.8 gives QML no
+     safe area margins yet, so the window keeps clear of the bars -->
+<resources>
+    <style name="EasyMorseTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/easymorse_ground</item>
+        <item name="android:statusBarColor">@color/easymorse_chrome</item>
+        <item name="android:navigationBarColor">@color/easymorse_chrome</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>
