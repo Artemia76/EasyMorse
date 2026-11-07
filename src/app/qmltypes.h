@@ -35,6 +35,7 @@
 #include <QtQml/qqmlregistration.h>
 
 #include "keyer/keyerinput.h"
+#include "net/lobby.h"
 #include "net/peersession.h"
 #include "settings/settings.h"
 #include "trainer.h"
@@ -78,6 +79,22 @@ struct PeerSessionForeign
     QML_FOREIGN(PeerSession)
     QML_NAMED_ELEMENT(PeerSession)
     QML_UNCREATABLE("Provided by Trainer.session")
+};
+
+struct LobbyForeign
+{
+    Q_GADGET
+    QML_FOREIGN(Lobby)
+    QML_NAMED_ELEMENT(Lobby)
+    QML_UNCREATABLE("Provided by Trainer.lobby")
+};
+
+struct SignalingClientForeign
+{
+    Q_GADGET
+    QML_FOREIGN(SignalingClient)
+    QML_NAMED_ELEMENT(SignalingClient)
+    QML_UNCREATABLE("Provided by Trainer.lobby.client")
 };
 
 struct KeyerInputForeign

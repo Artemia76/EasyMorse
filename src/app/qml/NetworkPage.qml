@@ -12,6 +12,8 @@ Page {
 
     readonly property var session: Trainer.session
     readonly property bool connected: session.state === PeerSession.Connected
+    // A call through the server drives the session itself
+    readonly property bool manual: Trainer.lobby.callState === Lobby.Idle
     readonly property bool busy: session.state === PeerSession.Preparing
                                  || session.state === PeerSession.Inviting
                                  || session.state === PeerSession.Connecting
@@ -77,16 +79,25 @@ Page {
             width: scroll.availableWidth
             spacing: 12
 
+            ServerPanel {
+                Layout.fillWidth: true
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
+                Layout.topMargin: 12
+            }
+
             GroupBox {
                 title: qsTr("Connection")
                 Layout.fillWidth: true
-                Layout.margins: 12
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
 
                 ColumnLayout {
                     anchors.fill: parent
                     spacing: 8
 
                     RowLayout {
+                        visible: root.manual && Trainer.lobby.client.state !== SignalingClient.Online
                         Layout.fillWidth: true
                         Label { text: qsTr("Your callsign") }
                         TextField {
@@ -106,7 +117,7 @@ Page {
                     }
 
                     Label {
-                        visible: !root.connected
+                        visible: !root.connected && root.manual
                         text: qsTr("1. Prepare your invitation and send it to your correspondent (mail, chat…).\n2. Paste the invitation they send you and connect. Each of you does both steps.")
                         wrapMode: Text.WordWrap
                         opacity: 0.7
@@ -114,14 +125,14 @@ Page {
                     }
 
                     Button {
-                        visible: !root.busy && !root.connected
+                        visible: !root.busy && !root.connected && root.manual
                         text: qsTr("Prepare my invitation")
                         onClicked: root.session.start()
                     }
 
                     // Our invitation, to copy
                     RowLayout {
-                        visible: root.session.invitation.length > 0 && !root.connected
+                        visible: root.session.invitation.length > 0 && !root.connected && root.manual
                         Layout.fillWidth: true
                         TextArea {
                             id: myInvitation
@@ -145,7 +156,7 @@ Page {
 
                     // The correspondent's invitation, to paste
                     RowLayout {
-                        visible: !root.connected
+                        visible: !root.connected && root.manual
                         Layout.fillWidth: true
                         TextArea {
                             id: peerInvitation
@@ -207,7 +218,7 @@ Page {
                         Layout.fillWidth: true
                     }
                     Button {
-                        visible: root.connected || root.busy
+                        visible: (root.connected || root.busy) && root.manual
                         text: root.connected ? qsTr("Disconnect") : qsTr("Cancel")
                         onClicked: root.session.stop()
                     }

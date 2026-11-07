@@ -24,6 +24,7 @@ qt_add_qml_module(easymorse
         qml/SendPage.qml
         qml/KeyPage.qml
         qml/NetworkPage.qml
+        qml/ServerPanel.qml
         qml/GlossaryPage.qml
         qml/LogPage.qml
         qml/OptionsPage.qml

@@ -160,6 +160,12 @@ void PeerSession::endSession(State pState)
     m_jitter.reset();
     // Never leave the remote key down
     m_remoteKeyer.apply(false, MonotonicClock::nowMs());
+    // The invitation of an ended session is useless: a new one is needed
+    if (!m_invitation.isEmpty())
+    {
+        m_invitation.clear();
+        emit invitationChanged();
+    }
     setState(pState);
 }
 

@@ -107,6 +107,11 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
         client->setServerUrl(QUrl(m_settings->serverUrl()));
     });
     connect(client, &SignalingClient::tokenChanged, m_settings, &Settings::setServerToken);
+    // Logged in: the account callsign is the station callsign
+    connect(client, &SignalingClient::stateChanged, this, [this, client] {
+        if (client->state() == SignalingClient::State::Online)
+            m_settings->setCallsign(client->callsign());
+    });
     connect(m_settings, &Settings::callsignChanged, this, &Trainer::applySessionSettings);
     connect(m_settings, &Settings::stunServerChanged, this, &Trainer::applySessionSettings);
     connect(m_settings, &Settings::jitterDelayMsChanged, this, &Trainer::applySessionSettings);

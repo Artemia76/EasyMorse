@@ -66,6 +66,31 @@ ApplicationWindow {
         }
     }
 
+    // Incoming call from a room member, whatever the page shown
+    Dialog {
+        id: incomingCall
+        property string caller
+        anchors.centerIn: parent
+        modal: true
+        title: qsTr("Incoming call")
+        Label { text: qsTr("%1 is calling you for a Morse session.").arg(incomingCall.caller) }
+        footer: DialogButtonBox {
+            Button { text: qsTr("Accept"); DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole }
+            Button { text: qsTr("Decline"); DialogButtonBox.buttonRole: DialogButtonBox.RejectRole }
+        }
+        onAccepted: { Trainer.lobby.accept(); window.currentPage = 2 }
+        onRejected: Trainer.lobby.decline()
+    }
+    Connections {
+        target: Trainer.lobby
+        function onIncomingCall(pFrom) { incomingCall.caller = pFrom; incomingCall.open() }
+        function onCallStateChanged() {
+            // The caller gave up meanwhile
+            if (Trainer.lobby.callState !== Lobby.Ringing && incomingCall.opened)
+                incomingCall.close()
+        }
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
