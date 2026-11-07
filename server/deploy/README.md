@@ -65,8 +65,11 @@ server alone, listening on `127.0.0.1`, behind that server's HTTPS.
    sudo yunohost firewall allow UDP 49160:49200
    ```
 
-   With another nginx, put the two locations of `nginx-easymorse.conf` in the
-   server block of the domain and open the same UDP ports.
+   The file switches YunoHost's single sign-on (SSOwat) off for its two
+   locations: EasyMorse has its own accounts and must stay public, the login
+   portal is not affected. With another nginx, remove the two
+   `access_by_lua_block` lines, put the locations in the server block of the
+   domain and open the same UDP ports.
 
 3. Start it (`.env` from `.env.example`; the database is in the Docker volume
    `easymorse-data` unless `EASYMORSE_DATA` names a host directory):
