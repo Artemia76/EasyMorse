@@ -16,7 +16,8 @@ Pane {
     // Manual session and members of the room; a line shows once connected
     readonly property var sessions: [Trainer.session].concat(Trainer.lobby.peers)
     property int connectedCount: 0
-    readonly property int nameWidth: root.width < 520 ? 76 : 120
+    readonly property int nameWidth: root.width < 520 ? 72 : 104
+    readonly property int textSize: root.width < 520 ? 17 : 20
 
     signal clearRequested()
 
@@ -25,49 +26,82 @@ Pane {
         return all.length > root.maxChars ? all.slice(all.length - root.maxChars) : all
     }
 
-    // Set apart from the pages: tinted background, line on top
+    // Set apart from the pages, like a reception tape
     background: Rectangle {
-        color: Qt.tint(root.Material.backgroundColor, Qt.alpha(root.Material.primaryColor, 0.08))
+        color: Theme.tape
         Rectangle {
             width: parent.width
             height: 1
-            color: root.Material.dividerColor
+            color: Theme.lineStrong
         }
     }
-    padding: 8
-    topPadding: 4
-    bottomPadding: 6
+    leftPadding: 16
+    rightPadding: 16
+    topPadding: 8
+    bottomPadding: 12
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 2
+        spacing: 4
 
         RowLayout {
             Layout.fillWidth: true
             Label {
-                text: qsTr("Decoded")
-                font.bold: true
-                opacity: 0.8
+                text: qsTr("Decoded").toUpperCase()
+                color: Theme.muted
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                font.letterSpacing: 1.2
                 Layout.fillWidth: true
             }
-            Label {
+            // What to show of the correspondents: nothing, after the message, live
+            Rectangle {
                 visible: root.connectedCount > 0
-                text: qsTr("Correspondents")
-                opacity: 0.7
-            }
-            ComboBox {
-                visible: root.connectedCount > 0
-                model: [qsTr("Nothing, listen"), qsTr("After the message"), qsTr("Live")]
-                currentIndex: MorseSettings.receiveDecodeMode
-                onActivated: (index) => MorseSettings.receiveDecodeMode = index
-                implicitContentWidthPolicy: ComboBox.WidestText
-                font.pixelSize: 13
-                Layout.preferredHeight: 40
+                color: Theme.surface
+                radius: 10
+                implicitWidth: modes.implicitWidth + 6
+                implicitHeight: 38
+                RowLayout {
+                    id: modes
+                    anchors.centerIn: parent
+                    spacing: 0
+                    Repeater {
+                        model: root.width < 520 ? [qsTr("Listen"), qsTr("After"), qsTr("Live")]
+                                                : [qsTr("Listen"), qsTr("After the message"), qsTr("Live")]
+                        AbstractButton {
+                            id: mode
+                            required property string modelData
+                            required property int index
+                            readonly property bool selected: MorseSettings.receiveDecodeMode === index
+                            text: modelData
+                            implicitHeight: 32
+                            implicitWidth: modeLabel.implicitWidth + 24
+                            checkable: true
+                            checked: selected
+                            onClicked: MorseSettings.receiveDecodeMode = index
+                            Accessible.name: qsTr("Show the correspondents: %1").arg(modelData)
+                            background: Rectangle {
+                                radius: 8
+                                color: mode.selected ? Theme.lineStrong : mode.hovered ? Theme.raised : "transparent"
+                            }
+                            contentItem: Label {
+                                id: modeLabel
+                                text: mode.text
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 13
+                                font.weight: mode.selected ? Font.DemiBold : Font.Medium
+                                color: mode.selected ? Theme.text : Theme.textSoft
+                            }
+                        }
+                    }
+                }
             }
             Button {
                 text: qsTr("Clear")
                 flat: true
                 font.pixelSize: 13
+                Material.foreground: Theme.accentText
                 Layout.preferredHeight: 40
                 onClicked: root.clearRequested()
             }
@@ -100,31 +134,34 @@ Pane {
 
             Rectangle {
                 width: 10; height: 10; radius: 5
-                color: Trainer.keyDown || Trainer.playing ? Material.accent : Material.color(Material.Grey)
+                color: Trainer.keyDown || Trainer.playing ? Theme.accent : Theme.lineStrong
             }
             Label {
                 text: MorseSettings.callsign.length > 0 ? MorseSettings.callsign : qsTr("Me")
-                font.bold: true
+                font.weight: Font.Bold
                 elide: Text.ElideRight
                 Layout.preferredWidth: root.nameWidth
             }
             Label {
                 // The end of the line stays visible, the pattern being keyed after it
                 text: own.text.replace(/&/g, "&amp;").replace(/</g, "&lt;") + (Trainer.decoderPattern.length > 0
-                                  ? "<font color=\"" + Material.accent + "\">"
-                                    + Trainer.decoderPattern.replace(/\./g, "·").replace(/-/g, "−") + "</font>" : "")
+                                  ? " <font color=\"" + Theme.accentText + "\">"
+                                    + Theme.pattern(Trainer.decoderPattern) + "</font>" : "")
                 textFormat: Text.StyledText
-                font.family: "monospace"
-                font.pixelSize: 18
+                font.family: Theme.monoFont
+                font.pixelSize: root.textSize
                 elide: Text.ElideLeft
                 horizontalAlignment: Text.AlignRight
                 Layout.fillWidth: true
             }
             Label {
                 text: qsTr("%1 WPM").arg(Math.round(Trainer.decoderSpeed))
-                opacity: 0.6
+                color: Theme.muted
+                font.family: Theme.monoFont
+                font.pixelSize: 13
                 horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 64
+                visible: root.width >= 520
+                Layout.preferredWidth: 84
             }
         }
 
@@ -197,10 +234,12 @@ Pane {
 
                 Rectangle {
                     width: 10; height: 10; radius: 5
-                    color: line.modelData.remoteKey.down ? Material.accent : Material.color(Material.Grey)
+                    color: line.modelData.remoteKey.down ? Theme.ok : Theme.lineStrong
                 }
                 Label {
                     text: line.modelData.peerCallsign.length > 0 ? line.modelData.peerCallsign : qsTr("Correspondent")
+                    color: Theme.okText
+                    font.weight: Font.DemiBold
                     elide: Text.ElideRight
                     Layout.preferredWidth: root.nameWidth
                 }
@@ -213,9 +252,9 @@ Pane {
                             return line.done + line.current
                         return line.done + (line.current.length > 0 ? "…" : "")
                     }
-                    opacity: MorseSettings.receiveDecodeMode === 0 ? 0.6 : 1
-                    font.family: "monospace"
-                    font.pixelSize: 18
+                    color: MorseSettings.receiveDecodeMode === 0 ? Theme.muted : Theme.textSoft
+                    font.family: MorseSettings.receiveDecodeMode === 0 ? Theme.uiFont : Theme.monoFont
+                    font.pixelSize: MorseSettings.receiveDecodeMode === 0 ? 14 : root.textSize
                     elide: Text.ElideLeft
                     horizontalAlignment: Text.AlignRight
                     Layout.fillWidth: true
@@ -228,9 +267,12 @@ Pane {
                 }
                 Label {
                     text: line.wpm > 0 ? qsTr("%1 WPM").arg(Math.round(line.wpm)) : ""
-                    opacity: 0.6
+                    color: Theme.muted
+                    font.family: Theme.monoFont
+                    font.pixelSize: 13
                     horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: 64
+                    visible: root.width >= 520
+                    Layout.preferredWidth: 84
                 }
             }
         }

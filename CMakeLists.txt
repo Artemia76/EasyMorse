@@ -52,7 +52,7 @@ option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServe
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core)
 if(EASYMORSE_BUILD_APP)
-    find_package(Qt6 REQUIRED COMPONENTS Gui Network WebSockets Qml Quick QuickControls2 LinguistTools
+    find_package(Qt6 REQUIRED COMPONENTS Gui Network WebSockets Qml Quick QuickControls2 Svg LinguistTools
                         OPTIONAL_COMPONENTS SerialPort)
     if(NOT TARGET Qt6::SerialPort)
         message(STATUS "Qt Serial Port not found: serial port keys disabled")

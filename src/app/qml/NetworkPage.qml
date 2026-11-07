@@ -51,6 +51,8 @@ Page {
 
     ListModel { id: messages }
 
+    background: null
+
     ScrollView {
         id: scroll
         anchors.fill: parent
@@ -59,21 +61,21 @@ Page {
 
         ColumnLayout {
             width: scroll.availableWidth
-            spacing: 12
+            spacing: 16
 
             ServerPanel {
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
-                Layout.topMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                Layout.topMargin: 24
             }
 
-            GroupBox {
+            Card {
                 title: qsTr("Connection")
                 visible: root.manual
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -90,7 +92,7 @@ Page {
                         visible: !root.connected && root.manual
                         text: qsTr("1. Prepare your invitation and send it to your correspondent (mail, chat…).\n2. Paste the invitation they send you and connect. Each of you does both steps.")
                         wrapMode: Text.WordWrap
-                        opacity: 0.7
+                        color: Theme.muted
                         Layout.fillWidth: true
                     }
 
@@ -109,7 +111,7 @@ Page {
                             text: root.session.invitation
                             readOnly: true
                             wrapMode: TextEdit.WrapAnywhere
-                            font.family: "monospace"
+                            font.family: Theme.monoFont
                             font.pixelSize: 11
                             Layout.fillWidth: true
                             Layout.maximumHeight: 90
@@ -132,7 +134,7 @@ Page {
                             id: peerInvitation
                             placeholderText: qsTr("Paste your correspondent's invitation here")
                             wrapMode: TextEdit.WrapAnywhere
-                            font.family: "monospace"
+                            font.family: Theme.monoFont
                             font.pixelSize: 11
                             Layout.fillWidth: true
                             Layout.maximumHeight: 90
@@ -157,7 +159,7 @@ Page {
                     Label {
                         id: joinError
                         visible: text.length > 0 && !root.connected
-                        color: Material.color(Material.Red)
+                        color: Theme.error
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
@@ -176,7 +178,7 @@ Page {
                         Label { text: qsTr("Security code") }
                         Label {
                             text: root.session.fingerprint
-                            font.family: "monospace"
+                            font.family: Theme.monoFont
                             font.bold: true
                         }
                     }
@@ -184,7 +186,7 @@ Page {
                         visible: root.connected
                         text: qsTr("Read the security code to each other: if it differs, someone is in the middle.")
                         wrapMode: Text.WordWrap
-                        opacity: 0.7
+                        color: Theme.muted
                         Layout.fillWidth: true
                     }
                     Button {
@@ -196,13 +198,13 @@ Page {
             }
 
             // Text messages of the manual session (a room has its chat)
-            GroupBox {
+            Card {
                 title: qsTr("Messages")
                 visible: root.manual
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
-                Layout.bottomMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                Layout.bottomMargin: 24
 
                 ColumnLayout {
                     anchors.fill: parent

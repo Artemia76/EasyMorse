@@ -37,15 +37,16 @@ The audio synthesizer is derived from
 
 ### Arch Linux
 
-    sudo pacman -S base-devel cmake ninja qt6-base qt6-declarative qt6-serialport qt6-tools
+    sudo pacman -S base-devel cmake ninja qt6-base qt6-declarative qt6-serialport qt6-tools \
+        qt6-websockets qt6-svg
 
 ### Debian 13+ / Ubuntu 25.04+
 
     sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-declarative-dev \
-        qt6-serialport-dev qt6-tools-dev qt6-l10n-tools \
+        qt6-serialport-dev qt6-tools-dev qt6-l10n-tools qt6-websockets-dev qt6-svg-dev \
         qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
         qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript \
-        qml6-module-qtcore
+        qml6-module-qtcore qml6-module-qtquick-effects
 
 Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 [Qt online installer](https://www.qt.io/download-qt-installer-oss) or
@@ -54,7 +55,7 @@ Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 ### Fedora
 
     sudo dnf install gcc-c++ cmake ninja-build qt6-qtbase-devel qt6-qtdeclarative-devel \
-        qt6-qtserialport-devel qt6-qttools-devel
+        qt6-qtserialport-devel qt6-qttools-devel qt6-qtwebsockets-devel qt6-qtsvg-devel
 
 ### macOS
 
@@ -141,7 +142,7 @@ to run it on a VPS with Docker and HTTPS.
 | `src/protocol/` | Messages shared by the application and the server |
 | `server/` | Match-making server, its web page and deployment files |
 | `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
-| `3rdparty/` | Bundled libraries (miniaudio, Monocypher); libjuice is used from the system or downloaded |
+| `3rdparty/` | Bundled libraries (miniaudio, Monocypher) and fonts (Inter, JetBrains Mono, SIL Open Font License); libjuice is used from the system or downloaded |
 | `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |
 
 ## Translations

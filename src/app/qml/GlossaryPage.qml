@@ -10,15 +10,17 @@ import EasyMorse
 Page {
     id: root
 
+    background: null
+
     signal playRequested(string text)
 
     GridView {
         id: grid
         anchors.fill: parent
-        anchors.margins: 8
+        anchors.margins: 16
         clip: true
         cellWidth: Math.max(110, width / Math.max(1, Math.floor(width / 140)))
-        cellHeight: 76
+        cellHeight: 80
         model: GlossaryModel {}
         ScrollBar.vertical: ScrollBar {}
 
@@ -27,8 +29,12 @@ Page {
             required property string character
             required property string pattern
 
-            width: grid.cellWidth - 6
-            height: grid.cellHeight - 6
+            width: grid.cellWidth - 10
+            height: grid.cellHeight - 10
+            background: Rectangle {
+                radius: 12
+                color: cell.hovered ? Theme.raised : Theme.surface
+            }
             enabled: !Trainer.playing && Trainer.audioRunning
             onClicked: root.playRequested(character)
 
@@ -36,15 +42,17 @@ Page {
                 spacing: 12
                 Label {
                     text: cell.character
+                    font.family: Theme.monoFont
                     font.pixelSize: 26
                     font.bold: true
                     Layout.preferredWidth: 32
                     horizontalAlignment: Text.AlignHCenter
                 }
                 Label {
-                    text: cell.pattern.replace(/\./g, "·").replace(/-/g, "−")
-                    font.pixelSize: 26
-                    color: Material.accent
+                    text: Theme.pattern(cell.pattern)
+                    font.family: Theme.monoFont
+                    font.pixelSize: 24
+                    color: Theme.accentText
                     Layout.fillWidth: true
                 }
             }

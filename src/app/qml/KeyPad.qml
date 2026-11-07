@@ -2,7 +2,6 @@
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Material
 import EasyMorse
 
 // Big round key operated by mouse, finger or the space bar when focused
@@ -33,27 +32,63 @@ Item {
         }
     }
 
-    Rectangle {
+    Item {
+        id: dial
         anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height)
+        width: Math.min(parent.width, parent.height) / 1.12
         height: width
-        radius: width / 2
-        // Lit by any key: this pad, Alt, serial key
-        color: Trainer.keyDown ? Material.accent : Material.color(Material.Grey, Material.Shade700)
-        border.width: root.activeFocus ? 4 : 0
-        border.color: Material.primary
-        scale: Trainer.keyDown ? 0.96 : 1.0
 
-        Behavior on scale { NumberAnimation { duration: 40 } }
-
-        Label {
+        // Glow, stronger while any key is down: this pad, Alt, serial key
+        Rectangle {
             anchors.centerIn: parent
-            width: parent.width * 0.7
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            text: Trainer.playing ? qsTr("Listening…") : qsTr("Press and hold")
-            color: "white"
-            font.pixelSize: 18
+            width: parent.width * 1.12
+            height: width
+            radius: width / 2
+            color: Qt.alpha(Theme.accent, Trainer.keyDown ? 0.26 : 0.08)
+            Behavior on color { ColorAnimation { duration: 60 } }
+        }
+        // Base
+        Rectangle {
+            anchors.fill: parent
+            radius: width / 2
+            color: Theme.surface
+            border.width: 2
+            border.color: Theme.lineStrong
+        }
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width * 0.88
+            height: width
+            radius: width / 2
+            color: Theme.raised
+            border.width: root.activeFocus ? 3 : 0
+            border.color: Theme.accent
+        }
+        // The key itself
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width * 0.62
+            height: width
+            radius: width / 2
+            scale: Trainer.keyDown ? 0.95 : 1.0
+            opacity: Trainer.playing ? 0.5 : 1.0
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Trainer.keyDown ? "#FFE3A8" : Theme.accentLight }
+                GradientStop { position: 0.55; color: Theme.accent }
+                GradientStop { position: 1.0; color: Theme.accentDeep }
+            }
+            Behavior on scale { NumberAnimation { duration: 40 } }
+
+            Label {
+                anchors.centerIn: parent
+                width: parent.width * 0.8
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                text: Trainer.playing ? qsTr("Listening…") : qsTr("Press")
+                color: Theme.accentInk
+                font.pixelSize: 16
+                font.weight: Font.DemiBold
+            }
         }
     }
 

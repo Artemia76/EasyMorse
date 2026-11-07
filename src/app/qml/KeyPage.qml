@@ -2,7 +2,6 @@
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Material
 import QtQuick.Layouts
 import EasyMorse
 
@@ -10,32 +9,38 @@ import EasyMorse
 Page {
     id: root
 
+    background: null
+
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
+        anchors.margins: 24
+        spacing: 16
 
+        Label {
+            // Dots and dashes of the character being keyed
+            text: Theme.pattern(Trainer.decoderPattern).split("").join(" ") || " "
+            font.family: Theme.monoFont
+            font.pixelSize: 44
+            color: Theme.accentText
+            horizontalAlignment: Text.AlignHCenter
+            Layout.fillWidth: true
+            Layout.preferredHeight: 60
+        }
         KeyPad {
             id: pad
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.minimumHeight: 160
-        }
-        Label {
-            // Dots and dashes of the character being keyed
-            text: Trainer.decoderPattern.replace(/\./g, "·").replace(/-/g, "−") || " "
-            font.pixelSize: 36
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
+            Layout.maximumHeight: 340
+            Layout.alignment: Qt.AlignHCenter
         }
         Label {
             text: qsTr("Space bar (key focused), Alt key or serial key")
-                  + " · " + qsTr("Decoded at %1 WPM").arg(Math.round(Trainer.decoderSpeed))
-                  + (MorseSettings.decoderAutoAdapt ? "" : " " + qsTr("(locked)"))
-            opacity: 0.7
+            color: Theme.muted
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
         }
+        Item { Layout.fillHeight: true; Layout.maximumHeight: 40 }
     }
 }

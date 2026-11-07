@@ -13,6 +13,9 @@ qt_add_executable(easymorse WIN32 MACOSX_BUNDLE
     "${PROJECT_SOURCE_DIR}/resources.qrc"
 )
 
+# Colors and fonts shared by every page
+set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(easymorse
     URI EasyMorse
     VERSION 1.0
@@ -29,6 +32,22 @@ qt_add_qml_module(easymorse
         qml/GlossaryPage.qml
         qml/LogPage.qml
         qml/OptionsPage.qml
+        qml/Theme.qml
+        qml/Card.qml
+        qml/Chip.qml
+        qml/NavButton.qml
+    RESOURCES
+        icons/send.svg
+        icons/key.svg
+        icons/network.svg
+        icons/glossary.svg
+        icons/log.svg
+        icons/options.svg
+        icons/sliders.svg
+        icons/more.svg
+        icons/arrow.svg
+        icons/play.svg
+        icons/stop.svg
     SOURCES
         qmltypes.h
         glossarymodel.cpp glossarymodel.h
@@ -47,6 +66,7 @@ target_link_libraries(easymorse PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::QuickControls2
+    Qt6::Svg
 )
 
 set_target_properties(easymorse PROPERTIES

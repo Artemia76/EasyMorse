@@ -4,6 +4,7 @@ import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
+import QtQuick.Effects
 import QtQuick.Layouts
 import EasyMorse
 
@@ -16,18 +17,30 @@ ApplicationWindow {
     minimumHeight: 480
     visible: true
     title: "EasyMorse " + Qt.application.version
+    color: Theme.ground
+    font.family: Theme.uiFont
+    font.pixelSize: 14
 
-    Material.theme: UiSettings.theme === UiSettings.Dark ? Material.Dark
-                  : UiSettings.theme === UiSettings.Light ? Material.Light : Material.System
-    Material.primary: Material.Indigo
-    Material.accent: Material.Amber
+    readonly property bool darkTheme: UiSettings.theme === UiSettings.Dark
+        || (UiSettings.theme === UiSettings.System && Qt.styleHints.colorScheme !== Qt.ColorScheme.Light)
+    Binding { target: Theme; property: "dark"; value: window.darkTheme }
 
-    // On narrow screens the sound and speed controls get their own tab
+    Material.theme: darkTheme ? Material.Dark : Material.Light
+    Material.background: Theme.ground
+    Material.foreground: Theme.text
+    Material.accent: Theme.accentText
+    Material.primary: Theme.accentDeep
+    Material.roundedScale: Material.SmallScale
+
+    // Desktop: navigation rail on the left, sound and speed on the right.
+    // Phone: navigation at the bottom, sound and speed on a page of their own
     readonly property bool wide: width >= 800
+    readonly property bool roomy: width >= 1040
     readonly property int pageCount: 6
+    readonly property int controlsPage: 6
     property int currentPage: 0
-
-    onCurrentPageChanged: tabs.currentIndex = currentPage
+    // Pages where Morse is heard show the sound and speed controls beside them
+    readonly property bool sidePanel: wide && (currentPage === 0 || currentPage === 1 || currentPage === 3)
 
     // Window size is kept between sessions
     Settings {
@@ -37,31 +50,87 @@ ApplicationWindow {
     }
     onWideChanged: if (wide && currentPage >= pageCount) currentPage = 0
 
-    header: ToolBar {
-        // Same dark bar in light and dark themes, white text
-        Material.background: Material.color(Material.Indigo, Material.Shade700)
-        Material.foreground: "white"
+    readonly property var pages: [
+        { title: qsTr("Send"), icon: "../icons/send.svg" },
+        { title: qsTr("Key"), icon: "../icons/key.svg" },
+        { title: qsTr("Network"), icon: "../icons/network.svg" },
+        { title: qsTr("Glossary"), icon: "../icons/glossary.svg" },
+        { title: qsTr("Log"), icon: "../icons/log.svg" },
+        { title: qsTr("Options"), icon: "../icons/options.svg" },
+        { title: qsTr("Sound and speed"), icon: "../icons/sliders.svg" }
+    ]
+
+    readonly property var client: Trainer.lobby.client
+    readonly property bool inRoom: client.state === SignalingClient.Online && client.room.length > 0
+
+    header: Rectangle {
+        implicitHeight: 56
+        color: Theme.chrome
+
+        Rectangle {
+            anchors.bottom: parent.bottom
+            width: parent.width
+            height: 1
+            color: Theme.line
+        }
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
             spacing: 12
 
+            Item {
+                Layout.preferredWidth: 34
+                Layout.preferredHeight: 34
+                Image {
+                    // The walrus ("morse" in French) of the original icon
+                    id: logo
+                    anchors.fill: parent
+                    source: "qrc:/gfx/Morse_128x128.png"
+                    sourceSize: Qt.size(72, 72)
+                    visible: false
+                }
+                Rectangle {
+                    id: logoMask
+                    anchors.fill: parent
+                    radius: 8
+                    visible: false
+                    layer.enabled: true
+                }
+                MultiEffect {
+                    anchors.fill: parent
+                    source: logo
+                    maskEnabled: true
+                    maskSource: logoMask
+                }
+            }
             Label {
                 text: "EasyMorse"
-                font.pixelSize: 20
-                font.bold: true
+                font.pixelSize: 18
+                font.weight: Font.Bold
                 Layout.fillWidth: true
+                elide: Text.ElideRight
             }
-            Label {
+            Chip {
                 visible: !Trainer.audioRunning
                 text: qsTr("No sound output")
-                color: Material.color(Material.Red, Material.Shade200)
+                foreground: Theme.error
+                light: Theme.error
             }
-            Label {
-                text: qsTr("Decoder %1 WPM").arg(Math.round(Trainer.decoderSpeed))
-                      + (MorseSettings.decoderAutoAdapt ? "" : " 🔒")
+            Chip {
+                visible: window.inRoom
+                text: window.wide ? qsTr("Room %1 · %n station(s)", "", Trainer.lobby.connectedCount + 1).arg(window.client.room)
+                                  : window.client.room + " · " + (Trainer.lobby.connectedCount + 1)
+                color: Theme.okBackground
+                foreground: Theme.okText
+                light: Theme.ok
+            }
+            Chip {
+                visible: window.width >= 520
+                textFormat: Text.StyledText
+                text: qsTr("Decoder <b>%1</b> WPM").arg(Math.round(Trainer.decoderSpeed))
+                      + (MorseSettings.decoderAutoAdapt ? "" : " · " + qsTr("locked"))
             }
         }
     }
@@ -75,57 +144,73 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            ControlsPanel {
+            // ---- Navigation rail (desktop)
+            Rectangle {
                 visible: window.wide
-                Layout.preferredWidth: 320
+                color: Theme.chrome
                 Layout.fillHeight: true
+                Layout.preferredWidth: window.roomy ? 196 : 68
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 4
+
+                    Repeater {
+                        model: 6
+                        NavButton {
+                            required property int index
+                            text: window.pages[index].title
+                            icon.source: window.pages[index].icon
+                            compact: !window.roomy
+                            checked: window.currentPage === index
+                            onClicked: window.currentPage = index
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Item { Layout.fillHeight: true }
+                }
+                Rectangle {
+                    anchors.right: parent.right
+                    width: 1
+                    height: parent.height
+                    color: Theme.line
+                }
             }
 
-            ToolSeparator {
-                visible: window.wide
-                orientation: Qt.Vertical
-                Layout.fillHeight: true
-            }
-
-            ColumnLayout {
-                spacing: 0
+            StackLayout {
+                currentIndex: window.currentPage
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                TabBar {
-                    id: tabs
-                    Layout.fillWidth: true
-                    onCurrentIndexChanged: window.currentPage = currentIndex
-
-                    TabButton { text: qsTr("Send"); width: implicitWidth }
-                    TabButton { text: qsTr("Key"); width: implicitWidth }
-                    TabButton { text: qsTr("Network"); width: implicitWidth }
-                    TabButton { text: qsTr("Glossary"); width: implicitWidth }
-                    TabButton { text: qsTr("Log"); width: implicitWidth }
-                    TabButton { text: qsTr("Options"); width: implicitWidth }
-                    TabButton {
-                        text: qsTr("Settings")
-                        width: window.wide ? 0 : implicitWidth
-                        visible: !window.wide
+                SendPage {}
+                KeyPage {}
+                NetworkPage {}
+                GlossaryPage {
+                    onPlayRequested: (text) => {
+                        Trainer.play(text)
                     }
                 }
+                LogPage {}
+                OptionsPage {}
+                ControlsPanel {}
+            }
 
-                StackLayout {
-                    currentIndex: tabs.currentIndex
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+            // ---- Sound and speed (desktop)
+            Rectangle {
+                visible: window.sidePanel
+                color: Theme.chrome
+                Layout.fillHeight: true
+                Layout.preferredWidth: 300
 
-                    SendPage {}
-                    KeyPage {}
-                    NetworkPage {}
-                    GlossaryPage {
-                        onPlayRequested: (text) => {
-                            Trainer.play(text)
-                        }
-                    }
-                    LogPage {}
-                    OptionsPage {}
-                    ControlsPanel {}
+                Rectangle {
+                    width: 1
+                    height: parent.height
+                    color: Theme.line
+                }
+                ControlsPanel {
+                    anchors.fill: parent
+                    anchors.leftMargin: 1
                 }
             }
         }
@@ -133,6 +218,61 @@ ApplicationWindow {
         // Decoded text, whatever the page shown
         DecoderPanel {
             Layout.fillWidth: true
+        }
+
+        // ---- Navigation bar (phone)
+        Rectangle {
+            visible: !window.wide
+            color: Theme.chrome
+            Layout.fillWidth: true
+            implicitHeight: 64
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.line
+            }
+            RowLayout {
+                anchors.fill: parent
+                anchors.topMargin: 4
+                spacing: 0
+
+                Repeater {
+                    model: 3
+                    NavButton {
+                        required property int index
+                        vertical: true
+                        text: window.pages[index].title
+                        icon.source: window.pages[index].icon
+                        checked: window.currentPage === index
+                        onClicked: window.currentPage = index
+                        Layout.fillWidth: true
+                    }
+                }
+                NavButton {
+                    id: moreButton
+                    vertical: true
+                    text: qsTr("More")
+                    icon.source: "../icons/more.svg"
+                    checked: window.currentPage >= 3
+                    onClicked: { checked = Qt.binding(() => window.currentPage >= 3); moreMenu.open() }
+                    Layout.fillWidth: true
+
+                    Menu {
+                        id: moreMenu
+                        y: -height
+                        Repeater {
+                            model: [3, 4, 5, 6]
+                            MenuItem {
+                                required property int modelData
+                                text: window.pages[modelData].title
+                                icon.source: window.pages[modelData].icon
+                                onTriggered: window.currentPage = modelData
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

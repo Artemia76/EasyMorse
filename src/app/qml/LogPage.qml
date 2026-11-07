@@ -11,6 +11,8 @@ import EasyMorse
 Page {
     id: root
 
+    background: null
+
     header: ToolBar {
         Material.background: "transparent"
         Material.elevation: 0
@@ -63,7 +65,7 @@ Page {
             width: list.width
             text: message
             wrapMode: Text.WrapAnywhere
-            font.family: "monospace"
+            font.family: Theme.monoFont
             // Log colors are chosen for a light background
             color: palette.window.hslLightness < 0.5 ? Qt.lighter(messageColor, 1.8) : messageColor
         }

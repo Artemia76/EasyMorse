@@ -9,6 +9,8 @@ import EasyMorse
 Page {
     id: root
 
+    background: null
+
     ScrollView {
         id: scroll
         anchors.fill: parent
@@ -19,10 +21,11 @@ Page {
             width: scroll.availableWidth
             spacing: 12
 
-            GroupBox {
+            Card {
                 title: qsTr("Sound")
                 Layout.fillWidth: true
-                Layout.margins: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -68,7 +71,7 @@ Page {
                 }
             }
 
-            GroupBox {
+            Card {
                 title: qsTr("Serial key")
                 visible: Trainer.serialPorts().length > 0 || MorseSettings.serialEnabled
                 Layout.fillWidth: true
@@ -111,7 +114,7 @@ Page {
                 }
             }
 
-            GroupBox {
+            Card {
                 title: qsTr("Decoder")
                 Layout.fillWidth: true
                 Layout.leftMargin: 12
@@ -126,7 +129,7 @@ Page {
                     }
                     Label {
                         text: qsTr("When off, the decoder expects the character speed.")
-                        opacity: 0.7
+                        color: Theme.muted
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
@@ -143,14 +146,14 @@ Page {
                     }
                     Label {
                         text: qsTr("Fast follows speed changes sooner, Stable is less disturbed by clumsy keying. Large speed changes are always followed.")
-                        opacity: 0.7
+                        color: Theme.muted
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
                 }
             }
 
-            GroupBox {
+            Card {
                 title: qsTr("Network")
                 Layout.fillWidth: true
                 Layout.leftMargin: 12
@@ -186,7 +189,7 @@ Page {
                 }
             }
 
-            GroupBox {
+            Card {
                 title: qsTr("Interface")
                 Layout.fillWidth: true
                 Layout.leftMargin: 12

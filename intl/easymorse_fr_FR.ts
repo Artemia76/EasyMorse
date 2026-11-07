@@ -27,47 +27,88 @@
 <context>
     <name>ControlsPanel</name>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="22"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="31"/>
+        <source>Characters</source>
+        <translation>Caractères</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="32"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="54"/>
+        <source>%1 WPM</source>
+        <translation>%1 mots/min</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="53"/>
+        <source>Effective</source>
+        <translation>Effective</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="72"/>
         <source>Sound</source>
         <translation>Son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="27"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="83"/>
+        <source>Tone</source>
+        <translation>Tonalité</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="84"/>
+        <source>%1 Hz</source>
+        <translation>%1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="91"/>
+        <source>Volume</source>
+        <translation>Volume</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="92"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="99"/>
+        <source>%1 %</source>
+        <translation>%1 %</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="98"/>
+        <source>Background noise</source>
+        <translation>Bruit de fond</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="107"/>
+        <source>Noise filter</source>
+        <translation>Filtre du bruit</translation>
+    </message>
+    <message>
         <source>Tone: %1 Hz</source>
-        <translation>Tonalité : %1 Hz</translation>
+        <translation type="vanished">Tonalité : %1 Hz</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="35"/>
         <source>Volume: %1 %</source>
-        <translation>Volume : %1 %</translation>
+        <translation type="vanished">Volume : %1 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="42"/>
         <source>Background noise: %1 %</source>
-        <translation>Bruit de fond : %1 %</translation>
+        <translation type="vanished">Bruit de fond : %1 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="51"/>
         <source>Noise filter: %1</source>
-        <translation>Filtre du bruit : %1</translation>
+        <translation type="vanished">Filtre du bruit : %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="60"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="20"/>
         <source>Speed</source>
         <translation>Vitesse</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="66"/>
         <source>Characters: %1 WPM</source>
-        <translation>Caractères : %1 mots/min</translation>
+        <translation type="vanished">Caractères : %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="81"/>
         <source>Effective: %1 WPM</source>
-        <translation>Effective : %1 mots/min</translation>
+        <translation type="vanished">Effective : %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="90"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="62"/>
         <source>Characters are sent at their own speed, spaces are stretched to reach the effective speed.</source>
         <translation>Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse effective.</translation>
     </message>
@@ -76,7 +117,8 @@
         <translation type="vanished">Globale : %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="74"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="41"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="49"/>
         <source>Farnsworth spacing</source>
         <translation>Espacement Farnsworth</translation>
     </message>
@@ -88,53 +130,68 @@
 <context>
     <name>DecoderPanel</name>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="48"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="50"/>
         <source>Decoded</source>
         <translation>Décodage</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="55"/>
         <source>Correspondents</source>
-        <translation>Correspondants</translation>
+        <translation type="vanished">Correspondants</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
         <source>Nothing, listen</source>
-        <translation>Rien, écoutez</translation>
+        <translation type="vanished">Rien, écoutez</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="70"/>
         <source>After the message</source>
         <translation>Après le message</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="69"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="70"/>
         <source>Live</source>
         <translation>En direct</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="68"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="69"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="70"/>
+        <source>Listen</source>
+        <translation>Écouter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="69"/>
+        <source>After</source>
+        <translation>Après</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="82"/>
+        <source>Show the correspondents: %1</source>
+        <translation>Afficher les correspondants : %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="101"/>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="106"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="140"/>
         <source>Me</source>
         <translation>Moi</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="124"/>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="230"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="158"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="269"/>
         <source>%1 WPM</source>
         <translation>%1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="203"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="240"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="211"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="250"/>
         <source>listening…</source>
         <translation>à l&apos;écoute…</translation>
     </message>
@@ -142,32 +199,34 @@
 <context>
     <name>KeyPad</name>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="54"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="87"/>
         <source>Listening…</source>
         <translation>Écoute…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="54"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="87"/>
+        <source>Press</source>
+        <translation>Appuyer</translation>
+    </message>
+    <message>
         <source>Press and hold</source>
-        <translation>Appuyer et maintenir</translation>
+        <translation type="vanished">Appuyer et maintenir</translation>
     </message>
 </context>
 <context>
     <name>KeyPage</name>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="32"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="38"/>
         <source>Space bar (key focused), Alt key or serial key</source>
         <translation>Barre d&apos;espace (touche sélectionnée), touche Alt ou manipulateur série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="33"/>
         <source>Decoded at %1 WPM</source>
-        <translation>Décodé à %1 mots/min</translation>
+        <translation type="vanished">Décodé à %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="34"/>
         <source>(locked)</source>
-        <translation>(verrouillé)</translation>
+        <translation type="vanished">(verrouillé)</translation>
     </message>
     <message>
         <source>Clear</source>
@@ -181,37 +240,37 @@
 <context>
     <name>LogPage</name>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="25"/>
+        <location filename="../src/app/qml/LogPage.qml" line="27"/>
         <source>Essential</source>
         <translation>Essentiel</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="25"/>
+        <location filename="../src/app/qml/LogPage.qml" line="27"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="25"/>
+        <location filename="../src/app/qml/LogPage.qml" line="27"/>
         <source>Verbose</source>
         <translation>Détaillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="32"/>
+        <location filename="../src/app/qml/LogPage.qml" line="34"/>
         <source>Filter (wildcards)</source>
         <translation>Filtre (jokers)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="39"/>
+        <location filename="../src/app/qml/LogPage.qml" line="41"/>
         <source>Clear</source>
         <translation>Vider</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="43"/>
+        <location filename="../src/app/qml/LogPage.qml" line="45"/>
         <source>Save</source>
         <translation>Enregistrer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/LogPage.qml" line="76"/>
+        <location filename="../src/app/qml/LogPage.qml" line="78"/>
         <source>Web page (*.html *.htm)</source>
         <translation>Page web (*.html *.htm)</translation>
     </message>
@@ -219,14 +278,13 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="59"/>
+        <location filename="../src/app/qml/Main.qml" line="117"/>
         <source>No sound output</source>
         <translation>Pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="63"/>
         <source>Decoder %1 WPM</source>
-        <translation>Décodeur %1 mots/min</translation>
+        <translation type="vanished">Décodeur %1 mots/min</translation>
     </message>
     <message>
         <source>Incoming call</source>
@@ -245,39 +303,66 @@
         <translation type="vanished">Refuser</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="100"/>
+        <location filename="../src/app/qml/Main.qml" line="54"/>
         <source>Send</source>
         <translation>Émission</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="101"/>
+        <location filename="../src/app/qml/Main.qml" line="55"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="102"/>
+        <location filename="../src/app/qml/Main.qml" line="56"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="103"/>
+        <location filename="../src/app/qml/Main.qml" line="57"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="104"/>
+        <location filename="../src/app/qml/Main.qml" line="58"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="105"/>
+        <location filename="../src/app/qml/Main.qml" line="59"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="107"/>
+        <location filename="../src/app/qml/Main.qml" line="60"/>
+        <source>Sound and speed</source>
+        <translation>Son et vitesse</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/qml/Main.qml" line="123"/>
+        <source>Room %1 · %n station(s)</source>
+        <translation>
+            <numerusform>Salon %1 · %n station</numerusform>
+            <numerusform>Salon %1 · %n stations</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="132"/>
+        <source>Decoder &lt;b&gt;%1&lt;/b&gt; WPM</source>
+        <translation>Décodeur &lt;b&gt;%1&lt;/b&gt; mots/min</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="133"/>
+        <source>locked</source>
+        <translation>verrouillé</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="255"/>
+        <source>More</source>
+        <translation>Plus</translation>
+    </message>
+    <message>
         <source>Settings</source>
-        <translation>Réglages</translation>
+        <translation type="vanished">Réglages</translation>
     </message>
 </context>
 <context>
@@ -490,7 +575,7 @@
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="72"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="74"/>
         <source>Connection</source>
         <translation>Connexion</translation>
     </message>
@@ -507,69 +592,69 @@
         <translation type="vanished">%1 : </translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="91"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="93"/>
         <source>1. Prepare your invitation and send it to your correspondent (mail, chat…).
 2. Paste the invitation they send you and connect. Each of you does both steps.</source>
         <translation>1. Préparez votre invitation et envoyez-la à votre correspondant (mail, messagerie…).
 2. Collez l&apos;invitation qu&apos;il vous envoie et connectez-vous. Chacun fait les deux étapes.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="99"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="101"/>
         <source>Prepare my invitation</source>
         <translation>Préparer mon invitation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="118"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="120"/>
         <source>Copy</source>
         <translation>Copier</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="133"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="135"/>
         <source>Paste your correspondent&apos;s invitation here</source>
         <translation>Collez ici l&apos;invitation de votre correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="142"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="144"/>
         <source>Paste</source>
         <translation>Coller</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="146"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="148"/>
         <source>Connect</source>
         <translation>Se connecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="172"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="174"/>
         <source>Path</source>
         <translation>Chemin</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="174"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="176"/>
         <source>Round trip</source>
         <translation>Aller-retour</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="175"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="177"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="176"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="178"/>
         <source>Security code</source>
         <translation>Code de sécurité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="185"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="187"/>
         <source>Read the security code to each other: if it differs, someone is in the middle.</source>
         <translation>Lisez-vous le code de sécurité : s&apos;il diffère, quelqu&apos;un s&apos;est intercalé entre vous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="192"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="194"/>
         <source>Disconnect</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="192"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="194"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -618,22 +703,22 @@
         <translation type="vanished">Vider</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="200"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="202"/>
         <source>Messages</source>
         <translation>Messages</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="225"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="227"/>
         <source>Text message</source>
         <translation>Message texte</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="232"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="234"/>
         <source>Send</source>
         <translation>Envoyer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/NetworkPage.qml" line="236"/>
+        <location filename="../src/app/qml/NetworkPage.qml" line="238"/>
         <source>Me</source>
         <translation>Moi</translation>
     </message>
@@ -732,154 +817,154 @@
 <context>
     <name>OptionsPage</name>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="23"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="25"/>
         <source>Sound</source>
         <translation>Son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="33"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="36"/>
         <source>Output sound card</source>
         <translation>Carte son de sortie</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="39"/>
-        <location filename="../src/app/qml/OptionsPage.qml" line="44"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="42"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="47"/>
         <source>System default</source>
         <translation>Par défaut du système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="51"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="54"/>
         <source>Buffer size (keyer latency)</source>
         <translation>Taille du tampon (latence du manipulateur)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="56"/>
-        <location filename="../src/app/qml/OptionsPage.qml" line="180"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="59"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="183"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="66"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="69"/>
         <source>Smaller is more responsive. Increase it if you hear crackles.</source>
         <translation>Plus petit = plus réactif. Augmentez-le si vous entendez des craquements.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="72"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="75"/>
         <source>Serial key</source>
         <translation>Manipulateur série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="84"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="87"/>
         <source>Enabled</source>
         <translation>Activé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="90"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="93"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="102"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="105"/>
         <source>Choose a port or type a device path</source>
         <translation>Choisissez un port ou saisissez un chemin de périphérique</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="108"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="111"/>
         <source>Refresh the list of ports</source>
         <translation>Actualiser la liste des ports</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="115"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="118"/>
         <source>Decoder</source>
         <translation>Décodeur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="123"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="126"/>
         <source>Adapts to the sender speed</source>
         <translation>S&apos;adapte à la vitesse de l&apos;opérateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="128"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="131"/>
         <source>When off, the decoder expects the character speed.</source>
         <translation>Désactivé, le décodeur attend la vitesse des caractères.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="136"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="139"/>
         <source>Reactivity</source>
         <translation>Réactivité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="141"/>
         <source>Fast</source>
         <translation>Rapide</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="141"/>
         <source>Normal</source>
         <translation>Normale</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="141"/>
         <source>Stable</source>
         <translation>Stable</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="145"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="148"/>
         <source>Fast follows speed changes sooner, Stable is less disturbed by clumsy keying. Large speed changes are always followed.</source>
         <translation>Rapide suit plus tôt les changements de vitesse, Stable est moins perturbé par les maladresses de manipulation. Les grands changements de vitesse sont toujours suivis.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="154"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="157"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="164"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="167"/>
         <source>STUN server</source>
         <translation>Serveur STUN</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="171"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="174"/>
         <source>Tells your public address to find a path through your Internet box. Used for the next connection.</source>
         <translation>Indique votre adresse publique pour trouver un chemin à travers votre box Internet. Pris en compte à la prochaine connexion.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="174"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="177"/>
         <source>Reception delay</source>
         <translation>Délai de réception</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="184"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="187"/>
         <source>Longer keeps the rhythm of the remote station on an irregular connection, shorter answers sooner.</source>
         <translation>Plus long conserve le rythme du correspondant sur une connexion irrégulière, plus court répond plus vite.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="190"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="193"/>
         <source>Interface</source>
         <translation>Interface</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="202"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="205"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="212"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="215"/>
         <source>Theme</source>
         <translation>Thème</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="215"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="218"/>
         <source>System</source>
         <translation>Système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="215"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="218"/>
         <source>Light</source>
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="215"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="218"/>
         <source>Dark</source>
         <translation>Sombre</translation>
     </message>
@@ -927,24 +1012,54 @@
 <context>
     <name>SendPage</name>
     <message>
-        <location filename="../src/app/qml/SendPage.qml" line="53"/>
+        <location filename="../src/app/qml/SendPage.qml" line="68"/>
+        <location filename="../src/app/qml/SendPage.qml" line="91"/>
+        <source>Text to send</source>
+        <translation>Texte à émettre</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/SendPage.qml" line="85"/>
         <source>Text to send in Morse</source>
         <translation>Texte à émettre en morse</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/SendPage.qml" line="59"/>
+        <location filename="../src/app/qml/SendPage.qml" line="94"/>
         <source>Stop</source>
         <translation>Arrêter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/SendPage.qml" line="59"/>
+        <location filename="../src/app/qml/SendPage.qml" line="94"/>
         <source>Play</source>
         <translation>Jouer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/SendPage.qml" line="79"/>
+        <location filename="../src/app/qml/SendPage.qml" line="136"/>
+        <source>Sending · heard by your correspondents</source>
+        <translation>En cours · entendu par vos correspondants</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/SendPage.qml" line="136"/>
+        <source>Sending</source>
+        <translation>En cours</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/SendPage.qml" line="137"/>
+        <source>Last text</source>
+        <translation>Dernier texte</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/SendPage.qml" line="148"/>
+        <source>Type a text or choose a phrase, then play it.</source>
+        <translation>Tapez un texte ou choisissez une phrase, puis jouez-le.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/SendPage.qml" line="169"/>
+        <source>Hold the Alt key or use the Key page to answer.</source>
+        <translation>Maintenez Alt ou passez sur Manipulateur pour répondre.</translation>
+    </message>
+    <message>
         <source>Hold the Alt key or use the Key tab to answer.</source>
-        <translation>Maintenez la touche Alt ou utilisez l&apos;onglet Manipulateur pour répondre.</translation>
+        <translation type="vanished">Maintenez la touche Alt ou utilisez l&apos;onglet Manipulateur pour répondre.</translation>
     </message>
 </context>
 <context>
@@ -968,7 +1083,7 @@
 <context>
     <name>ServerPanel</name>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="23"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="55"/>
         <source>Server</source>
         <translation>Serveur</translation>
     </message>
@@ -989,122 +1104,159 @@
         <translation type="vanished">%1 n&apos;a pas répondu</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="30"/>
         <source>connected through the relay</source>
-        <translation>connecté par le relais</translation>
+        <translation type="vanished">connecté par le relais</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="30"/>
         <source>connected</source>
-        <translation>connecté</translation>
+        <translation type="vanished">connecté</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="31"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="33"/>
+        <source>through the relay</source>
+        <translation>par le relais</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="33"/>
+        <source>direct</source>
+        <translation>direct</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="37"/>
         <source>no connection, trying again…</source>
         <translation>pas de liaison, nouvel essai…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="36"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="39"/>
         <source>connecting…</source>
         <translation>connexion…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="60"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="68"/>
         <source>Server address</source>
         <translation>Adresse du serveur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="69"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="77"/>
         <source>Callsign</source>
         <translation>Indicatif</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="74"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="82"/>
         <source>Callsign or first name</source>
         <translation>Indicatif ou prénom</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="79"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="88"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="83"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="92"/>
         <source>At least 8 characters</source>
         <translation>8 caractères au moins</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="93"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="103"/>
         <source>Connecting…</source>
         <translation>Connexion…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="93"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="103"/>
         <source>Log in</source>
         <translation>Se connecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="102"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="113"/>
         <source>Create account</source>
         <translation>Créer un compte</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="119"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="130"/>
         <source>No server? Exchange invitations with your correspondent below.</source>
         <translation>Pas de serveur ? Échangez des invitations avec votre correspondant ci-dessous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="130"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="148"/>
         <source>Logged in as %1</source>
         <translation>Connecté en tant que %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="135"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
+        <source>Choose a room</source>
+        <translation>Choisissez un salon</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="165"/>
         <source>Log out</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="151"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="180"/>
+        <source>Room</source>
+        <translation>Salon</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="183"/>
         <source>Join</source>
         <translation>Rejoindre</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="191"/>
         <source>Leave</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="164"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="198"/>
+        <source>Type a room name or choose one, then join it.</source>
+        <translation>Tapez le nom d&apos;un salon ou choisissez-en un, puis rejoignez-le.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="326"/>
+        <source>Room messages</source>
+        <translation>Messages du salon</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="346"/>
+        <source>No message yet.</source>
+        <translation>Pas encore de message.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
         <source>Room %1</source>
         <translation>Salon %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="165"/>
         <source>Choose or type a room, then join it</source>
-        <translation>Choisissez ou saisissez un salon, puis rejoignez-le</translation>
+        <translation type="vanished">Choisissez ou saisissez un salon, puis rejoignez-le</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="173"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="199"/>
         <source>You hear the members of the room and they hear you: key when you like.</source>
         <translation>Vous entendez les membres du salon et ils vous entendent : manipulez quand vous voulez.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="174"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="200"/>
         <source>Nobody else in this room yet.</source>
         <translation>Personne d&apos;autre dans ce salon pour l&apos;instant.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="197"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="262"/>
         <source>(you)</source>
         <translation>(vous)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="213"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="288"/>
+        <source>Security code</source>
+        <translation>Code de sécurité</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="300"/>
         <source>Security code: %1 sees the same one, unless someone is in the middle.</source>
         <translation>Code de sécurité : %1 voit le même, sauf si quelqu&apos;un s&apos;est glissé entre vous.</translation>
     </message>
@@ -1129,12 +1281,13 @@
         <translation type="vanished">Raccrocher</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="236"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="353"/>
         <source>Message to the room</source>
         <translation>Message au salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="242"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="362"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="364"/>
         <source>Send</source>
         <translation>Envoyer</translation>
     </message>
@@ -1251,7 +1404,7 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="167"/>
+        <location filename="../src/app/main.cpp" line="169"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>
