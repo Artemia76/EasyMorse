@@ -130,7 +130,7 @@
 <context>
     <name>DecoderPanel</name>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="50"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="56"/>
         <source>Decoded</source>
         <translation>Décodage</translation>
     </message>
@@ -143,24 +143,24 @@
         <translation type="vanished">Rien, écoutez</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="61"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="67"/>
         <source>After the message</source>
         <translation>Après le message</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="61"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="66"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="67"/>
         <source>Live</source>
         <translation>En direct</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="61"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="66"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="67"/>
         <source>Listen</source>
         <translation>Écouter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="60"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="66"/>
         <source>After</source>
         <translation>Après</translation>
     </message>
@@ -169,33 +169,34 @@
         <translation type="vanished">Afficher les correspondants : %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="63"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="69"/>
         <source>Show the correspondents</source>
         <translation>Afficher les correspondants</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="67"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="73"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="140"/>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="106"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="112"/>
         <source>Me</source>
         <translation>Moi</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="124"/>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="235"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="130"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="250"/>
         <source>%1 WPM</source>
         <translation>%1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="206"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="221"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/DecoderPanel.qml" line="216"/>
+        <location filename="../src/app/qml/DecoderPanel.qml" line="231"/>
         <source>listening…</source>
         <translation>à l&apos;écoute…</translation>
     </message>
@@ -220,42 +221,42 @@
 <context>
     <name>KeyPage</name>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="25"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="27"/>
         <source>Straight key</source>
         <translation>Pioche</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="25"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="27"/>
         <source>Iambic</source>
         <translation>Iambique</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="27"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="29"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="32"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="34"/>
         <source>Mode %1 · %2 WPM</source>
         <translation>Mode %1 · %2 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="73"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="76"/>
         <source>One finger on each paddle; hold both to alternate.</source>
         <translation>Un doigt sur chaque palette ; tenez les deux pour alterner.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="74"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="77"/>
         <source>Press the key as long as the sign lasts.</source>
         <translation>Appuyez sur la touche le temps du signe.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="75"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="78"/>
         <source>%1: dots · %2: dashes · serial paddles</source>
         <translation>%1 : points · %2 : traits · palettes série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="77"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="80"/>
         <source>Space bar (key focused), %1 or serial key</source>
         <translation>Barre d&apos;espace (touche sélectionnée), %1 ou manipulateur série</translation>
     </message>
@@ -378,7 +379,7 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="124"/>
+        <location filename="../src/app/qml/Main.qml" line="126"/>
         <source>No sound output</source>
         <translation>Pas de sortie son</translation>
     </message>
@@ -403,42 +404,42 @@
         <translation type="vanished">Refuser</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="61"/>
+        <location filename="../src/app/qml/Main.qml" line="63"/>
         <source>Send</source>
         <translation>Émission</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="62"/>
+        <location filename="../src/app/qml/Main.qml" line="64"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="63"/>
+        <location filename="../src/app/qml/Main.qml" line="65"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="64"/>
+        <location filename="../src/app/qml/Main.qml" line="66"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="65"/>
+        <location filename="../src/app/qml/Main.qml" line="67"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="66"/>
+        <location filename="../src/app/qml/Main.qml" line="68"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="67"/>
+        <location filename="../src/app/qml/Main.qml" line="69"/>
         <source>Sound and speed</source>
         <translation>Son et vitesse</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/qml/Main.qml" line="130"/>
+        <location filename="../src/app/qml/Main.qml" line="132"/>
         <source>Room %1 · %n station(s)</source>
         <translation>
             <numerusform>Salon %1 · %n station</numerusform>
@@ -446,17 +447,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="139"/>
+        <location filename="../src/app/qml/Main.qml" line="141"/>
         <source>Decoder &lt;b&gt;%1&lt;/b&gt; WPM</source>
         <translation>Décodeur &lt;b&gt;%1&lt;/b&gt; mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="140"/>
+        <location filename="../src/app/qml/Main.qml" line="142"/>
         <source>locked</source>
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="262"/>
+        <location filename="../src/app/qml/Main.qml" line="265"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
@@ -1187,22 +1188,22 @@
 <context>
     <name>PaddlePad</name>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="72"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="73"/>
         <source>Dashes</source>
         <translation>Traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="72"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="73"/>
         <source>Dots</source>
         <translation>Points</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="94"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="95"/>
         <source>Dash paddle</source>
         <translation>Palette des traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="94"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="95"/>
         <source>Dot paddle</source>
         <translation>Palette des points</translation>
     </message>
@@ -1646,9 +1647,14 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="171"/>
+        <location filename="../src/app/main.cpp" line="172"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/main.cpp" line="177"/>
+        <source>No TLS library: secure servers (https) cannot be reached</source>
+        <translation>Pas de bibliothèque TLS : les serveurs sécurisés (https) sont injoignables</translation>
     </message>
 </context>
 </TS>

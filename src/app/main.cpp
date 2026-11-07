@@ -28,6 +28,7 @@
 
 #include <QCommandLineParser>
 #include <QDir>
+#include <QSslSocket>
 #include <QFontDatabase>
 #include <QGuiApplication>
 #include <QIcon>
@@ -169,6 +170,11 @@ int main(int argc, char *argv[])
         return 1;
 
     CLogger::instance()->log(QCoreApplication::translate("main", "Welcome to EasyMorse %1").arg(VER_PRODUCTVERSION_STR), Qt::blue);
+    // Secure servers (https://, wss://) need a TLS library
+    if (QSslSocket::supportsSsl())
+        CLogger::instance()->log(QStringLiteral("TLS: %1").arg(QSslSocket::sslLibraryVersionString()), Qt::darkGray);
+    else
+        CLogger::instance()->log(QCoreApplication::translate("main", "No TLS library: secure servers (https) cannot be reached"), Qt::red);
     // Sound card and serial key chosen in the options
     trainer.start();
     // Phones: no sound in the background, back when shown again
