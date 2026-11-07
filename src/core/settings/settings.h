@@ -82,7 +82,10 @@ public:
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
-    static constexpr const char* DefaultStunServer = "stun.l.google.com:19302";
+    // The project's match-making server, offered at the first start; its
+    // STUN service also finds the public address of manual sessions
+    static constexpr const char* DefaultServerUrl = "https://easymorse.f4ikz.ovh";
+    static constexpr const char* DefaultStunServer = "easymorse.f4ikz.ovh:3478";
 
     ///
     /// \param pIniFile settings file, empty for the platform default location

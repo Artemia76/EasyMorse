@@ -33,6 +33,7 @@ private slots:
         QCOMPARE(settings.decoderReactivity(), 1);
         QVERIFY(settings.callsign().isEmpty());
         QCOMPARE(settings.stunServer(), QString(Settings::DefaultStunServer));
+        QCOMPARE(settings.serverUrl(), QString(Settings::DefaultServerUrl));
         QCOMPARE(settings.jitterDelayMs(), 200);
         // Received Morse is not decoded by default: learn by ear
         QCOMPARE(settings.receiveDecodeMode(), 0);

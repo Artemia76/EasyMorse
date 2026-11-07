@@ -96,7 +96,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
     m_receiveDecodeMode = qBound(0, m_store->value(Key::ReceiveDecodeMode, 0).toInt(), 2);
-    m_serverUrl = m_store->value(Key::ServerUrl).toString();
+    m_serverUrl = m_store->value(Key::ServerUrl, DefaultServerUrl).toString();
     m_serverToken = m_store->value(Key::ServerToken).toString();
 }
 
