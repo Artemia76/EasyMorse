@@ -1,0 +1,41 @@
+# EasyMorse server with Caddy for HTTPS (Let's Encrypt certificates).
+# Copy .env.example to .env, set the domain and public address, then:
+#   docker compose up -d --build
+#
+# Host networking: TURN needs many UDP ports, and the server only listens
+# on 127.0.0.1:8080, reachable through Caddy.
+
+services:
+  easymorse:
+    build:
+      context: ../..
+      dockerfile: server/deploy/Dockerfile
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - easymorse-data:/data
+    command:
+      - --listen=127.0.0.1
+      - --port=8080
+      - --trust-proxy
+      - --rooms=${EASYMORSE_ROOMS:-Beginners,QSO}
+      - --public-host=${EASYMORSE_DOMAIN}
+      - --external-address=${EASYMORSE_PUBLIC_IP}
+      - --turn-port=3478
+      - --relay-ports=49160-49200
+
+  caddy:
+    image: caddy:2
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - EASYMORSE_DOMAIN=${EASYMORSE_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  easymorse-data:
+  caddy-data:
+  caddy-config:
