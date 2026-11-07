@@ -36,7 +36,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
-          modules: qtserialport
+          modules: qtserialport qtwebsockets qthttpserver
           cache: true
 
       - name: Install dependencies (Linux)

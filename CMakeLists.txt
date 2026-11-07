@@ -44,12 +44,20 @@ else()
 endif()
 option(EASYMORSE_DEPLOY_QT "Bundle Qt libraries and plugins when installing" ${_deploy_qt_default})
 option(EASYMORSE_BUILD_TESTS "Build the unit tests" ON)
+option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServer, WebSockets, Sql)" ON)
 
 # =======================================================================
 # Dependencies
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 LinguistTools
                     OPTIONAL_COMPONENTS SerialPort)
+if(EASYMORSE_BUILD_SERVER)
+    find_package(Qt6 OPTIONAL_COMPONENTS Network HttpServer WebSockets Sql)
+    if(NOT (TARGET Qt6::HttpServer AND TARGET Qt6::WebSockets AND TARGET Qt6::Sql))
+        message(STATUS "Qt HttpServer, WebSockets or Sql not found: server not built")
+        set(EASYMORSE_BUILD_SERVER OFF)
+    endif()
+endif()
 if(NOT TARGET Qt6::SerialPort)
     message(STATUS "Qt Serial Port not found: serial port keys disabled")
 endif()
@@ -93,8 +101,12 @@ configure_file(src/app/version.h.in "${PROJECT_BINARY_DIR}/generated/version.h" 
 # =======================================================================
 # Components
 
+add_subdirectory(src/protocol) # messages shared with the server
 add_subdirectory(src/core)  # audio, Morse logic, settings: no user interface
 add_subdirectory(src/app)   # QML application (desktop and mobile)
+if(EASYMORSE_BUILD_SERVER)
+    add_subdirectory(server)    # match-making server
+endif()
 
 if(EASYMORSE_BUILD_TESTS)
     enable_testing()
