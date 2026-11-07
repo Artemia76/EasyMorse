@@ -20,38 +20,87 @@
 ** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 ****************************************************************************/
 
+
 /****************************************************************************
 * keyboardkeyer.h is part of EasyMorse project
 *
-* The Alt key operates the straight key wherever the focus is, like in the
-* previous versions. Left and right Ctrl are the dot and dash contacts of
-* the paddles, as sent by the USB paddle adapters (VBand).
+* Keys of the computer keyboard used as a Morse key wherever the focus is:
+* one key for the straight key, two for the dot and dash paddles. Each one
+* is chosen by the user (left and right Ctrl, Alt, Shift... are told
+* apart); a printable key does not key while a text field has the focus.
 * **************************************************************************/
 
 #ifndef KEYBOARDKEYER_H
 #define KEYBOARDKEYER_H
 
 #include <QObject>
+#include <QString>
 
 #include "keyer/iambickeyer.h"
 
 class ManualKeyer;
+class QKeyEvent;
+class Settings;
 
 class KeyboardKeyer : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString capturing READ capturing NOTIFY capturingChanged)
 
 public:
-    explicit KeyboardKeyer(ManualKeyer* pKeyer, QObject* parent = nullptr);
+    KeyboardKeyer(ManualKeyer* pKeyer, Settings* pSettings, QObject* parent = nullptr);
 
     Paddles* paddles() { return &m_paddles; }
 
+    ///
+    /// \brief the next key pressed becomes the key of pRole ("straight", "dot"
+    /// or "dash"); Escape cancels
+    ///
+    Q_INVOKABLE void capture(const QString& pRole);
+    Q_INVOKABLE void cancelCapture();
+    QString capturing() const { return m_capturing; }
+
+    ///
+    /// \brief name of a key setting ("<key>:<side>") in the user language, e.g. "Left Ctrl"
+    ///
+    Q_INVOKABLE QString keyName(const QString& pKey) const;
+
+    // Ready-made choices of paddle keys
+    Q_INVOKABLE void useRightHandedKeys();
+    Q_INVOKABLE void useLeftHandedKeys();
+    Q_INVOKABLE void useAdapterKeys();
+
+signals:
+    void    capturingChanged();
+
 protected:
-    bool eventFilter(QObject* pWatched, QEvent* pEvent) override;
+    bool    eventFilter(QObject* pWatched, QEvent* pEvent) override;
 
 private:
-    ManualKeyer* m_keyer;
-    Paddles      m_paddles;
+    struct Binding
+    {
+        int key = 0;
+        int side = 0;   // 0 either, 1 left, 2 right
+        bool matches(int pKey, int pSide) const { return key == pKey && (side == 0 || side == pSide); }
+    };
+
+    static Binding parse(const QString& pKey);
+    static QString format(int pKey, int pSide) { return QString("%1:%2").arg(pKey).arg(pSide); }
+    ///
+    /// \brief Qt key and side (1 left, 2 right, 0 for keys that have one only)
+    ///
+    static void identify(const QKeyEvent* pEvent, int& pKey, int& pSide);
+    static bool isModifier(int pKey);
+    void    loadBindings();
+    void    releaseAll();
+
+    ManualKeyer*    m_keyer;
+    Settings*       m_settings;
+    Paddles         m_paddles;
+    Binding         m_straight;
+    Binding         m_dot;
+    Binding         m_dash;
+    QString         m_capturing;
 };
 
 #endif // KEYBOARDKEYER_H

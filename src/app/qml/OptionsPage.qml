@@ -9,6 +9,27 @@ import EasyMorse
 Page {
     id: root
 
+    // Key of the keyboard for a role, changed by pressing the new one
+    component KeyChooser: RowLayout {
+        id: chooser
+        required property string role
+        required property string value
+        readonly property bool waiting: Keyboard.capturing === role
+        spacing: 8
+        Label {
+            text: chooser.waiting ? qsTr("Press a key… (Escape to cancel)") : Keyboard.keyName(chooser.value)
+            font.family: chooser.waiting ? Theme.uiFont : Theme.monoFont
+            color: chooser.waiting ? Theme.accentText : Theme.text
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+        Button {
+            text: chooser.waiting ? qsTr("Cancel") : qsTr("Change")
+            flat: true
+            onClicked: chooser.waiting ? Keyboard.cancelCapture() : Keyboard.capture(chooser.role)
+        }
+    }
+
     background: null
 
     ScrollView {
@@ -112,8 +133,39 @@ Page {
                         ToolTip.text: qsTr("Dashes on the left contact, for left-handed operators")
                     }
 
+                    Label { text: qsTr("Straight key on the keyboard") }
+                    KeyChooser { role: "straight"; value: MorseSettings.straightKey }
+
+                    Label { text: qsTr("Paddle keys"); enabled: MorseSettings.keyerMode === 1 }
+                    Segmented {
+                        enabled: MorseSettings.keyerMode === 1
+                        model: [qsTr("Right-handed"), qsTr("Left-handed"), qsTr("USB adapter")]
+                        // Which ready-made choice the current keys are, if any
+                        currentIndex: {
+                            const keys = MorseSettings.dotKey + " " + MorseSettings.dashKey
+                            const control = Qt.platform.os === "osx" ? Qt.Key_Meta : Qt.Key_Control
+                            const alt = Qt.Key_Alt
+                            if (keys === control + ":1 " + alt + ":1") return 0
+                            if (keys === control + ":2 " + alt + ":2") return 1
+                            if (keys === control + ":1 " + control + ":2") return 2
+                            return -1
+                        }
+                        accessibleName: qsTr("Paddle keys")
+                        onActivated: (index) => {
+                            if (index === 0) Keyboard.useRightHandedKeys()
+                            else if (index === 1) Keyboard.useLeftHandedKeys()
+                            else Keyboard.useAdapterKeys()
+                        }
+                    }
+
+                    Label { text: qsTr("Dot paddle key"); enabled: MorseSettings.keyerMode === 1 }
+                    KeyChooser { role: "dot"; value: MorseSettings.dotKey; enabled: MorseSettings.keyerMode === 1 }
+
+                    Label { text: qsTr("Dash paddle key"); enabled: MorseSettings.keyerMode === 1 }
+                    KeyChooser { role: "dash"; value: MorseSettings.dashKey; enabled: MorseSettings.keyerMode === 1 }
+
                     Label {
-                        text: qsTr("The keyer sends at the character speed. Keyboard: Alt is the straight key; left and right Ctrl are the paddles, as USB paddle adapters send them.")
+                        text: qsTr("The keyer sends at the character speed. Ctrl and Alt keys work wherever the focus is; a letter key does not key while you type in a text field.")
                         color: Theme.muted
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true

@@ -46,6 +46,9 @@ namespace Key
     constexpr const char* KeyerMode = "keyer/Mode";
     constexpr const char* IambicMode = "keyer/IambicMode";
     constexpr const char* PaddlesReversed = "keyer/PaddlesReversed";
+    constexpr const char* StraightKey = "keyer/StraightKey";
+    constexpr const char* DotKey = "keyer/DotKey";
+    constexpr const char* DashKey = "keyer/DashKey";
     constexpr const char* Callsign = "network/Callsign";
     constexpr const char* StunServer = "network/StunServer";
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
@@ -78,6 +81,17 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_keyerMode = qBound(0, m_store->value(Key::KeyerMode, 0).toInt(), 1);
     m_iambicMode = qBound(0, m_store->value(Key::IambicMode, 1).toInt(), 1);
     m_paddlesReversed = m_store->value(Key::PaddlesReversed, false).toBool();
+    // Left Alt as in the previous versions (right Alt is AltGr on many
+    // layouts, needed to type); paddles for a right-handed operator:
+    // left Ctrl for dots and left Alt for dashes, side by side
+#ifdef Q_OS_MACOS
+    const int control = Qt::Key_Meta;   // the Control key on macOS
+#else
+    const int control = Qt::Key_Control;
+#endif
+    m_straightKey = m_store->value(Key::StraightKey, QString("%1:1").arg(int(Qt::Key_Alt))).toString();
+    m_dotKey = m_store->value(Key::DotKey, QString("%1:1").arg(control)).toString();
+    m_dashKey = m_store->value(Key::DashKey, QString("%1:1").arg(int(Qt::Key_Alt))).toString();
     m_callsign = m_store->value(Key::Callsign).toString();
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
@@ -192,6 +206,24 @@ void Settings::setPaddlesReversed(bool pReversed)
 {
     if (store(Key::PaddlesReversed, m_paddlesReversed, pReversed))
         emit paddlesReversedChanged();
+}
+
+void Settings::setStraightKey(const QString& pKey)
+{
+    if (store(Key::StraightKey, m_straightKey, pKey))
+        emit keyboardKeysChanged();
+}
+
+void Settings::setDotKey(const QString& pKey)
+{
+    if (store(Key::DotKey, m_dotKey, pKey))
+        emit keyboardKeysChanged();
+}
+
+void Settings::setDashKey(const QString& pKey)
+{
+    if (store(Key::DashKey, m_dashKey, pKey))
+        emit keyboardKeysChanged();
 }
 
 void Settings::setCallsign(const QString& pCallsign)

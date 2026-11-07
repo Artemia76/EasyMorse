@@ -35,6 +35,7 @@
 #include <QtQml/qqmlregistration.h>
 
 #include "keyer/keyerinput.h"
+#include "keyboardkeyer.h"
 #include "keyer/iambickeyer.h"
 #include "net/lobby.h"
 #include "net/peersession.h"
@@ -71,6 +72,14 @@ struct SettingsForeign : ExistingInstance<Settings>
     Q_GADGET
     QML_FOREIGN(Settings)
     QML_NAMED_ELEMENT(MorseSettings)
+    QML_SINGLETON
+};
+
+struct KeyboardKeyerForeign : ExistingInstance<KeyboardKeyer>
+{
+    Q_GADGET
+    QML_FOREIGN(KeyboardKeyer)
+    QML_NAMED_ELEMENT(Keyboard)
     QML_SINGLETON
 };
 

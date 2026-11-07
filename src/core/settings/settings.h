@@ -63,6 +63,10 @@ class Settings : public QObject
     Q_PROPERTY(int keyerMode READ keyerMode WRITE setKeyerMode NOTIFY keyerModeChanged)
     Q_PROPERTY(int iambicMode READ iambicMode WRITE setIambicMode NOTIFY iambicModeChanged)
     Q_PROPERTY(bool paddlesReversed READ paddlesReversed WRITE setPaddlesReversed NOTIFY paddlesReversedChanged)
+    // Keyboard keys: "<Qt key code>:<side>", side 0 = either, 1 = left, 2 = right
+    Q_PROPERTY(QString straightKey READ straightKey WRITE setStraightKey NOTIFY keyboardKeysChanged)
+    Q_PROPERTY(QString dotKey READ dotKey WRITE setDotKey NOTIFY keyboardKeysChanged)
+    Q_PROPERTY(QString dashKey READ dashKey WRITE setDashKey NOTIFY keyboardKeysChanged)
     // Network
     Q_PROPERTY(QString callsign READ callsign WRITE setCallsign NOTIFY callsignChanged)
     Q_PROPERTY(QString stunServer READ stunServer WRITE setStunServer NOTIFY stunServerChanged)
@@ -102,6 +106,9 @@ public:
     int     keyerMode() const { return m_keyerMode; }
     int     iambicMode() const { return m_iambicMode; }
     bool    paddlesReversed() const { return m_paddlesReversed; }
+    QString straightKey() const { return m_straightKey; }
+    QString dotKey() const { return m_dotKey; }
+    QString dashKey() const { return m_dashKey; }
     QString callsign() const { return m_callsign; }
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
@@ -128,6 +135,9 @@ public:
     void    setKeyerMode(int pMode);
     void    setIambicMode(int pMode);
     void    setPaddlesReversed(bool pReversed);
+    void    setStraightKey(const QString& pKey);
+    void    setDotKey(const QString& pKey);
+    void    setDashKey(const QString& pKey);
     void    setCallsign(const QString& pCallsign);
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
@@ -158,6 +168,7 @@ signals:
     void    keyerModeChanged();
     void    iambicModeChanged();
     void    paddlesReversedChanged();
+    void    keyboardKeysChanged();
     void    callsignChanged();
     void    stunServerChanged();
     void    jitterDelayMsChanged();
@@ -185,6 +196,9 @@ private:
     int         m_keyerMode;
     int         m_iambicMode;
     bool        m_paddlesReversed;
+    QString     m_straightKey;
+    QString     m_dotKey;
+    QString     m_dashKey;
     QString     m_callsign;
     QString     m_stunServer;
     int         m_jitterDelayMs;

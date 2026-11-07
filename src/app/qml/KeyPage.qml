@@ -70,8 +70,9 @@ Page {
             Layout.maximumHeight: 300
         }
         Label {
-            text: root.iambic ? qsTr("Left Ctrl: dots · Right Ctrl: dashes · serial paddles")
-                              : qsTr("Space bar (key focused), Alt key or serial key")
+            text: root.iambic ? qsTr("%1: dots · %2: dashes · serial paddles")
+                                .arg(Keyboard.keyName(MorseSettings.dotKey)).arg(Keyboard.keyName(MorseSettings.dashKey))
+                              : qsTr("Space bar (key focused), %1 or serial key").arg(Keyboard.keyName(MorseSettings.straightKey))
             color: Theme.muted
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter

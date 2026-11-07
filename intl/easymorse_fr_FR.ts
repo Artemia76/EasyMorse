@@ -241,13 +241,21 @@
     </message>
     <message>
         <location filename="../src/app/qml/KeyPage.qml" line="73"/>
-        <source>Left Ctrl: dots · Right Ctrl: dashes · serial paddles</source>
-        <translation>Ctrl gauche : points · Ctrl droit : traits · palettes série</translation>
+        <source>%1: dots · %2: dashes · serial paddles</source>
+        <translation>%1 : points · %2 : traits · palettes série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="74"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="75"/>
+        <source>Space bar (key focused), %1 or serial key</source>
+        <translation>Barre d&apos;espace (touche sélectionnée), %1 ou manipulateur série</translation>
+    </message>
+    <message>
+        <source>Left Ctrl: dots · Right Ctrl: dashes · serial paddles</source>
+        <translation type="vanished">Ctrl gauche : points · Ctrl droit : traits · palettes série</translation>
+    </message>
+    <message>
         <source>Space bar (key focused), Alt key or serial key</source>
-        <translation>Barre d&apos;espace (touche sélectionnée), touche Alt ou manipulateur série</translation>
+        <translation type="vanished">Barre d&apos;espace (touche sélectionnée), touche Alt ou manipulateur série</translation>
     </message>
     <message>
         <source>Decoded at %1 WPM</source>
@@ -264,6 +272,59 @@
     <message>
         <source>Decoded text appears here as you key</source>
         <translation type="vanished">Le texte décodé s&apos;affiche ici pendant que vous manipulez</translation>
+    </message>
+</context>
+<context>
+    <name>KeyboardKeyer</name>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="136"/>
+        <source>None</source>
+        <translation>Aucune</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="139"/>
+        <source>Ctrl</source>
+        <translation>Ctrl</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="142"/>
+        <source>Option</source>
+        <translation>Option</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="144"/>
+        <source>Alt</source>
+        <translation>Alt</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="147"/>
+        <source>Shift</source>
+        <translation>Maj</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="150"/>
+        <source>Command</source>
+        <translation>Commande</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="152"/>
+        <source>System</source>
+        <translation>Système</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="155"/>
+        <source>Space</source>
+        <translation>Espace</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="159"/>
+        <source>Left %1</source>
+        <translation>%1 gauche</translation>
+    </message>
+    <message>
+        <location filename="../src/app/keyboardkeyer.cpp" line="161"/>
+        <source>Right %1</source>
+        <translation>%1 droit</translation>
     </message>
 </context>
 <context>
@@ -846,209 +907,264 @@
 <context>
     <name>OptionsPage</name>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="25"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="46"/>
         <source>Sound</source>
         <translation>Son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="37"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="58"/>
         <source>Output sound card</source>
         <translation>Carte son de sortie</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="43"/>
-        <location filename="../src/app/qml/OptionsPage.qml" line="48"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="64"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="69"/>
         <source>System default</source>
         <translation>Par défaut du système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="55"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="76"/>
         <source>Buffer size (keyer latency)</source>
         <translation>Taille du tampon (latence du manipulateur)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="60"/>
-        <location filename="../src/app/qml/OptionsPage.qml" line="242"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="81"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="294"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="70"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="91"/>
         <source>Smaller is more responsive. Increase it if you hear crackles.</source>
         <translation>Plus petit = plus réactif. Augmentez-le si vous entendez des craquements.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="76"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="97"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="86"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="107"/>
         <source>Keying</source>
         <translation>Manipulation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="88"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="109"/>
         <source>Straight key</source>
         <translation>Pioche</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="88"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="109"/>
         <source>Iambic paddles</source>
         <translation>Palettes iambiques</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="95"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="116"/>
         <source>Iambic mode</source>
         <translation>Mode iambique</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="98"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="119"/>
         <source>A: stops when the paddles are released</source>
         <translation>A : s&apos;arrête quand on relâche les palettes</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="99"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="120"/>
         <source>B: sends one more element after a squeeze</source>
         <translation>B : ajoute un signe après un serrage</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="106"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="127"/>
         <source>Reversed paddles</source>
         <translation>Palettes inversées</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="112"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="133"/>
         <source>Dashes on the left contact, for left-handed operators</source>
         <translation>Traits sur le contact gauche, pour les gauchers</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="116"/>
         <source>The keyer sends at the character speed. Keyboard: Alt is the straight key; left and right Ctrl are the paddles, as USB paddle adapters send them.</source>
-        <translation>Le manipulateur iambique émet à la vitesse des caractères. Au clavier : Alt sert de pioche ; Ctrl gauche et Ctrl droit sont les palettes, comme les envoient les adaptateurs USB.</translation>
+        <translation type="vanished">Le manipulateur iambique émet à la vitesse des caractères. Au clavier : Alt sert de pioche ; Ctrl gauche et Ctrl droit sont les palettes, comme les envoient les adaptateurs USB.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="126"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="20"/>
+        <source>Press a key… (Escape to cancel)</source>
+        <translation>Appuyez sur une touche… (Échap pour annuler)</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="27"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="27"/>
+        <source>Change</source>
+        <translation>Changer</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="136"/>
+        <source>Straight key on the keyboard</source>
+        <translation>Touche de la pioche</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="139"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="153"/>
+        <source>Paddle keys</source>
+        <translation>Touches des palettes</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="142"/>
+        <source>Right-handed</source>
+        <translation>Droitier</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="142"/>
+        <source>Left-handed</source>
+        <translation>Gaucher</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="142"/>
+        <source>USB adapter</source>
+        <translation>Adaptateur USB</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="161"/>
+        <source>Dot paddle key</source>
+        <translation>Touche des points</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="164"/>
+        <source>Dash paddle key</source>
+        <translation>Touche des traits</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="168"/>
+        <source>The keyer sends at the character speed. Ctrl and Alt keys work wherever the focus is; a letter key does not key while you type in a text field.</source>
+        <translation>Le manipulateur iambique émet à la vitesse des caractères. Ctrl et Alt manipulent où que soit le curseur ; une touche de lettre ne manipule pas pendant que vous écrivez dans un champ de texte.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="178"/>
         <source>Serial key</source>
         <translation>Manipulateur série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="138"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="190"/>
         <source>Enabled</source>
         <translation>Activé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="144"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="196"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="156"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="208"/>
         <source>Choose a port or type a device path</source>
         <translation>Choisissez un port ou saisissez un chemin de périphérique</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="162"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="214"/>
         <source>Refresh the list of ports</source>
         <translation>Actualiser la liste des ports</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="167"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="219"/>
         <source>Wiring: DTR and RTS feed the contacts. Straight key on CTS or DSR; paddles with dots on CTS or DCD and dashes on DSR.</source>
         <translation>Câblage : DTR et RTS alimentent les contacts. Pioche sur CTS ou DSR ; palettes avec les points sur CTS ou DCD et les traits sur DSR.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="177"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="229"/>
         <source>Decoder</source>
         <translation>Décodeur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="185"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="237"/>
         <source>Adapts to the sender speed</source>
         <translation>S&apos;adapte à la vitesse de l&apos;opérateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="190"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="242"/>
         <source>When off, the decoder expects the character speed.</source>
         <translation>Désactivé, le décodeur attend la vitesse des caractères.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="198"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="250"/>
         <source>Reactivity</source>
         <translation>Réactivité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="200"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="252"/>
         <source>Fast</source>
         <translation>Rapide</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="200"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="252"/>
         <source>Normal</source>
         <translation>Normale</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="200"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="252"/>
         <source>Stable</source>
         <translation>Stable</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="207"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="259"/>
         <source>Fast follows speed changes sooner, Stable is less disturbed by clumsy keying. Large speed changes are always followed.</source>
         <translation>Rapide suit plus tôt les changements de vitesse, Stable est moins perturbé par les maladresses de manipulation. Les grands changements de vitesse sont toujours suivis.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="216"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="268"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="226"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="278"/>
         <source>STUN server</source>
         <translation>Serveur STUN</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="233"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="285"/>
         <source>Tells your public address to find a path through your Internet box. Used for the next connection.</source>
         <translation>Indique votre adresse publique pour trouver un chemin à travers votre box Internet. Pris en compte à la prochaine connexion.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="236"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="288"/>
         <source>Reception delay</source>
         <translation>Délai de réception</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="246"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="298"/>
         <source>Longer keeps the rhythm of the remote station on an irregular connection, shorter answers sooner.</source>
         <translation>Plus long conserve le rythme du correspondant sur une connexion irrégulière, plus court répond plus vite.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="252"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="304"/>
         <source>Interface</source>
         <translation>Interface</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="264"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="316"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="274"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="326"/>
         <source>Theme</source>
         <translation>Thème</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="277"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="329"/>
         <source>System</source>
         <translation>Système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="277"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="329"/>
         <source>Light</source>
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="277"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="329"/>
         <source>Dark</source>
         <translation>Sombre</translation>
     </message>
@@ -1510,7 +1626,7 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="170"/>
+        <location filename="../src/app/main.cpp" line="171"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>
