@@ -95,21 +95,21 @@ if(ANDROID)
         QT_ANDROID_VERSION_CODE ${EASYMORSE_VERSION_CODE}
     )
     # Android gives applications no OpenSSL: without it no https:// or wss://
-    # server. Built from the official sources by packaging/android/build-openssl.sh
+    # server. Built from the official sources by packaging/android/make-openssl.sh
     set(EASYMORSE_ANDROID_OPENSSL_DIR "" CACHE PATH
-        "OpenSSL built by packaging/android/build-openssl.sh, needed for https:// and wss://")
+        "OpenSSL built by packaging/android/make-openssl.sh, needed for https:// and wss://")
     if(EASYMORSE_ANDROID_OPENSSL_DIR)
         set(_openssl "${EASYMORSE_ANDROID_OPENSSL_DIR}/${CMAKE_ANDROID_ARCH_ABI}")
         if(NOT EXISTS "${_openssl}/libssl_3.so" OR NOT EXISTS "${_openssl}/libcrypto_3.so")
             message(FATAL_ERROR "No OpenSSL for ${CMAKE_ANDROID_ARCH_ABI} in ${EASYMORSE_ANDROID_OPENSSL_DIR}: "
-                                "run packaging/android/build-openssl.sh")
+                                "run packaging/android/make-openssl.sh")
         endif()
         # Loaded by Qt at run time, not linked
         set_property(TARGET easymorse APPEND PROPERTY QT_ANDROID_EXTRA_LIBS
             "${_openssl}/libcrypto_3.so" "${_openssl}/libssl_3.so")
     else()
         message(WARNING "EASYMORSE_ANDROID_OPENSSL_DIR is not set: the application will not "
-                        "reach https:// servers (see packaging/android/build-openssl.sh)")
+                        "reach https:// servers (see packaging/android/make-openssl.sh)")
     endif()
 elseif(IOS)
     set_target_properties(easymorse PROPERTIES

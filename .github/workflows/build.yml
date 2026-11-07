@@ -111,10 +111,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: openssl-android
-          key: openssl-android-${{ hashFiles('packaging/android/build-openssl.sh') }}
+          key: openssl-android-${{ hashFiles('packaging/android/make-openssl.sh') }}
 
       - name: Build OpenSSL for Android
-        run: packaging/android/build-openssl.sh openssl-android arm64-v8a
+        run: packaging/android/make-openssl.sh openssl-android arm64-v8a
 
       - name: Install Qt for Android
         uses: jurplel/install-qt-action@v4
