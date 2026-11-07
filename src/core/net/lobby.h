@@ -20,73 +20,107 @@
 ** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 ****************************************************************************/
 
+
 /****************************************************************************
 * lobby.h is part of EasyMorse project
 *
-* Calls between members of a room of the match-making server: call, ring,
-* accept or decline, then the peer to peer session is opened with the
-* invitations exchanged through the server (no copy and paste).
+* Room of the match-making server: a peer to peer session is opened by
+* itself with every other member of the room (full mesh), with the
+* invitations exchanged through the server. Lost links are retried while
+* the member stays in the room.
 * **************************************************************************/
 
 #ifndef LOBBY_H
 #define LOBBY_H
 
+#include <QList>
 #include <QObject>
 #include <QTimer>
 
-#include "net/signalingclient.h"
+#include <map>
 
-class PeerSession;
+#include "net/peerlink.h"
+#include "net/peersession.h"
+#include "net/signalingclient.h"
 
 class Lobby : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(CallState callState READ callState NOTIFY callStateChanged)
-    Q_PROPERTY(QString callPeer READ callPeer NOTIFY callStateChanged)
     Q_PROPERTY(SignalingClient* client READ client CONSTANT)
+    Q_PROPERTY(QList<PeerSession*> peers READ peers NOTIFY peersChanged)
+    Q_PROPERTY(int connectedCount READ connectedCount NOTIFY connectedCountChanged)
 
 public:
-    enum class CallState
-    {
-        Idle,
-        Calling,    // waiting for the member called to answer
-        Ringing,    // a member is calling us
-        InCall      // session opening or open
-    };
-    Q_ENUM(CallState)
+    // A session still not open after this long is started again
+    static constexpr int StallTimeoutMs = 20000;
+    static constexpr int FirstRetryMs = 3000;
+    static constexpr int MaxRetryMs = 60000;
 
-    static constexpr int CallTimeoutMs = 30000;
-
-    explicit Lobby(PeerSession* pSession, QObject* parent = nullptr);
+    explicit Lobby(QObject* parent = nullptr);
+    ~Lobby() override;
 
     SignalingClient* client() { return &m_client; }
-    CallState   callState() const { return m_callState; }
-    QString     callPeer() const { return m_peer; }
 
-    Q_INVOKABLE bool call(const QString& pCallsign);
-    Q_INVOKABLE void accept();
-    Q_INVOKABLE void decline();
-    Q_INVOKABLE void hangup();
+    ///
+    /// \brief sessions with the other members of the room, by callsign
+    ///
+    QList<PeerSession*> peers() const;
+    ///
+    /// \return the session with this member, null if none
+    ///
+    Q_INVOKABLE PeerSession* peer(const QString& pCallsign) const;
+    int     connectedCount() const;
+
+    ///
+    /// \brief STUN server used when the match-making server offers none
+    ///
+    void    setFallbackStun(const PeerLink::Server& pServer) { m_fallbackStun = pServer; }
+    void    setJitterDelay(int pMs);
+
+public slots:
+    ///
+    /// \brief send a change of the local key to every connected member
+    ///
+    void    sendKey(bool pDown, qint64 pTimeMs);
 
 signals:
-    void    callStateChanged();
-    void    incomingCall(const QString& pFrom);
+    void    peersChanged();
+    void    peerAdded(PeerSession* pSession);
     ///
-    /// \param pReason "declined", "busy", "timeout" or "left"
+    /// \brief the session is deleted right after
     ///
-    void    callFailed(const QString& pPeer, const QString& pReason);
+    void    peerRemoved(PeerSession* pSession);
+    void    connectedCountChanged();
 
 private:
-    void    onSignal(const QString& pFrom, const QString& pKind, const QString& pData);
-    void    startSession();
-    void    setCall(CallState pState, const QString& pPeer = QString());
+    struct Peer
+    {
+        PeerSession*    session = nullptr;
+        QString         sentInvitation;
+        qint64          stateSince = 0;
+        qint64          retryAt = 0;    // 0: no retry planned
+        int             retryDelayMs = 0;
+    };
 
-    PeerSession*    m_session;
-    SignalingClient m_client;
-    QTimer          m_callTimer;
-    CallState       m_callState = CallState::Idle;
-    QString         m_peer;
-    bool            m_invitationSent = false;
+    void    sync();
+    Peer&   addPeer(const QString& pCallsign);
+    void    removePeer(const QString& pCallsign);
+    void    clearPeers();
+    void    configure(PeerSession* pSession);
+    void    restart(Peer& pPeer);
+    void    onSignal(const QString& pFrom, const QString& pKind, const QString& pData);
+    void    tick();
+    ///
+    /// \brief one side only retries, so both do not restart at once
+    ///
+    bool    leads(const QString& pCallsign) const { return m_client.callsign() < pCallsign; }
+
+    SignalingClient             m_client;
+    std::map<QString, Peer>     m_peers;
+    QTimer                      m_tick;
+    PeerLink::Server            m_fallbackStun;
+    int                         m_jitterDelayMs = -1;
+    int                         m_connected = 0;
 };
 
 #endif // LOBBY_H

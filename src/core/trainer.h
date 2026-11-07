@@ -36,6 +36,9 @@
 #include <QStringList>
 #include <QTimer>
 
+#include <map>
+#include <memory>
+
 #include "audio/AudioEngine.h"
 #include "keyer/keyerinput.h"
 #include "morse/keydecoder.h"
@@ -63,6 +66,7 @@ class Trainer : public QObject
     Q_PROPERTY(bool remoteKeyDown READ isRemoteKeyDown NOTIFY remoteKeyDownChanged)
     Q_PROPERTY(bool remoteActive READ isRemoteActive NOTIFY remoteActiveChanged)
     Q_PROPERTY(double remoteDecoderSpeed READ remoteDecoderSpeed NOTIFY remoteDecoderSpeedChanged)
+    Q_PROPERTY(QString remoteCallsign READ remoteCallsign NOTIFY remoteDecoderSpeedChanged)
 
 public:
     explicit Trainer(Settings* pSettings, QObject* parent = nullptr);
@@ -79,7 +83,6 @@ public:
     ManualKeyer*    manualKeyer() { return &m_manualKeyer; }
     PeerSession*    session() { return &m_session; }
     Lobby*          lobby() { return &m_lobby; }
-    KeyDecoder*     remoteDecoder() { return &m_remoteDecoder; }
 #ifdef EASYMORSE_HAS_SERIALPORT
     SerialKeyer*    serialKeyer() const { return m_serialKeyer; }
 #endif
@@ -106,7 +109,11 @@ public:
     /// \brief the remote station keyed recently: its message is not over
     ///
     bool            isRemoteActive() const { return m_remoteActive; }
+    ///
+    /// \brief speed of the station heard last
+    ///
     double          remoteDecoderSpeed() const;
+    QString         remoteCallsign() const { return m_remoteCallsign; }
 
 signals:
     void            playingChanged();
@@ -119,13 +126,12 @@ signals:
     void            decoderPatternChanged();
     void            remoteKeyDownChanged();
     void            remoteActiveChanged();
-    void            remoteCharDecoded(const QString& pText, const QString& pPattern);
-    void            remoteWordGap();
+    void            remoteCharDecoded(const QString& pFrom, const QString& pText, const QString& pPattern);
+    void            remoteWordGap(const QString& pFrom);
     void            remoteDecoderSpeedChanged();
 
 private slots:
     void            onKeyChanged(bool pDown, qint64 pTimeMs);
-    void            onRemoteKeyChanged(bool pDown, qint64 pTimeMs);
     void            applySessionSettings();
     void            restartAudio();
     void            reopenSerial();
@@ -133,6 +139,14 @@ private slots:
 
 private:
     void            setKeyDown(bool pDown, qint64 pTimeMs);
+    ///
+    /// \brief play and decode a remote station (manual session or room member)
+    ///
+    void            addRemote(PeerSession* pSession);
+    void            removeRemote(PeerSession* pSession);
+    void            onRemoteKeyChanged(PeerSession* pSession, bool pDown, qint64 pTimeMs);
+    void            silenceRemote(PeerSession* pSession);
+    QString         remoteName(PeerSession* pSession) const;
 
     Settings*               m_settings;
     AudioEngine             m_audio;
@@ -141,7 +155,11 @@ private:
     ManualKeyer             m_manualKeyer;
     PeerSession             m_session;
     Lobby                   m_lobby;
-    KeyDecoder              m_remoteDecoder;
+    // One decoder per remote station: each one's speed is learnt separately
+    std::map<PeerSession*, std::unique_ptr<KeyDecoder>> m_remoteDecoders;
+    QSet<PeerSession*>      m_remoteDown;
+    PeerSession*            m_lastRemote = nullptr;
+    QString                 m_remoteCallsign;
     QTimer                  m_remoteIdleTimer;
     bool                    m_remoteActive = false;
 #ifdef EASYMORSE_HAS_SERIALPORT

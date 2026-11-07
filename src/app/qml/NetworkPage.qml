@@ -12,16 +12,28 @@ Page {
 
     readonly property var session: Trainer.session
     readonly property bool connected: session.state === PeerSession.Connected
-    // A call through the server drives the session itself
-    readonly property bool manual: Trainer.lobby.callState === Lobby.Idle
+    // In a room of the server the sessions open by themselves; otherwise
+    // invitations are exchanged by hand
+    readonly property bool inRoom: Trainer.lobby.client.state === SignalingClient.Online
+                                   && Trainer.lobby.client.room.length > 0
+    readonly property bool manual: !inRoom || root.connected || root.busy
     readonly property bool busy: session.state === PeerSession.Preparing
                                  || session.state === PeerSession.Inviting
                                  || session.state === PeerSession.Connecting
 
-    // Received Morse: finished messages, and the one in progress
+    // Received Morse: finished messages, and the one in progress with its sender
     property string receivedText
     property string currentText
+    property string currentFrom
     property bool revealed: false
+    readonly property bool hearing: root.connected || Trainer.lobby.connectedCount > 0
+
+    function flushMessage() {
+        if (root.currentText.trim().length > 0)
+            root.receivedText += qsTr("%1: ").arg(root.currentFrom) + root.currentText.trim() + "\n"
+        root.currentText = ""
+        root.revealed = false
+    }
 
     function stateText() {
         switch (session.state) {
@@ -46,17 +58,18 @@ Page {
 
     Connections {
         target: Trainer
-        function onRemoteCharDecoded(pText, pPattern) {
+        function onRemoteCharDecoded(pFrom, pText, pPattern) {
+            // Another station keys: a new line
+            if (pFrom !== root.currentFrom)
+                root.flushMessage()
+            root.currentFrom = pFrom
             root.currentText += pText.length > 0 ? pText : "[" + pPattern + "]"
         }
-        function onRemoteWordGap() { root.currentText += " " }
+        function onRemoteWordGap(pFrom) { if (pFrom === root.currentFrom) root.currentText += " " }
         function onRemoteActiveChanged() {
             // Message over: it joins the finished ones
-            if (!Trainer.remoteActive && root.currentText.length > 0) {
-                root.receivedText += root.currentText.trim() + "\n"
-                root.currentText = ""
-                root.revealed = false
-            }
+            if (!Trainer.remoteActive)
+                root.flushMessage()
         }
     }
 
@@ -88,6 +101,7 @@ Page {
 
             GroupBox {
                 title: qsTr("Connection")
+                visible: root.manual
                 Layout.fillWidth: true
                 Layout.leftMargin: 12
                 Layout.rightMargin: 12
@@ -230,7 +244,9 @@ Page {
                             color: Trainer.remoteKeyDown ? Material.accent : Material.color(Material.Grey)
                         }
                         Label {
-                            text: root.connected ? qsTr("Correspondent at %1 WPM").arg(Math.round(Trainer.remoteDecoderSpeed)) : qsTr("Nothing received yet")
+                            text: Trainer.remoteCallsign.length > 0 && root.hearing
+                                  ? qsTr("%1 at %2 WPM").arg(Trainer.remoteCallsign).arg(Math.round(Trainer.remoteDecoderSpeed))
+                                  : qsTr("Nothing received yet")
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
@@ -259,9 +275,10 @@ Page {
                             const mode = MorseSettings.receiveDecodeMode
                             if (mode === 0)
                                 return ""
+                            const current = root.currentText.length > 0 ? qsTr("%1: ").arg(root.currentFrom) : ""
                             if (mode === 2 || root.revealed)
-                                return root.receivedText + root.currentText
-                            return root.receivedText + (root.currentText.length > 0 ? "…" : "")
+                                return root.receivedText + current + root.currentText
+                            return root.receivedText + (current.length > 0 ? current + "…" : "")
                         }
                         onTextChanged: cursorPosition = length
 
@@ -285,14 +302,16 @@ Page {
                         Button {
                             text: qsTr("Clear")
                             flat: true
-                            onClicked: { root.receivedText = ""; root.currentText = "" }
+                            onClicked: { root.receivedText = ""; root.currentText = ""; root.currentFrom = "" }
                         }
                     }
                 }
             }
 
+            // Text messages of the manual session (a room has its chat)
             GroupBox {
                 title: qsTr("Messages")
+                visible: root.manual
                 Layout.fillWidth: true
                 Layout.leftMargin: 12
                 Layout.rightMargin: 12

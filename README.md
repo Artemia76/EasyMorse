@@ -100,11 +100,12 @@ GitHub Actions workflow for every push.
 
 ## Practising with a correspondent
 
-The *Network* tab connects two EasyMorse directly over the Internet.
+The *Network* tab connects EasyMorse directly over the Internet.
 
 **With an EasyMorse server** (see below): enter its address, log in or create
-an account, join a room and click *Call* next to an operator. Once the call is
-accepted the session opens by itself.
+an account and join a room. You are connected by yourself with every operator
+in the room (up to 8): everyone hears everyone, as on a shared frequency, and
+the decoded text shows who is sending.
 
 **Without a server**, with invitation codes:
 
@@ -112,8 +113,8 @@ accepted the session opens by itself.
    other (mail, chat...).
 2. Each pastes the code received and clicks *Connect*.
 
-In both cases, read the *security code* to each other: it must be the same on
-both sides.
+In both cases, the *security code* of a link must be the same on both sides:
+read it to each other to make sure nobody is in the middle.
 
 The key is sent as key events, not audio: each side hears the other with its
 own tone and the rhythm is restored on reception. By default the received Morse
@@ -124,8 +125,9 @@ to end (X25519, XChaCha20-Poly1305): the server never sees the Morse.
 
 ## EasyMorse server
 
-`easymorse-server` (in `server/`) hosts accounts, rooms and calls, serves a
-small web page and runs the STUN/TURN relay. It is built with the application
+`easymorse-server` (in `server/`) hosts accounts and rooms, serves a small web
+page and an administration page to moderate the accounts, and runs the
+STUN/TURN relay. It is built with the application
 when Qt 6.8+ HttpServer, WebSockets and Sql are installed, or alone with
 `-DEASYMORSE_BUILD_APP=OFF`. See [server/deploy/README.md](server/deploy/README.md)
 to run it on a VPS with Docker and HTTPS.

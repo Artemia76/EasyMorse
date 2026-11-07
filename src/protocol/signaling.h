@@ -37,8 +37,12 @@
 *                                         error   {code, message}
 *
 * Signal kinds, relayed between two members of the same room:
-*   call (A asks B for a session), accept, decline, invitation (the
-*   PeerSession invitation code), hangup.
+*   invitation (the PeerSession invitation code). Every member opens a
+*   session with each other member of its room by itself (full mesh).
+*   call, accept, decline and hangup are kept for older clients.
+*
+* Errors closing the connection for good (the token is no longer valid):
+*   bad_token, banned (message: the reason), kicked.
 * **************************************************************************/
 
 #ifndef SIGNALING_H
@@ -56,6 +60,8 @@ namespace Signaling
     constexpr int MaxRoomNameChars = 32;
     constexpr int MaxCallsignChars = 16;
     constexpr int MinPasswordChars = 8;
+    // Every member is connected to every other one: keep rooms small
+    constexpr int MaxRoomMembers = 8;
 
     namespace Type
     {

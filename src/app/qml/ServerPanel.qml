@@ -6,7 +6,8 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 import EasyMorse
 
-// Match-making server: account, rooms, members to call, room chat
+// Match-making server: account, rooms, members (each one connected
+// peer to peer by itself), room chat
 GroupBox {
     id: root
 
@@ -21,12 +22,18 @@ GroupBox {
 
     title: qsTr("Server")
 
-    function failureText(reason) {
-        switch (reason) {
-        case "declined": return qsTr("%1 declined the call")
-        case "busy": return qsTr("%1 is busy")
-        case "left": return qsTr("%1 left the room")
-        default: return qsTr("%1 did not answer")
+    function linkText(session) {
+        if (!session)
+            return ""
+        switch (session.state) {
+        case PeerSession.Connected:
+            return (session.pathType === "relay" ? qsTr("connected through the relay") : qsTr("connected"))
+                   + (session.roundTripMs >= 0 ? " · " + qsTr("%1 ms").arg(session.roundTripMs) : "")
+        case PeerSession.Disconnected:
+        case PeerSession.Failed:
+            return qsTr("no connection, trying again…")
+        default:
+            return qsTr("connecting…")
         }
     }
 
@@ -35,11 +42,6 @@ GroupBox {
         function onChatReceived(pFrom, pText) { roomChat.append({ from: pFrom, message: pText }) }
         function onRoomChanged() { if (root.client.room.length === 0) roomChat.clear() }
         function onStateChanged() { if (root.online) root.client.refreshRooms() }
-    }
-    Connections {
-        target: root.lobby
-        function onCallFailed(pPeer, pReason) { callMessage.text = root.failureText(pReason).arg(pPeer) }
-        function onCallStateChanged() { if (root.lobby.callState !== Lobby.Idle) callMessage.text = "" }
     }
 
     ListModel { id: roomChat }
@@ -165,45 +167,53 @@ GroupBox {
             font.bold: root.client.room.length > 0
         }
 
-        // Members, with a call button
+        Label {
+            visible: root.online && root.client.room.length > 0
+            text: root.client.members.length > 1
+                  ? qsTr("You hear the members of the room and they hear you: key when you like.")
+                  : qsTr("Nobody else in this room yet.")
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+
+        // Members and the state of the link with each of them
         Repeater {
             model: root.online ? root.client.members : []
             RowLayout {
+                id: member
                 required property string modelData
+                readonly property bool self: modelData === root.client.callsign
+                // Re-read when the list of sessions changes
+                readonly property var session: { root.lobby.peers; return self ? null : root.lobby.peer(modelData) }
+                readonly property bool connected: session !== null && session.state === PeerSession.Connected
                 Layout.fillWidth: true
+                Rectangle {
+                    width: 10; height: 10; radius: 5
+                    color: member.self || member.connected ? Material.color(Material.Green)
+                                                           : Material.color(Material.Grey)
+                }
                 Label {
-                    text: parent.modelData === root.client.callsign ? parent.modelData + " " + qsTr("(you)") : parent.modelData
+                    text: member.self ? member.modelData + " " + qsTr("(you)") : member.modelData
+                    font.bold: member.self
+                }
+                Label {
+                    text: root.linkText(member.session)
+                    opacity: 0.7
+                    elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
-                Button {
-                    visible: parent.modelData !== root.client.callsign
-                    text: qsTr("Call")
-                    enabled: root.lobby.callState === Lobby.Idle
-                    onClicked: root.lobby.call(parent.modelData)
+                Label {
+                    // Security code of the link: the same on both sides
+                    visible: member.connected
+                    text: member.session ? member.session.fingerprint : ""
+                    font.family: "monospace"
+                    opacity: 0.7
+                    ToolTip.visible: codeArea.containsMouse
+                    ToolTip.text: qsTr("Security code: %1 sees the same one, unless someone is in the middle.").arg(member.modelData)
+                    MouseArea { id: codeArea; anchors.fill: parent; hoverEnabled: true }
                 }
             }
-        }
-
-        // Call in progress
-        RowLayout {
-            visible: root.lobby.callState === Lobby.Calling
-            Layout.fillWidth: true
-            BusyIndicator { running: parent.visible; implicitWidth: 32; implicitHeight: 32 }
-            Label { text: qsTr("Calling %1…").arg(root.lobby.callPeer); Layout.fillWidth: true }
-            Button { text: qsTr("Cancel"); onClicked: root.lobby.hangup() }
-        }
-        RowLayout {
-            visible: root.lobby.callState === Lobby.InCall
-            Layout.fillWidth: true
-            Label { text: qsTr("In a session with %1").arg(root.lobby.callPeer); font.bold: true; Layout.fillWidth: true }
-            Button { text: qsTr("Hang up"); onClicked: root.lobby.hangup() }
-        }
-        Label {
-            id: callMessage
-            visible: text.length > 0
-            color: Material.color(Material.Orange)
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
         }
 
         // Room chat

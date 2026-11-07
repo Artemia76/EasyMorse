@@ -36,7 +36,6 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     : QObject(parent)
     , m_settings(pSettings)
     , m_sequencer(&m_audio)
-    , m_lobby(&m_session)
 {
     // Playback
     connect(&m_sequencer, &MorseSequencer::charPlayed, this, &Trainer::charPlayed);
@@ -70,13 +69,8 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     });
 #endif
 
-    // Remote station: played as its own key source and decoded by its own
-    // decoder, so its speed is learnt separately
-    connect(m_session.remoteKeyer(), &KeyerInput::keyChanged, this, &Trainer::onRemoteKeyChanged);
-    connect(&m_remoteDecoder, &KeyDecoder::charDecoded, this, &Trainer::remoteCharDecoded);
-    connect(&m_remoteDecoder, &KeyDecoder::wordGap, this, &Trainer::remoteWordGap);
-    connect(&m_remoteDecoder, &KeyDecoder::speedChanged, this, &Trainer::remoteDecoderSpeedChanged);
-    m_remoteDecoder.setSpeed(m_settings->charSpeed());
+    // Remote stations: the manual session and the members of the room, all
+    // played as the remote key source
     // The message is considered over after this long without keying
     m_remoteIdleTimer.setSingleShot(true);
     m_remoteIdleTimer.setInterval(3000);
@@ -84,23 +78,10 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
         m_remoteActive = false;
         emit remoteActiveChanged();
     });
-    connect(&m_session, &PeerSession::stateChanged, this, [this] {
-        if (m_session.state() == PeerSession::State::Connected)
-            return;
-        m_remoteDecoder.clear();
-        m_remoteIdleTimer.stop();
-        if (m_remoteActive)
-        {
-            m_remoteActive = false;
-            emit remoteActiveChanged();
-        }
-    });
+    addRemote(&m_session);
+    connect(&m_lobby, &Lobby::peerAdded, this, &Trainer::addRemote);
+    connect(&m_lobby, &Lobby::peerRemoved, this, &Trainer::removeRemote);
     applySessionSettings();
-    // A call uses the servers given by the match-making server; back to ours after
-    connect(&m_lobby, &Lobby::callStateChanged, this, [this] {
-        if (m_lobby.callState() == Lobby::CallState::Idle)
-            applySessionSettings();
-    });
     SignalingClient* client = m_lobby.client();
     client->setServerUrl(QUrl(m_settings->serverUrl()));
     connect(m_settings, &Settings::serverUrlChanged, this, [this, client] {
@@ -164,8 +145,11 @@ Trainer::~Trainer()
     // Members are destroyed in reverse order: the session, closing, would
     // report to slots using the remote decoder and timer already destroyed
     disconnect(&m_lobby, nullptr, this, nullptr);
-    disconnect(&m_session, nullptr, this, nullptr);
-    disconnect(m_session.remoteKeyer(), nullptr, this, nullptr);
+    for (const auto& [session, decoder] : m_remoteDecoders)
+    {
+        disconnect(session, nullptr, this, nullptr);
+        disconnect(session->remoteKeyer(), nullptr, this, nullptr);
+    }
     m_session.stop();
     m_settings->setDecoderEstimates(m_decoder.dotMs(), m_decoder.dashMs(), m_decoder.gapMs());
 }
@@ -273,30 +257,106 @@ void Trainer::setKeyDown(bool pDown, qint64 pTimeMs)
     else
         m_audio.keyUp(KeySource::Local);
     m_decoder.keyEdge(pDown, pTimeMs);
-    // Sent only when a session is connected
+    // Sent only to the connected sessions
     m_session.sendKey(pDown, pTimeMs);
+    m_lobby.sendKey(pDown, pTimeMs);
     emit keyDownChanged();
 }
 
 bool Trainer::isRemoteKeyDown() const
 {
-    return m_session.state() == PeerSession::State::Connected && m_session.remoteKeyer()->isDown();
+    return !m_remoteDown.isEmpty();
 }
 
 double Trainer::remoteDecoderSpeed() const
 {
-    return m_remoteDecoder.speed();
+    const auto it = m_remoteDecoders.find(m_lastRemote);
+    return it == m_remoteDecoders.end() ? 0.0 : it->second->speed();
 }
 
-void Trainer::onRemoteKeyChanged(bool pDown, qint64 pTimeMs)
+QString Trainer::remoteName(PeerSession* pSession) const
 {
+    return pSession->peerCallsign().isEmpty() ? tr("Correspondent") : pSession->peerCallsign();
+}
+
+void Trainer::addRemote(PeerSession* pSession)
+{
+    auto decoder = std::make_unique<KeyDecoder>();
+    decoder->setSpeed(m_settings->charSpeed());
+    decoder->setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
+    connect(decoder.get(), &KeyDecoder::charDecoded, this, [this, pSession](const QString& pText, const QString& pPattern) {
+        emit remoteCharDecoded(remoteName(pSession), pText, pPattern);
+    });
+    connect(decoder.get(), &KeyDecoder::wordGap, this, [this, pSession] { emit remoteWordGap(remoteName(pSession)); });
+    connect(decoder.get(), &KeyDecoder::speedChanged, this, [this, pSession] {
+        if (pSession == m_lastRemote)
+            emit remoteDecoderSpeedChanged();
+    });
+    m_remoteDecoders[pSession] = std::move(decoder);
+    connect(pSession->remoteKeyer(), &KeyerInput::keyChanged, this, [this, pSession](bool pDown, qint64 pTimeMs) {
+        onRemoteKeyChanged(pSession, pDown, pTimeMs);
+    });
+    connect(pSession, &PeerSession::stateChanged, this, [this, pSession] {
+        if (pSession->state() != PeerSession::State::Connected)
+            silenceRemote(pSession);
+    });
+}
+
+void Trainer::removeRemote(PeerSession* pSession)
+{
+    disconnect(pSession, nullptr, this, nullptr);
+    disconnect(pSession->remoteKeyer(), nullptr, this, nullptr);
+    silenceRemote(pSession);
+    m_remoteDecoders.erase(pSession);
+    if (m_lastRemote == pSession)
+        m_lastRemote = nullptr;
+}
+
+void Trainer::silenceRemote(PeerSession* pSession)
+{
+    if (m_remoteDown.remove(pSession))
+    {
+        if (m_remoteDown.isEmpty())
+            m_audio.keyUp(KeySource::Remote);
+        emit remoteKeyDownChanged();
+    }
+    const auto it = m_remoteDecoders.find(pSession);
+    if (it != m_remoteDecoders.end())
+        it->second->clear();
+    if (m_remoteDown.isEmpty() && m_remoteActive)
+    {
+        m_remoteIdleTimer.start();
+    }
+}
+
+///
+/// \brief Trainer::onRemoteKeyChanged the tone sounds while any remote key is down,
+/// as on a shared frequency
+///
+void Trainer::onRemoteKeyChanged(PeerSession* pSession, bool pDown, qint64 pTimeMs)
+{
+    const bool wasDown = !m_remoteDown.isEmpty();
     if (pDown)
-        m_audio.keyDown(KeySource::Remote);
+        m_remoteDown.insert(pSession);
     else
+        m_remoteDown.remove(pSession);
+    const bool down = !m_remoteDown.isEmpty();
+    if (down && !wasDown)
+        m_audio.keyDown(KeySource::Remote);
+    else if (!down && wasDown)
         m_audio.keyUp(KeySource::Remote);
-    m_remoteDecoder.keyEdge(pDown, pTimeMs);
+
+    const auto it = m_remoteDecoders.find(pSession);
+    if (it != m_remoteDecoders.end())
+        it->second->keyEdge(pDown, pTimeMs);
     if (pDown)
     {
+        if (pSession != m_lastRemote || m_remoteCallsign != remoteName(pSession))
+        {
+            m_lastRemote = pSession;
+            m_remoteCallsign = remoteName(pSession);
+            emit remoteDecoderSpeedChanged();
+        }
         m_remoteIdleTimer.stop();
         if (!m_remoteActive)
         {
@@ -304,7 +364,7 @@ void Trainer::onRemoteKeyChanged(bool pDown, qint64 pTimeMs)
             emit remoteActiveChanged();
         }
     }
-    else
+    else if (!down)
     {
         m_remoteIdleTimer.start();
     }
@@ -325,6 +385,8 @@ void Trainer::applySessionSettings()
     stun.port = static_cast<quint16>((portOk && port > 0 && port < 65536) ? port : 3478);
     m_session.setStunServer(stun);
     m_session.setTurnServer({});
+    m_lobby.setFallbackStun(stun);
+    m_lobby.setJitterDelay(m_settings->jitterDelayMs());
 }
 
 void Trainer::restartAudio()
@@ -357,8 +419,9 @@ void Trainer::applyDecoderMode()
     const bool autoAdapt = m_settings->decoderAutoAdapt();
     m_decoder.setAutoAdapt(autoAdapt);
     m_decoder.setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
-    // The remote speed is unknown: its decoder always adapts
-    m_remoteDecoder.setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
+    // The remote speeds are unknown: their decoders always adapt
+    for (const auto& [session, decoder] : m_remoteDecoders)
+        decoder->setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
     // A locked decoder expects the character speed
     if (!autoAdapt)
         m_decoder.setSpeed(m_settings->charSpeed());

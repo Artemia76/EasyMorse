@@ -1,5 +1,5 @@
-// End to end: match-making server in process, two clients calling each
-// other and opening a peer to peer session - part of EasyMorse, GPLv3
+// End to end: match-making server in process, clients in a room opening
+// peer to peer sessions with each other by themselves - part of EasyMorse, GPLv3
 
 #include <QTest>
 
@@ -16,10 +16,15 @@ namespace
 {
     struct Station
     {
-        PeerSession session;
-        Lobby       lobby{&session};
+        Lobby lobby;
 
         SignalingClient* client() { return lobby.client(); }
+        PeerSession* peer(const QString& pCallsign) { return lobby.peer(pCallsign); }
+        bool connectedWith(const QString& pCallsign)
+        {
+            PeerSession* session = lobby.peer(pCallsign);
+            return session && session->state() == PeerSession::State::Connected;
+        }
     };
 }
 
@@ -59,38 +64,7 @@ private slots:
         m_server.reset();
     }
 
-    void callOpensASessionWithoutCopyAndPaste()
-    {
-        Station alice, bob;
-        enter(alice, "F4IKZ");
-        enter(bob, "F5XYZ");
-        QTRY_COMPARE_WITH_TIMEOUT(alice.client()->members(), QStringList({"F4IKZ", "F5XYZ"}), 3000);
-
-        QSignalSpy ringing(&bob.lobby, &Lobby::incomingCall);
-        QVERIFY(alice.lobby.call("F5XYZ"));
-        QCOMPARE(alice.lobby.callState(), Lobby::CallState::Calling);
-        QVERIFY(ringing.wait(3000));
-        QCOMPARE(ringing.at(0).at(0).toString(), QString("F4IKZ"));
-        QCOMPARE(bob.lobby.callState(), Lobby::CallState::Ringing);
-
-        bob.lobby.accept();
-        QTRY_COMPARE_WITH_TIMEOUT(alice.session.state(), PeerSession::State::Connected, 15000);
-        QTRY_COMPARE_WITH_TIMEOUT(bob.session.state(), PeerSession::State::Connected, 15000);
-        QCOMPARE(alice.lobby.callState(), Lobby::CallState::InCall);
-        QCOMPARE(alice.session.fingerprint(), bob.session.fingerprint());
-
-        // Morse goes peer to peer
-        bob.session.setJitterDelay(0);
-        alice.session.sendKey(true, MonotonicClock::nowMs());
-        QTRY_VERIFY_WITH_TIMEOUT(bob.session.remoteKeyer()->isDown(), 3000);
-
-        alice.lobby.hangup();
-        QCOMPARE(alice.lobby.callState(), Lobby::CallState::Idle);
-        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.callState(), Lobby::CallState::Idle, 3000);
-        QVERIFY(!bob.session.remoteKeyer()->isDown());
-    }
-
-    void declineAndBusy()
+    void roomMembersConnectByThemselves()
     {
         Station alice, bob, carol;
         enter(alice, "F4IKZ");
@@ -98,25 +72,56 @@ private slots:
         enter(carol, "F6CAR");
         QTRY_COMPARE_WITH_TIMEOUT(alice.client()->members().size(), 3, 3000);
 
-        QSignalSpy failed(&alice.lobby, &Lobby::callFailed);
-        QVERIFY(alice.lobby.call("F5XYZ"));
-        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.callState(), Lobby::CallState::Ringing, 3000);
-        bob.lobby.decline();
-        QVERIFY(failed.wait(3000));
-        QCOMPARE(failed.at(0).at(1).toString(), QString("declined"));
-        QCOMPARE(alice.lobby.callState(), Lobby::CallState::Idle);
+        // Everyone with everyone, without calling
+        QTRY_COMPARE_WITH_TIMEOUT(alice.lobby.connectedCount(), 2, 20000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.connectedCount(), 2, 20000);
+        QTRY_COMPARE_WITH_TIMEOUT(carol.lobby.connectedCount(), 2, 20000);
+        QCOMPARE(alice.lobby.peers().size(), 2);
+        QVERIFY(!alice.peer("F4IKZ"));
+        QCOMPARE(alice.peer("F5XYZ")->fingerprint(), bob.peer("F4IKZ")->fingerprint());
+        QCOMPARE(bob.peer("F6CAR")->fingerprint(), carol.peer("F5XYZ")->fingerprint());
+        QCOMPARE(bob.peer("F4IKZ")->peerCallsign(), QString("F4IKZ"));
 
-        // Bob is being called by Carol: Alice gets "busy"
-        QVERIFY(carol.lobby.call("F5XYZ"));
-        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.callState(), Lobby::CallState::Ringing, 3000);
-        QVERIFY(alice.lobby.call("F5XYZ"));
-        QVERIFY(failed.wait(3000));
-        QCOMPARE(failed.at(1).at(1).toString(), QString("busy"));
-        QCOMPARE(bob.lobby.callPeer(), QString("F6CAR"));
+        // Alice's key reaches both
+        bob.lobby.setJitterDelay(0);
+        carol.lobby.setJitterDelay(0);
+        alice.lobby.sendKey(true, MonotonicClock::nowMs());
+        QTRY_VERIFY_WITH_TIMEOUT(bob.peer("F4IKZ")->remoteKeyer()->isDown(), 3000);
+        QTRY_VERIFY_WITH_TIMEOUT(carol.peer("F4IKZ")->remoteKeyer()->isDown(), 3000);
+        alice.lobby.sendKey(false, MonotonicClock::nowMs());
+        QTRY_VERIFY_WITH_TIMEOUT(!bob.peer("F4IKZ")->remoteKeyer()->isDown(), 3000);
 
-        // Cannot call oneself or someone absent
-        QVERIFY(!alice.lobby.call("F4IKZ"));
-        QVERIFY(!alice.lobby.call("NOBODY"));
+        // Carol leaves: her sessions close, the others stay
+        QSignalSpy removed(&alice.lobby, &Lobby::peerRemoved);
+        carol.client()->leaveRoom();
+        QCOMPARE(carol.lobby.peers().size(), 0);
+        QTRY_COMPARE_WITH_TIMEOUT(alice.lobby.peers().size(), 1, 3000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.peers().size(), 1, 3000);
+        QCOMPARE(removed.count(), 1);
+        QVERIFY(alice.connectedWith("F5XYZ"));
+        QVERIFY(bob.connectedWith("F4IKZ"));
+
+        // Logging out closes everything
+        alice.client()->logout();
+        QCOMPARE(alice.lobby.peers().size(), 0);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.lobby.peers().size(), 0, 3000);
+    }
+
+    void lostSessionIsOpenedAgain()
+    {
+        Station alice, bob;
+        enter(alice, "F4IKZ");
+        enter(bob, "F5XYZ");
+        QTRY_VERIFY_WITH_TIMEOUT(alice.connectedWith("F5XYZ"), 20000);
+        QTRY_VERIFY_WITH_TIMEOUT(bob.connectedWith("F4IKZ"), 20000);
+
+        // Bob's side of the link breaks while both stay in the room
+        bob.peer("F4IKZ")->stop();
+        QTRY_VERIFY_WITH_TIMEOUT(!alice.connectedWith("F5XYZ"), 5000);
+        // Alice (first callsign) starts again after a short delay
+        QTRY_VERIFY_WITH_TIMEOUT(alice.connectedWith("F5XYZ"), 30000);
+        QTRY_VERIFY_WITH_TIMEOUT(bob.connectedWith("F4IKZ"), 10000);
+        QCOMPARE(alice.peer("F5XYZ")->fingerprint(), bob.peer("F4IKZ")->fingerprint());
     }
 
     void relayCredentialsWork()

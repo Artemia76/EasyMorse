@@ -156,7 +156,9 @@ private slots:
 
         QTRY_VERIFY_WITH_TIMEOUT(bob.isRemoteActive(), 2000);
         QVERIFY(decoded.wait(2000));
-        QCOMPARE(decoded.at(0).at(0).toString(), QString("N"));
+        QCOMPARE(decoded.at(0).at(0).toString(), QString("F4IKZ"));
+        QCOMPARE(decoded.at(0).at(1).toString(), QString("N"));
+        QCOMPARE(bob.remoteCallsign(), QString("F4IKZ"));
         QCOMPARE(remoteKey.count(), 4);
         // Bob's own decoder did not see Alice's key
         QVERIFY(bob.decoderPattern().isEmpty());

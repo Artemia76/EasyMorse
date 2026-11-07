@@ -6,7 +6,7 @@ const french = {
   how: "Comment ça marche",
   step1: "Installez EasyMorse sur votre ordinateur.",
   step2: "Créez votre compte ci-dessous, ou depuis l'onglet Réseau de l'application.",
-  step3: "Dans l'application, saisissez l'adresse de ce serveur, rejoignez un salon et appelez un opérateur.",
+  step3: "Dans l'application, saisissez l'adresse de ce serveur et rejoignez un salon : vous êtes relié aux opérateurs présents.",
   download: "Télécharger EasyMorse",
   address: "Adresse du serveur pour l'application :",
   rooms: "Salons",

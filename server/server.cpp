@@ -362,6 +362,8 @@ void Server::joinRoom(Client* pClient, const QString& pRoom)
     const QString key = roomKey(name);
     if (pClient->room == key)
         return;
+    if (m_rooms.value(key).size() >= Signaling::MaxRoomMembers)
+        return sendError(pClient, "room_full", QString("At most %1 members per room").arg(Signaling::MaxRoomMembers));
     leaveRoom(pClient);
     if (!m_roomNames.contains(key))
         m_roomNames.insert(key, name);

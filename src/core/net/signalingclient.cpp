@@ -52,16 +52,15 @@ SignalingClient::SignalingClient(QObject* parent)
     connect(m_socket, &QWebSocket::textMessageReceived, this, &SignalingClient::onMessage);
     connect(m_socket, &QWebSocket::disconnected, this, [this] {
         const bool wasOnline = m_state == State::Online || m_state == State::Connecting;
+        const bool retry = wasOnline && !m_token.isEmpty();
+        // The state first: the room cleared while reconnecting keeps the sessions
+        setState(retry ? State::Connecting : State::Offline);
         m_room.clear();
         m_members.clear();
         emit roomChanged();
-        if (m_token.isEmpty() || !wasOnline)
-        {
-            setState(State::Offline);
+        if (!retry)
             return;
-        }
         // Lost: try again later with the same token
-        setState(State::Connecting);
         m_reconnectDelayMs = qBound(FirstReconnectDelayMs, m_reconnectDelayMs * 2, MaxReconnectDelayMs);
         m_reconnectTimer.start(m_reconnectDelayMs);
     });
@@ -244,13 +243,16 @@ void SignalingClient::onMessage(const QString& pText)
     else if (type == Signaling::Type::Error)
     {
         const QString code = message.value("code").toString();
-        if (code == "bad_token" || code == "replaced")
+        if (code == "bad_token" || code == "replaced" || code == "banned" || code == "kicked")
         {
             // Do not reconnect with a token the server refuses
             m_token.clear();
-            if (code == "bad_token")
+            m_wantedRoom.clear();
+            if (code != "replaced")
                 emit tokenChanged(QString());
         }
+        if (code == "room_full")
+            m_wantedRoom.clear();
         m_lastError = errorText(code, message.value("message").toString());
         emit errorOccurred(m_lastError);
     }
@@ -272,6 +274,13 @@ QString SignalingClient::errorText(const QString& pCode, const QString& pServerM
         return tr("Session expired, log in again");
     if (pCode == "replaced")
         return tr("Logged in from somewhere else");
+    if (pCode == "banned")
+        return pServerMessage.isEmpty() ? tr("This account is suspended")
+                                        : tr("This account is suspended: %1").arg(pServerMessage);
+    if (pCode == "kicked")
+        return tr("Disconnected by a moderator");
+    if (pCode == "room_full")
+        return tr("This room is full");
     if (pCode == "unknown_member")
         return tr("This operator is no longer in the room");
     return pServerMessage.isEmpty() ? tr("Server error") : pServerMessage;
