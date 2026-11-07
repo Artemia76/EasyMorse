@@ -13,7 +13,9 @@ class IFilter
 {
 
 public: 
-    virtual void triggerOn() = 0;
+        virtual ~IFilter() = default;
+
+virtual void triggerOn() = 0;
     virtual void triggerOff() = 0;
 
     virtual double process(double dInputValue) = 0;

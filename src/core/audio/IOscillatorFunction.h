@@ -13,6 +13,8 @@ class IOscillatorFunction
 {
 public:
 
+    virtual ~IOscillatorFunction() = default;
+
 virtual double calculate(double dTime, double dFrequency) = 0;
 
 private:

@@ -43,8 +43,6 @@ private:
     
     double m_dActualSustainAmplitude;
     double m_dStartAmplitude;
-    double m_dTimeNoteOn;
-    double m_dTimeNoteOff;
     double m_dTriggerOffTime;
     double m_dTriggerOnTime;
     double m_dCurrentAmplitude;

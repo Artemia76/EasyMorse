@@ -16,7 +16,9 @@
 class ILfo
 {
 public:
-    virtual void setOscillator(std::shared_ptr<IOscillatorFunction> pOscillator) = 0;
+        virtual ~ILfo() = default;
+
+virtual void setOscillator(std::shared_ptr<IOscillatorFunction> pOscillator) = 0;
 
     virtual void trigger(double dTime) = 0;
     
