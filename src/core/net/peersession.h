@@ -54,6 +54,7 @@ class PeerSession : public QObject
     Q_PROPERTY(QString fingerprint READ fingerprint NOTIFY peerChanged)
     Q_PROPERTY(QString pathType READ pathType NOTIFY stateChanged)
     Q_PROPERTY(int roundTripMs READ roundTripMs NOTIFY roundTripChanged)
+    Q_PROPERTY(KeyerInput* remoteKey READ remoteKeyInput CONSTANT)
 
 public:
     enum class State
@@ -84,6 +85,7 @@ public:
     ///
     RemoteKeyer* remoteKeyer() { return &m_remoteKeyer; }
     const RemoteKeyer* remoteKeyer() const { return &m_remoteKeyer; }
+    KeyerInput* remoteKeyInput() { return &m_remoteKeyer; }
 
     State   state() const { return m_state; }
     QString invitation() const { return m_invitation; }

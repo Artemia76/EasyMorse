@@ -98,6 +98,10 @@ public:
 
     Q_INVOKABLE bool play(const QString& pText);
     Q_INVOKABLE void stop();
+    ///
+    /// \brief speed learnt by the decoder of a remote station, in WPM
+    ///
+    Q_INVOKABLE double stationSpeed(PeerSession* pSession) const;
 
     bool            isPlaying() const;
     bool            isAudioRunning() const;
@@ -118,6 +122,10 @@ public:
 signals:
     void            playingChanged();
     void            charPlayed(int pIndex);
+    ///
+    /// \brief characters of the played text as they are sent (with the spaces before them)
+    ///
+    void            charSent(const QString& pText);
     void            audioRunningChanged();
     void            keyDownChanged();
     void            charDecoded(const QString& pText, const QString& pPattern);
@@ -126,8 +134,9 @@ signals:
     void            decoderPatternChanged();
     void            remoteKeyDownChanged();
     void            remoteActiveChanged();
-    void            remoteCharDecoded(const QString& pFrom, const QString& pText, const QString& pPattern);
-    void            remoteWordGap(const QString& pFrom);
+    void            remoteCharDecoded(PeerSession* pSession, const QString& pText, const QString& pPattern);
+    void            remoteWordGap(PeerSession* pSession);
+    void            remoteSpeedChanged(PeerSession* pSession);
     void            remoteDecoderSpeedChanged();
 
 private slots:
@@ -139,6 +148,12 @@ private slots:
 
 private:
     void            setKeyDown(bool pDown, qint64 pTimeMs);
+    void            sendKey(bool pDown, qint64 pTimeMs);
+    ///
+    /// \brief send the key changes of the played text when they are due
+    ///
+    void            sendPlayedKeys();
+    void            endPlayedKeys();
     ///
     /// \brief play and decode a remote station (manual session or room member)
     ///
@@ -172,6 +187,14 @@ private:
     bool                    m_audioRestartPending = false;
     bool                    m_serialReopenPending = false;
     QString                 m_decoderPattern;
+    // Played text, sent to the network with its exact rhythm
+    QString                 m_playText;
+    int                     m_playShown = -1;
+    QList<TimelineEvent>    m_playEdges;
+    qsizetype               m_playNext = 0;
+    qint64                  m_playStartMs = 0;
+    bool                    m_playKeyDown = false;
+    QTimer                  m_playKeyTimer;
 };
 
 #endif // TRAINER_H

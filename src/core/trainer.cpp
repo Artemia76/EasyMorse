@@ -38,8 +38,19 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     , m_sequencer(&m_audio)
 {
     // Playback
-    connect(&m_sequencer, &MorseSequencer::charPlayed, this, &Trainer::charPlayed);
+    connect(&m_sequencer, &MorseSequencer::charPlayed, this, [this](int pIndex) {
+        emit charPlayed(pIndex);
+        if (pIndex > m_playShown && pIndex < m_playText.size())
+        {
+            emit charSent(m_playText.mid(m_playShown + 1, pIndex - m_playShown).toUpper());
+            m_playShown = pIndex;
+        }
+    });
+    m_playKeyTimer.setSingleShot(true);
+    m_playKeyTimer.setTimerType(Qt::PreciseTimer);
+    connect(&m_playKeyTimer, &QTimer::timeout, this, &Trainer::sendPlayedKeys);
     connect(&m_sequencer, &MorseSequencer::finished, this, [this] {
+        endPlayedKeys();
         if (!m_playing)
             return;
         m_playing = false;
@@ -207,6 +218,17 @@ bool Trainer::play(const QString& pText)
     // The keys are muted while a text is played
     if (m_keyDown)
         setKeyDown(false, MonotonicClock::nowMs());
+    // The correspondents hear the text too
+    endPlayedKeys();
+    m_playText = pText;
+    m_playShown = -1;
+    for (const TimelineEvent& event : MorseSequencer::buildTimeline(pText, timing))
+    {
+        if (event.kind == TimelineEvent::Kind::KeyDown || event.kind == TimelineEvent::Kind::KeyUp)
+            m_playEdges.append(event);
+    }
+    m_playStartMs = MonotonicClock::nowMs();
+    sendPlayedKeys();
     m_playing = true;
     emit playingChanged();
     return true;
@@ -257,10 +279,53 @@ void Trainer::setKeyDown(bool pDown, qint64 pTimeMs)
     else
         m_audio.keyUp(KeySource::Local);
     m_decoder.keyEdge(pDown, pTimeMs);
+    sendKey(pDown, pTimeMs);
+    emit keyDownChanged();
+}
+
+void Trainer::sendKey(bool pDown, qint64 pTimeMs)
+{
     // Sent only to the connected sessions
     m_session.sendKey(pDown, pTimeMs);
     m_lobby.sendKey(pDown, pTimeMs);
-    emit keyDownChanged();
+}
+
+void Trainer::sendPlayedKeys()
+{
+    const qint64 now = MonotonicClock::nowMs();
+    while (m_playNext < m_playEdges.size())
+    {
+        const TimelineEvent& edge = m_playEdges.at(m_playNext);
+        // The time of the timeline, not the time the timer fired: exact rhythm
+        const qint64 time = m_playStartMs + qRound64(edge.time * 1000.0);
+        if (time > now)
+        {
+            m_playKeyTimer.start(static_cast<int>(time - now));
+            return;
+        }
+        m_playKeyDown = edge.kind == TimelineEvent::Kind::KeyDown;
+        sendKey(m_playKeyDown, time);
+        ++m_playNext;
+    }
+}
+
+void Trainer::endPlayedKeys()
+{
+    m_playKeyTimer.stop();
+    m_playEdges.clear();
+    m_playNext = 0;
+    // Stopped in the middle of a sign
+    if (m_playKeyDown)
+    {
+        m_playKeyDown = false;
+        sendKey(false, MonotonicClock::nowMs());
+    }
+}
+
+double Trainer::stationSpeed(PeerSession* pSession) const
+{
+    const auto it = m_remoteDecoders.find(pSession);
+    return it == m_remoteDecoders.end() ? 0.0 : it->second->speed();
 }
 
 bool Trainer::isRemoteKeyDown() const
@@ -285,10 +350,11 @@ void Trainer::addRemote(PeerSession* pSession)
     decoder->setSpeed(m_settings->charSpeed());
     decoder->setReactivity(static_cast<KeyDecoder::Reactivity>(m_settings->decoderReactivity()));
     connect(decoder.get(), &KeyDecoder::charDecoded, this, [this, pSession](const QString& pText, const QString& pPattern) {
-        emit remoteCharDecoded(remoteName(pSession), pText, pPattern);
+        emit remoteCharDecoded(pSession, pText, pPattern);
     });
-    connect(decoder.get(), &KeyDecoder::wordGap, this, [this, pSession] { emit remoteWordGap(remoteName(pSession)); });
+    connect(decoder.get(), &KeyDecoder::wordGap, this, [this, pSession] { emit remoteWordGap(pSession); });
     connect(decoder.get(), &KeyDecoder::speedChanged, this, [this, pSession] {
+        emit remoteSpeedChanged(pSession);
         if (pSession == m_lastRemote)
             emit remoteDecoderSpeedChanged();
     });

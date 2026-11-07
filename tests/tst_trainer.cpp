@@ -156,12 +156,53 @@ private slots:
 
         QTRY_VERIFY_WITH_TIMEOUT(bob.isRemoteActive(), 2000);
         QVERIFY(decoded.wait(2000));
-        QCOMPARE(decoded.at(0).at(0).toString(), QString("F4IKZ"));
+        QCOMPARE(decoded.at(0).at(0).value<PeerSession*>(), bob.session());
         QCOMPARE(decoded.at(0).at(1).toString(), QString("N"));
         QCOMPARE(bob.remoteCallsign(), QString("F4IKZ"));
         QCOMPARE(remoteKey.count(), 4);
         // Bob's own decoder did not see Alice's key
         QVERIFY(bob.decoderPattern().isEmpty());
+    }
+
+    void playedTextReachesTheCorrespondent()
+    {
+        Settings aliceSettings(newSettingsFile()), bobSettings(newSettingsFile());
+        aliceSettings.setCallsign("F4IKZ");
+        for (Settings* settings : {&aliceSettings, &bobSettings})
+        {
+            settings->setStunServer(QString());
+            settings->setCharSpeed(25);
+            settings->setWordSpeed(25);
+        }
+        bobSettings.setJitterDelayMs(100);
+        Trainer alice(&aliceSettings), bob(&bobSettings);
+        alice.start();
+        bob.start();
+        alice.session()->start();
+        bob.session()->start();
+        QTRY_COMPARE_WITH_TIMEOUT(alice.session()->state(), PeerSession::State::Inviting, 5000);
+        QTRY_COMPARE_WITH_TIMEOUT(bob.session()->state(), PeerSession::State::Inviting, 5000);
+        QCOMPARE(alice.session()->join(bob.session()->invitation()), QString());
+        QCOMPARE(bob.session()->join(alice.session()->invitation()), QString());
+        QTRY_COMPARE_WITH_TIMEOUT(bob.session()->state(), PeerSession::State::Connected, 10000);
+        QTRY_COMPARE_WITH_TIMEOUT(alice.session()->state(), PeerSession::State::Connected, 10000);
+
+        QSignalSpy sent(&alice, &Trainer::charSent);
+        QSignalSpy decoded(&bob, &Trainer::remoteCharDecoded);
+        QVERIFY(alice.play("paris es"));
+        QTRY_VERIFY_WITH_TIMEOUT(!alice.isPlaying(), 10000);
+        QTRY_COMPARE_WITH_TIMEOUT(decoded.count(), 7, 5000);
+        QString text, shown;
+        for (const QList<QVariant>& arguments : std::as_const(decoded))
+            text += arguments.at(1).toString();
+        for (const QList<QVariant>& arguments : std::as_const(sent))
+            shown += arguments.at(0).toString();
+        // Played at its own rhythm, decoded on the other side
+        QCOMPARE(text, QString("PARISES"));
+        QCOMPARE(shown, QString("PARIS ES"));
+        QVERIFY(!bob.isRemoteKeyDown());
+        // The keys were not decoded locally
+        QVERIFY(alice.decoderPattern().isEmpty());
     }
 
     void decoderEstimatesAreSaved()
