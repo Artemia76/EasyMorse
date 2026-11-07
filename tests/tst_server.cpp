@@ -97,6 +97,24 @@ private:
         return result;
     }
 
+    ///
+    /// \brief replace the server; the HTTP connections kept alive are closed
+    /// first, QHttpServer does not free them when it is destroyed
+    ///
+    bool restart(const Server::Config& pConfig)
+    {
+        stop();
+        m_server = std::make_unique<Server>();
+        return m_server->start(pConfig);
+    }
+
+    void stop()
+    {
+        m_network.clearConnectionCache();
+        QTest::qWait(50);
+        m_server.reset();
+    }
+
     QString tokenFor(const QString& pCallsign)
     {
         const Reply reply = request("POST", "/api/v1/register", {{"callsign", pCallsign}, {"password", "morse code!"}});
@@ -128,7 +146,7 @@ private slots:
 
     void cleanup()
     {
-        m_server.reset();
+        stop();
     }
 
     void passwordHashes()
@@ -163,12 +181,11 @@ private slots:
 
     void limitsAuthAttempts()
     {
-        m_server = std::make_unique<Server>();
         Server::Config config;
         config.port = 0;
         config.database = ":memory:";
         config.authAttempts = 3;
-        QVERIFY(m_server->start(config));
+        QVERIFY(restart(config));
         for (int i = 0; i < 3; ++i)
             QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F4IKZ"}, {"password", "guess0000"}}).status, 401);
         QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F4IKZ"}, {"password", "guess0000"}}).status, 429);
@@ -259,7 +276,6 @@ private slots:
 
     void relayCredentials()
     {
-        m_server = std::make_unique<Server>();
         Server::Config config;
         config.port = 0;
         config.database = ":memory:";
@@ -267,7 +283,7 @@ private slots:
         config.turnEnabled = true;
         config.turn.port = 0;
         config.turn.bindAddress = "127.0.0.1";
-        QVERIFY(m_server->start(config));
+        QVERIFY(restart(config));
         Client client;
         QVERIFY(client.open(m_server->port()));
         client.send(Signaling::message(Signaling::Type::Auth, {{"token", tokenFor("F4IKZ")}}));

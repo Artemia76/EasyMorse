@@ -54,6 +54,8 @@ private slots:
 
     void cleanup()
     {
+        // Let the server free the connections the clients just closed
+        QTest::qWait(100);
         m_server.reset();
     }
 
