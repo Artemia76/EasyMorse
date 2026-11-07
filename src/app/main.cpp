@@ -171,6 +171,13 @@ int main(int argc, char *argv[])
     CLogger::instance()->log(QCoreApplication::translate("main", "Welcome to EasyMorse %1").arg(VER_PRODUCTVERSION_STR), Qt::blue);
     // Sound card and serial key chosen in the options
     trainer.start();
+    // Phones: no sound in the background, back when shown again
+    QObject::connect(&app, &QGuiApplication::applicationStateChanged, &trainer, [&trainer](Qt::ApplicationState pState) {
+        if (pState == Qt::ApplicationSuspended)
+            trainer.suspend();
+        else if (pState == Qt::ApplicationActive)
+            trainer.resume();
+    });
 
     if (selfTesting)
         new SelfTest(qobject_cast<QQuickWindow*>(engine.rootObjects().constFirst()), parser.value(screenshotOption));

@@ -36,7 +36,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # =======================================================================
 # Options
 
-if(WIN32 OR APPLE)
+# Phones and tablets: the application only, packaged by Qt (APK, Xcode)
+if(ANDROID OR IOS)
+    set(EASYMORSE_MOBILE ON)
+else()
+    set(EASYMORSE_MOBILE OFF)
+endif()
+
+if(EASYMORSE_MOBILE)
+    set(_deploy_qt_default OFF)
+elseif(WIN32 OR APPLE)
     set(_deploy_qt_default ON)
 else()
     # Linux distributions provide Qt themselves
@@ -44,8 +53,13 @@ else()
 endif()
 option(EASYMORSE_DEPLOY_QT "Bundle Qt libraries and plugins when installing" ${_deploy_qt_default})
 option(EASYMORSE_BUILD_APP "Build the EasyMorse application" ON)
-option(EASYMORSE_BUILD_TESTS "Build the unit tests" ON)
-option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServer, WebSockets, Sql)" ON)
+if(EASYMORSE_MOBILE)
+    set(_desktop_only OFF)
+else()
+    set(_desktop_only ON)
+endif()
+option(EASYMORSE_BUILD_TESTS "Build the unit tests" ${_desktop_only})
+option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServer, WebSockets, Sql)" ${_desktop_only})
 
 # =======================================================================
 # Dependencies
@@ -133,6 +147,6 @@ endif()
 # =======================================================================
 # Packaging
 
-if(EASYMORSE_BUILD_APP)
+if(EASYMORSE_BUILD_APP AND NOT EASYMORSE_MOBILE)
     include(cmake/Packaging.cmake)
 endif()

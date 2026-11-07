@@ -49,6 +49,13 @@ ApplicationWindow {
         property alias height: window.height
     }
     onWideChanged: if (wide && currentPage >= pageCount) currentPage = 0
+    // Android back button: first back to the first page, then quit
+    onClosing: (close) => {
+        if (Qt.platform.os === "android" && currentPage !== 0) {
+            close.accepted = false
+            currentPage = 0
+        }
+    }
 
     readonly property var pages: [
         { title: qsTr("Send"), icon: "../icons/send.svg" },

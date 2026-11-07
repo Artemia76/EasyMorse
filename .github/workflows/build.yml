@@ -87,3 +87,81 @@ jobs:
             out/build/${{ matrix.preset }}/*.exe
             out/build/${{ matrix.preset }}/*.dmg
           if-no-files-found: error
+
+  android:
+    name: Android
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install the Android NDK
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "ndk;26.1.10909125" "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> "$GITHUB_ENV"
+
+      - name: Install Qt for Android
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: android
+          arch: android_arm64_v8a
+          modules: qtwebsockets
+          # Qt for Android needs the desktop Qt of the same version
+          autodesktop: true
+          cache: true
+
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configure
+        run: |
+          "$QT_ROOT_DIR/bin/qt-cmake" -S . -B out/build/android -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DANDROID_SDK_ROOT="$ANDROID_SDK_ROOT" -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT"
+
+      - name: Build the APK
+        run: cmake --build out/build/android --target apk
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: easymorse-android
+          path: out/build/android/src/app/android-build/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+  ios:
+    name: iOS (unsigned)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Qt for iOS
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: mac
+          target: ios
+          arch: ios
+          modules: qtwebsockets
+          autodesktop: true
+          cache: true
+
+      - name: Configure
+        run: |
+          "$QT_ROOT_DIR/bin/qt-cmake" -S . -B out/build/ios -G Xcode \
+            -DCMAKE_OSX_ARCHITECTURES=arm64
+
+      - name: Build (no code signing)
+        run: |
+          cmake --build out/build/ios --config Release -- \
+            -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO

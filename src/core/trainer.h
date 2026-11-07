@@ -81,6 +81,12 @@ public:
     /// \brief start opens the sound card and the serial key chosen in the settings
     ///
     void            start();
+    ///
+    /// \brief suspend closes the sound output while the application is in
+    /// the background (phones); resume opens it again
+    ///
+    void            suspend();
+    void            resume();
 
     Settings*       settings() const { return m_settings; }
     AudioEngine*    audio() { return &m_audio; }

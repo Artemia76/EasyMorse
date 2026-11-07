@@ -184,6 +184,21 @@ void Trainer::start()
         m_lobby.client()->resume(m_settings->serverToken());
 }
 
+void Trainer::suspend()
+{
+    stop();
+    m_manualKeyer.release();
+    m_manualPaddles.release();
+    m_audio.stop();
+    emit audioRunningChanged();
+}
+
+void Trainer::resume()
+{
+    if (!m_audio.isRunning())
+        restartAudio();
+}
+
 void Trainer::addKeyer(KeyerInput* pKeyer)
 {
     if (m_keyers.contains(pKeyer))

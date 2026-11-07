@@ -82,7 +82,25 @@ set_target_properties(easymorse PROPERTIES
     MACOSX_BUNDLE_ICON_FILE easymorse.icns
 )
 
-if(WIN32)
+if(ANDROID)
+    # Manifest, icons and theme; Qt fills in the rest of the Gradle project
+    math(EXPR EASYMORSE_VERSION_CODE
+        "${PROJECT_VERSION_MAJOR} * 10000 + ${PROJECT_VERSION_MINOR} * 100 + ${PROJECT_VERSION_PATCH}")
+    set_target_properties(easymorse PROPERTIES
+        QT_ANDROID_PACKAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/packaging/android"
+        QT_ANDROID_PACKAGE_NAME "io.github.artemia76.easymorse"
+        QT_ANDROID_MIN_SDK_VERSION 28
+        QT_ANDROID_TARGET_SDK_VERSION 35
+        QT_ANDROID_VERSION_NAME "${PROJECT_VERSION}"
+        QT_ANDROID_VERSION_CODE ${EASYMORSE_VERSION_CODE}
+    )
+elseif(IOS)
+    set_target_properties(easymorse PROPERTIES
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "io.github.artemia76.easymorse"
+        XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+        XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 15.0
+    )
+elseif(WIN32)
     target_sources(easymorse PRIVATE "${PROJECT_SOURCE_DIR}/EasyMorse.rc")
 elseif(APPLE)
     set_source_files_properties("${PROJECT_SOURCE_DIR}/gfx/easymorse.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -101,6 +119,11 @@ qt_add_translations(easymorse
 # Installation
 
 include(GNUInstallDirs)
+
+if(EASYMORSE_MOBILE)
+    # The APK or the iOS application is built by Qt, nothing to install
+    return()
+endif()
 
 install(TARGETS easymorse
     BUNDLE DESTINATION .

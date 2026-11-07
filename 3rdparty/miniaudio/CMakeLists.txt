@@ -15,6 +15,13 @@ target_compile_definitions(miniaudio PUBLIC
 )
 set_target_properties(miniaudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+if(IOS)
+    # No dlopen() of the audio frameworks on iOS: link them
+    target_compile_definitions(miniaudio PUBLIC MA_NO_RUNTIME_LINKING)
+    target_link_libraries(miniaudio PUBLIC
+        "-framework CoreFoundation" "-framework CoreAudio" "-framework AudioToolbox" "-framework AVFoundation")
+endif()
+
 find_package(Threads REQUIRED)
 target_link_libraries(miniaudio PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
 if(UNIX AND NOT APPLE)
