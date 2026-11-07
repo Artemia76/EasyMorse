@@ -36,6 +36,8 @@ qt_add_qml_module(easymorse
         qml/Card.qml
         qml/Chip.qml
         qml/NavButton.qml
+        qml/Segmented.qml
+        qml/PaddlePad.qml
     RESOURCES
         icons/send.svg
         icons/key.svg

@@ -26,6 +26,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.leftMargin: 24
                 Layout.rightMargin: 24
+                Layout.topMargin: 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -72,11 +73,61 @@ Page {
             }
 
             Card {
+                title: qsTr("Key")
+                Layout.fillWidth: true
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+
+                GridLayout {
+                    anchors.fill: parent
+                    columns: root.width < 560 ? 1 : 2
+                    columnSpacing: 12
+
+                    Label { text: qsTr("Keying") }
+                    ComboBox {
+                        model: [qsTr("Straight key"), qsTr("Iambic paddles")]
+                        currentIndex: MorseSettings.keyerMode
+                        onActivated: (index) => MorseSettings.keyerMode = index
+                        implicitContentWidthPolicy: ComboBox.WidestText
+                        Layout.fillWidth: true
+                    }
+
+                    Label { text: qsTr("Iambic mode"); enabled: MorseSettings.keyerMode === 1 }
+                    ComboBox {
+                        enabled: MorseSettings.keyerMode === 1
+                        model: [qsTr("A: stops when the paddles are released"),
+                                qsTr("B: sends one more element after a squeeze")]
+                        currentIndex: MorseSettings.iambicMode
+                        onActivated: (index) => MorseSettings.iambicMode = index
+                        implicitContentWidthPolicy: ComboBox.WidestText
+                        Layout.fillWidth: true
+                    }
+
+                    Label { text: qsTr("Reversed paddles"); enabled: MorseSettings.keyerMode === 1 }
+                    Switch {
+                        enabled: MorseSettings.keyerMode === 1
+                        checked: MorseSettings.paddlesReversed
+                        onToggled: MorseSettings.paddlesReversed = checked
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Dashes on the left contact, for left-handed operators")
+                    }
+
+                    Label {
+                        text: qsTr("The keyer sends at the character speed. Keyboard: Alt is the straight key; left and right Ctrl are the paddles, as USB paddle adapters send them.")
+                        color: Theme.muted
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                        Layout.columnSpan: root.width < 560 ? 1 : 2
+                    }
+                }
+            }
+
+            Card {
                 title: qsTr("Serial key")
                 visible: Trainer.serialPorts().length > 0 || MorseSettings.serialEnabled
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -111,14 +162,22 @@ Page {
                             ToolTip.text: qsTr("Refresh the list of ports")
                         }
                     }
+
+                    Label {
+                        text: qsTr("Wiring: DTR and RTS feed the contacts. Straight key on CTS or DSR; paddles with dots on CTS or DCD and dashes on DSR.")
+                        color: Theme.muted
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                        Layout.columnSpan: root.width < 560 ? 1 : 2
+                    }
                 }
             }
 
             Card {
                 title: qsTr("Decoder")
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -156,8 +215,8 @@ Page {
             Card {
                 title: qsTr("Network")
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -192,9 +251,9 @@ Page {
             Card {
                 title: qsTr("Interface")
                 Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
-                Layout.bottomMargin: 12
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                Layout.bottomMargin: 24
 
                 GridLayout {
                     anchors.fill: parent

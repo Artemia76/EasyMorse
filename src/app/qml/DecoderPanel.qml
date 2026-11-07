@@ -55,47 +55,13 @@ Pane {
                 Layout.fillWidth: true
             }
             // What to show of the correspondents: nothing, after the message, live
-            Rectangle {
+            Segmented {
                 visible: root.connectedCount > 0
-                color: Theme.surface
-                radius: 10
-                implicitWidth: modes.implicitWidth + 6
-                implicitHeight: 38
-                RowLayout {
-                    id: modes
-                    anchors.centerIn: parent
-                    spacing: 0
-                    Repeater {
-                        model: root.width < 520 ? [qsTr("Listen"), qsTr("After"), qsTr("Live")]
-                                                : [qsTr("Listen"), qsTr("After the message"), qsTr("Live")]
-                        AbstractButton {
-                            id: mode
-                            required property string modelData
-                            required property int index
-                            readonly property bool selected: MorseSettings.receiveDecodeMode === index
-                            text: modelData
-                            implicitHeight: 32
-                            implicitWidth: modeLabel.implicitWidth + 24
-                            checkable: true
-                            checked: selected
-                            onClicked: MorseSettings.receiveDecodeMode = index
-                            Accessible.name: qsTr("Show the correspondents: %1").arg(modelData)
-                            background: Rectangle {
-                                radius: 8
-                                color: mode.selected ? Theme.lineStrong : mode.hovered ? Theme.raised : "transparent"
-                            }
-                            contentItem: Label {
-                                id: modeLabel
-                                text: mode.text
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                font.pixelSize: 13
-                                font.weight: mode.selected ? Font.DemiBold : Font.Medium
-                                color: mode.selected ? Theme.text : Theme.textSoft
-                            }
-                        }
-                    }
-                }
+                model: root.width < 520 ? [qsTr("Listen"), qsTr("After"), qsTr("Live")]
+                                        : [qsTr("Listen"), qsTr("After the message"), qsTr("Live")]
+                currentIndex: MorseSettings.receiveDecodeMode
+                accessibleName: qsTr("Show the correspondents")
+                onActivated: (index) => MorseSettings.receiveDecodeMode = index
             }
             Button {
                 text: qsTr("Clear")

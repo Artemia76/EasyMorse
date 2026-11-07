@@ -2,12 +2,24 @@
 
 EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
 play any text in Morse (with Farnsworth timing, background noise and filter),
-key Morse yourself with the keyboard (Alt key), the on-screen key (mouse or
-touch) or a straight key wired to a serial port, and watch it being decoded
-in real time, whatever your speed.
+key Morse yourself with a straight key or iambic paddles, and watch it being
+decoded in real time, whatever your speed. Practise with other operators over
+the Internet (see below). Android/iOS support is planned.
 
-Future versions will add peer-to-peer practice sessions between EasyMorse
-users and Android/iOS support.
+## Keys
+
+Choose the keying on the *Key* page or in the options:
+
+- **Straight key**: the Alt key, the on-screen key (mouse or touch) or a key
+  wired to a serial port.
+- **Iambic paddles** (modes A and B, reversible for left-handed operators): the
+  keyer sends dots and dashes at the character speed. Left Ctrl is the dot
+  paddle and right Ctrl the dash paddle, as USB paddle adapters (VBand) send
+  them; on-screen paddles can be held together on a touch screen.
+
+Serial port wiring, as usual for Morse software: DTR and RTS are kept active to
+feed the contacts. A straight key closes CTS or DSR; paddles close CTS or DCD
+for dots and DSR for dashes.
 
 ## License
 
