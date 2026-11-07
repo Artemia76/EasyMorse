@@ -141,7 +141,9 @@ int main(int argc, char *argv[])
     if (selfTesting)
         s_defaultHandler = qInstallMessageHandler(countQmlWarnings);
 
-    QFontDatabase::addApplicationFont(":/fonts/morse.ttf");
+    // Interface (Inter) and Morse text (JetBrains Mono) fonts, free (SIL OFL)
+    for (const QString& font : QDir(":/fonts").entryList({"*.ttf"}))
+        QFontDatabase::addApplicationFont(":/fonts/" + font);
 
     LogModel logModel;
     LogModel::s_instance = &logModel;
