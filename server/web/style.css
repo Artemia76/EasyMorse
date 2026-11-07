@@ -25,3 +25,26 @@ form input { display: block; width: 100%; max-width: 360px; padding: 10px; margi
 #result.ok { color: var(--ok); }
 #result.error { color: var(--error); }
 footer { text-align: center; color: var(--muted); padding: 16px; }
+/* Administration */
+[hidden] { display: none !important; }
+#action-result.ok, #login-result.ok { color: var(--ok); }
+#action-result.error, #login-result.error { color: var(--error); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.toolbar h2 { margin-right: auto; }
+button.flat { background: transparent; color: var(--accent); padding: 6px 12px; }
+button.small { padding: 6px 14px; font-size: 0.9rem; font-weight: 500; background: var(--bg); color: var(--fg);
+  border: 1px solid var(--muted); }
+button.small.danger { color: var(--error); border-color: var(--error); }
+#filter { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--muted); background: var(--bg);
+  color: var(--fg); font-size: 1rem; }
+.user { background: var(--bg); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+.user.banned { border-left: 4px solid var(--error); }
+.user-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 1.1rem; }
+.badge { font-size: 0.75rem; border-radius: 10px; padding: 1px 8px; border: 1px solid currentColor; }
+.badge.ok { color: var(--ok); }
+.badge.error { color: var(--error); }
+.badge.accent { color: var(--accent); }
+.badge.muted { color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.user .hint { font-size: 0.9rem; overflow-wrap: anywhere; }
+header a { color: white; }

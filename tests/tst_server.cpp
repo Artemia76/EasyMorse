@@ -2,6 +2,7 @@
 
 #include <QTest>
 
+#include <QDir>
 #include <QElapsedTimer>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -10,7 +11,12 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QWebSocket>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+
+#include <vector>
 
 #include "accounts.h"
 #include "protocol/signaling.h"
@@ -78,13 +84,17 @@ class TestServer : public QObject
     Q_OBJECT
 
 private:
+    QTemporaryDir               m_temp;
     std::unique_ptr<Server>     m_server;
     QNetworkAccessManager       m_network;
 
-    Reply request(const QString& pMethod, const QString& pPath, const QJsonObject& pBody = {})
+    Reply request(const QString& pMethod, const QString& pPath, const QJsonObject& pBody = {},
+                  const QString& pToken = QString())
     {
         QNetworkRequest request(QUrl(QString("http://127.0.0.1:%1%2").arg(m_server->port()).arg(pPath)));
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        if (!pToken.isEmpty())
+            request.setRawHeader("Authorization", "Bearer " + pToken.toLatin1());
         QNetworkReply* reply = (pMethod == "POST")
             ? m_network.post(request, QJsonDocument(pBody).toJson())
             : m_network.get(request);
@@ -272,6 +282,132 @@ private slots:
         second.send(Signaling::message(Signaling::Type::Auth, {{"token", login.body.value("token").toString()}}));
         QVERIFY(!second.take(Signaling::Type::Welcome).isEmpty());
         QTRY_VERIFY_WITH_TIMEOUT(closed.count() > 0, 3000);
+    }
+
+    void roomsAreLimited()
+    {
+        std::vector<std::unique_ptr<Client>> members;
+        for (int i = 0; i < Signaling::MaxRoomMembers; ++i)
+        {
+            members.push_back(connectedClient(QString("F%1AAA").arg(i)));
+            QVERIFY(members.back());
+            members.back()->send(Signaling::message(Signaling::Type::Join, {{"room", "QSO"}}));
+            QVERIFY(!members.back()->take(Signaling::Type::Room).isEmpty());
+        }
+        auto late = connectedClient("F9LATE");
+        QVERIFY(late);
+        late->send(Signaling::message(Signaling::Type::Join, {{"room", "QSO"}}));
+        QCOMPARE(late->take(Signaling::Type::Error).value("code").toString(), QString("room_full"));
+        // Another room is fine
+        late->send(Signaling::message(Signaling::Type::Join, {{"room", "Beginners"}}));
+        QVERIFY(!late->take(Signaling::Type::Room).isEmpty());
+    }
+
+    void administration()
+    {
+        const QString admin = tokenFor("F1ADM");
+        const QString user = tokenFor("F5XYZ");
+        // Not an administrator yet
+        QCOMPARE(request("GET", "/api/v1/admin/users", {}, admin).status, 403);
+        QCOMPARE(request("GET", "/api/v1/admin/users").status, 403);
+        QVERIFY(m_server->accounts().setAdmin("f1adm", true) == Accounts::Result::Ok);
+        QCOMPARE(request("GET", "/api/v1/me", {}, admin).body.value("admin").toBool(), true);
+        QCOMPARE(request("GET", "/api/v1/me", {}, user).body.value("admin").toBool(), false);
+        QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F1ADM"}, {"password", "morse code!"}})
+                     .body.value("admin").toBool(), true);
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "ban"}, {"callsign", "F1ADM"}}, user).status, 403);
+
+        // The user is online in a room
+        Client client;
+        QVERIFY(client.open(m_server->port()));
+        QSignalSpy closed(&client.socket, &QWebSocket::disconnected);
+        client.send(Signaling::message(Signaling::Type::Auth, {{"token", user}}));
+        QVERIFY(!client.take(Signaling::Type::Welcome).isEmpty());
+        client.send(Signaling::message(Signaling::Type::Join, {{"room", "QSO"}}));
+        QVERIFY(!client.take(Signaling::Type::Room).isEmpty());
+        Reply list = request("GET", "/api/v1/admin/users", {}, admin);
+        QCOMPARE(list.status, 200);
+        QCOMPARE(list.body.value("online").toInt(), 1);
+        const QJsonArray users = list.body.value("users").toArray();
+        QCOMPARE(users.size(), 2);
+        QCOMPARE(users.at(0).toObject().value("callsign").toString(), QString("F1ADM"));
+        QCOMPARE(users.at(0).toObject().value("admin").toBool(), true);
+        QCOMPARE(users.at(1).toObject().value("room").toString(), QString("QSO"));
+        QVERIFY(users.at(1).toObject().value("lastLogin").isUndefined());
+
+        // Suspended: disconnected with the reason, cannot come back
+        QCOMPARE(request("POST", "/api/v1/admin/users",
+                         {{"action", "ban"}, {"callsign", "f5xyz"}, {"reason", "spam"}}, admin).status, 204);
+        const QJsonObject banned = client.take(Signaling::Type::Error);
+        QCOMPARE(banned.value("code").toString(), QString("banned"));
+        QCOMPARE(banned.value("message").toString(), QString("spam"));
+        QTRY_VERIFY_WITH_TIMEOUT(closed.count() > 0, 3000);
+        QCOMPARE(request("GET", "/api/v1/me", {}, user).status, 401);
+        Reply login = request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "morse code!"}});
+        QCOMPARE(login.status, 403);
+        QCOMPARE(login.body.value("error").toString(), QString("banned"));
+        // A wrong password does not tell the account is suspended
+        QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "wrong!!!!"}}).status, 401);
+        list = request("GET", "/api/v1/admin/users", {}, admin);
+        QCOMPARE(list.body.value("users").toArray().at(1).toObject().value("reason").toString(), QString("spam"));
+
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "unban"}, {"callsign", "F5XYZ"}}, admin).status, 204);
+        QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "morse code!"}}).status, 200);
+
+        // New password, given by the administrator
+        QCOMPARE(request("POST", "/api/v1/admin/users",
+                         {{"action", "password"}, {"callsign", "F5XYZ"}, {"password", "short"}}, admin).status, 400);
+        QCOMPARE(request("POST", "/api/v1/admin/users",
+                         {{"action", "password"}, {"callsign", "F5XYZ"}, {"password", "new password"}}, admin).status, 204);
+        QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "morse code!"}}).status, 401);
+        const QString second = request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "new password"}})
+                                   .body.value("token").toString();
+        QVERIFY(!second.isEmpty());
+
+        // Kick: logged out everywhere
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "kick"}, {"callsign", "F5XYZ"}}, admin).status, 204);
+        QCOMPARE(request("GET", "/api/v1/me", {}, second).status, 401);
+
+        // Rights, and no locking oneself out
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "grant"}, {"callsign", "F5XYZ"}}, admin).status, 204);
+        QVERIFY(m_server->accounts().isAdmin("F5XYZ"));
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "revoke"}, {"callsign", "F5XYZ"}}, admin).status, 204);
+        QVERIFY(!m_server->accounts().isAdmin("F5XYZ"));
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "ban"}, {"callsign", "F1ADM"}}, admin).status, 400);
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "revoke"}, {"callsign", "F1ADM"}}, admin).status, 400);
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "dance"}, {"callsign", "F5XYZ"}}, admin).status, 400);
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "ban"}, {"callsign", "NOBODY"}}, admin).status, 404);
+
+        // Deleted
+        QCOMPARE(request("POST", "/api/v1/admin/users", {{"action", "delete"}, {"callsign", "F5XYZ"}}, admin).status, 204);
+        QCOMPARE(request("POST", "/api/v1/login", {{"callsign", "F5XYZ"}, {"password", "new password"}}).status, 401);
+        QCOMPARE(request("GET", "/api/v1/admin/users", {}, admin).body.value("users").toArray().size(), 1);
+        QCOMPARE(request("GET", "/admin.html").status, 200);
+    }
+
+    void olderDatabasesAreUpgraded()
+    {
+        // A database of the first version, without the moderation columns
+        const QString path = QDir(m_temp.path()).filePath("old.db");
+        {
+            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "old");
+            db.setDatabaseName(path);
+            QVERIFY(db.open());
+            QSqlQuery query(db);
+            QVERIFY(query.exec("CREATE TABLE users (id INTEGER PRIMARY KEY, callsign TEXT NOT NULL UNIQUE,"
+                               " password TEXT NOT NULL, created INTEGER NOT NULL)"));
+            query.prepare("INSERT INTO users (callsign, password, created) VALUES ('F4IKZ', ?, 0)");
+            query.addBindValue(Accounts::hashPassword("morse code!"));
+            QVERIFY(query.exec());
+            db.close();
+        }
+        QSqlDatabase::removeDatabase("old");
+        Accounts accounts;
+        QVERIFY(accounts.open(path));
+        QString token;
+        QVERIFY(accounts.login("F4IKZ", "morse code!", token) == Accounts::Result::Ok);
+        QVERIFY(accounts.setAdmin("F4IKZ", true) == Accounts::Result::Ok);
+        QVERIFY(accounts.user("F4IKZ").lastLogin > 0);
     }
 
     void relayCredentials()

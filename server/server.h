@@ -26,7 +26,8 @@
 * Match-making server: REST API for accounts and rooms, WebSocket on the
 * same port for presence, room chat and the signals that let two members
 * open a peer to peer session (see protocol/signaling.h), static web pages,
-* and the STUN/TURN relay. Plain HTTP: TLS is done by a reverse proxy.
+* the STUN/TURN relay, and an administration API and page to moderate the
+* accounts (/admin.html). Plain HTTP: TLS is done by a reverse proxy.
 * **************************************************************************/
 
 #ifndef SERVER_H
@@ -77,6 +78,7 @@ public:
 
     bool    start(const Config& pConfig);
     quint16 port() const;
+    Accounts& accounts() { return m_accounts; }
 
 private:
     struct Client
@@ -99,6 +101,16 @@ private:
     void    sendError(Client* pClient, const QString& pCode, const QString& pMessage);
     void    broadcast(const QString& pRoom, const QJsonObject& pMessage, Client* pExcept = nullptr);
     void    disconnectClient(QWebSocket* pSocket);
+    ///
+    /// \brief close the connection of this callsign, if any, with an error
+    ///
+    void    dropCallsign(const QString& pCallsign, const QString& pCode, const QString& pMessage);
+    ///
+    /// \return the callsign of the administrator the request comes from, empty if not one
+    ///
+    QString administrator(const class QHttpServerRequest& pRequest);
+    QJsonObject adminUsers();
+    class QHttpServerResponse adminAction(const QString& pAdmin, const QJsonObject& pRequest);
     Client* clientByCallsign(const QString& pCallsign);
     QStringList members(const QString& pRoom) const;
     QString roomKey(const QString& pRoom) const { return pRoom.toCaseFolded(); }

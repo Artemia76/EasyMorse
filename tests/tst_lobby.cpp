@@ -3,9 +3,12 @@
 
 #include <QTest>
 
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QSignalSpy>
 
 #include "keyer/monotonicclock.h"
+#include "accounts.h"
 #include "net/lobby.h"
 #include "net/peerlink.h"
 #include "net/peersession.h"
@@ -122,6 +125,35 @@ private slots:
         QTRY_VERIFY_WITH_TIMEOUT(alice.connectedWith("F5XYZ"), 30000);
         QTRY_VERIFY_WITH_TIMEOUT(bob.connectedWith("F4IKZ"), 10000);
         QCOMPARE(alice.peer("F5XYZ")->fingerprint(), bob.peer("F4IKZ")->fingerprint());
+    }
+
+    void suspendedAccountIsDisconnected()
+    {
+        Station alice;
+        QSignalSpy token(alice.client(), &SignalingClient::tokenChanged);
+        enter(alice, "F4IKZ");
+        QSignalSpy error(alice.client(), &SignalingClient::errorOccurred);
+
+        // As the administration page does
+        QNetworkAccessManager network;
+        QString adminToken;
+        QVERIFY(m_server->accounts().registerUser("F1ADM", "admin password", adminToken) == Accounts::Result::Ok);
+        QVERIFY(m_server->accounts().setAdmin("F1ADM", true) == Accounts::Result::Ok);
+        QNetworkRequest request(QUrl(serverUrl().toString() + "/api/v1/admin/users"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        request.setRawHeader("Authorization", "Bearer " + adminToken.toLatin1());
+        QNetworkReply* reply = network.post(request, R"({"action":"ban","callsign":"F4IKZ","reason":"spam"})");
+        QSignalSpy finished(reply, &QNetworkReply::finished);
+        QVERIFY(finished.wait(5000));
+        QCOMPARE(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), 204);
+        reply->deleteLater();
+
+        QTRY_VERIFY_WITH_TIMEOUT(error.count() > 0, 3000);
+        QVERIFY(error.at(0).at(0).toString().contains("spam"));
+        QTRY_COMPARE_WITH_TIMEOUT(alice.client()->state(), SignalingClient::State::Offline, 3000);
+        // The saved token is forgotten: no reconnection
+        QVERIFY(token.last().at(0).toString().isEmpty());
+        network.clearConnectionCache();
     }
 
     void relayCredentialsWork()

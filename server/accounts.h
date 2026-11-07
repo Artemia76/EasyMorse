@@ -24,12 +24,14 @@
 * accounts.h is part of EasyMorse server
 *
 * User accounts in SQLite: callsign and Argon2id password hash, access
-* tokens of which only a hash is stored.
+* tokens of which only a hash is stored, moderation (administrators,
+* suspended accounts).
 * **************************************************************************/
 
 #ifndef ACCOUNTS_H
 #define ACCOUNTS_H
 
+#include <QList>
 #include <QString>
 #include <QtSql/QSqlDatabase>
 
@@ -43,10 +45,22 @@ public:
         WeakPassword,
         AlreadyExists,
         WrongCredentials,
+        Banned,
+        NotFound,
         DatabaseError
     };
 
     static constexpr int TokenLifetimeDays = 90;
+
+    struct User
+    {
+        QString callsign;
+        bool    admin = false;
+        bool    banned = false;
+        QString banReason;
+        qint64  created = 0;    // seconds since the epoch
+        qint64  lastLogin = 0;  // 0: never
+    };
 
     Accounts() = default;
     ~Accounts();
@@ -71,6 +85,25 @@ public:
     ///
     QString callsignForToken(const QString& pToken);
     void    revokeToken(const QString& pToken);
+
+    // Moderation
+    QList<User> users();
+    ///
+    /// \return the account, an empty callsign if it does not exist
+    ///
+    User    user(const QString& pCallsign);
+    bool    isAdmin(const QString& pCallsign);
+    Result  setAdmin(const QString& pCallsign, bool pAdmin);
+    ///
+    /// \brief a suspended account cannot log in; its tokens are revoked
+    ///
+    Result  setBanned(const QString& pCallsign, bool pBanned, const QString& pReason = QString());
+    Result  setPassword(const QString& pCallsign, const QString& pPassword);
+    Result  deleteUser(const QString& pCallsign);
+    ///
+    /// \brief log the account out everywhere
+    ///
+    void    revokeTokens(const QString& pCallsign);
 
     // Password hashes, exposed for the tests
     static QString hashPassword(const QString& pPassword);

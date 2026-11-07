@@ -101,16 +101,36 @@ bool Accounts::open(const QString& pPath)
     if (!m_db.open())
         return false;
     QSqlQuery query(m_db);
-    return query.exec("PRAGMA foreign_keys = ON")
-        && query.exec("CREATE TABLE IF NOT EXISTS users ("
-                      " id INTEGER PRIMARY KEY,"
-                      " callsign TEXT NOT NULL UNIQUE,"
-                      " password TEXT NOT NULL,"
-                      " created INTEGER NOT NULL)")
-        && query.exec("CREATE TABLE IF NOT EXISTS tokens ("
-                      " hash BLOB PRIMARY KEY,"
-                      " user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,"
-                      " expires INTEGER NOT NULL)");
+    if (!query.exec("PRAGMA foreign_keys = ON")
+        || !query.exec("CREATE TABLE IF NOT EXISTS users ("
+                       " id INTEGER PRIMARY KEY,"
+                       " callsign TEXT NOT NULL UNIQUE,"
+                       " password TEXT NOT NULL,"
+                       " created INTEGER NOT NULL)")
+        || !query.exec("CREATE TABLE IF NOT EXISTS tokens ("
+                       " hash BLOB PRIMARY KEY,"
+                       " user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,"
+                       " expires INTEGER NOT NULL)"))
+        return false;
+
+    // Columns added after the first version
+    QStringList columns;
+    if (!query.exec("PRAGMA table_info(users)"))
+        return false;
+    while (query.next())
+        columns.append(query.value(1).toString());
+    const QList<std::pair<QString, QString>> added = {
+        {"admin", "INTEGER NOT NULL DEFAULT 0"},
+        {"banned", "INTEGER NOT NULL DEFAULT 0"},
+        {"ban_reason", "TEXT"},
+        {"last_login", "INTEGER"},
+    };
+    for (const auto& [name, type] : added)
+    {
+        if (!columns.contains(name) && !query.exec(QString("ALTER TABLE users ADD COLUMN %1 %2").arg(name, type)))
+            return false;
+    }
+    return true;
 }
 
 QString Accounts::hashPassword(const QString& pPassword)
@@ -172,7 +192,7 @@ Accounts::Result Accounts::login(const QString& pCallsign, const QString& pPassw
 {
     const QString callsign = Signaling::normalizeCallsign(pCallsign);
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, password FROM users WHERE callsign = ?");
+    query.prepare("SELECT id, password, banned FROM users WHERE callsign = ?");
     query.addBindValue(callsign);
     if (!query.exec())
         return Result::DatabaseError;
@@ -185,7 +205,15 @@ Accounts::Result Accounts::login(const QString& pCallsign, const QString& pPassw
     }
     if (!verifyPassword(pPassword, query.value(1).toString()))
         return Result::WrongCredentials;
-    pToken = createToken(query.value(0).toLongLong());
+    // Told only to who knows the password
+    if (query.value(2).toBool())
+        return Result::Banned;
+    const qint64 id = query.value(0).toLongLong();
+    query.prepare("UPDATE users SET last_login = ? WHERE id = ?");
+    query.addBindValue(QDateTime::currentSecsSinceEpoch());
+    query.addBindValue(id);
+    query.exec();
+    pToken = createToken(id);
     return pToken.isEmpty() ? Result::DatabaseError : Result::Ok;
 }
 
@@ -211,7 +239,7 @@ QString Accounts::callsignForToken(const QString& pToken)
         return QString();
     QSqlQuery query(m_db);
     query.prepare("SELECT users.callsign FROM tokens JOIN users ON users.id = tokens.user_id"
-                  " WHERE tokens.hash = ? AND tokens.expires >= ?");
+                  " WHERE tokens.hash = ? AND tokens.expires >= ? AND users.banned = 0");
     query.addBindValue(tokenHash(pToken));
     query.addBindValue(QDateTime::currentSecsSinceEpoch());
     if (!query.exec() || !query.next())
@@ -225,4 +253,90 @@ void Accounts::revokeToken(const QString& pToken)
     query.prepare("DELETE FROM tokens WHERE hash = ?");
     query.addBindValue(tokenHash(pToken));
     query.exec();
+}
+
+void Accounts::revokeTokens(const QString& pCallsign)
+{
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM tokens WHERE user_id = (SELECT id FROM users WHERE callsign = ?)");
+    query.addBindValue(Signaling::normalizeCallsign(pCallsign));
+    query.exec();
+}
+
+QList<Accounts::User> Accounts::users()
+{
+    QList<User> list;
+    QSqlQuery query(m_db);
+    if (!query.exec("SELECT callsign, admin, banned, ban_reason, created, last_login FROM users ORDER BY callsign"))
+        return list;
+    while (query.next())
+    {
+        list.append({query.value(0).toString(), query.value(1).toBool(), query.value(2).toBool(),
+                     query.value(3).toString(), query.value(4).toLongLong(), query.value(5).toLongLong()});
+    }
+    return list;
+}
+
+Accounts::User Accounts::user(const QString& pCallsign)
+{
+    QSqlQuery query(m_db);
+    query.prepare("SELECT callsign, admin, banned, ban_reason, created, last_login FROM users WHERE callsign = ?");
+    query.addBindValue(Signaling::normalizeCallsign(pCallsign));
+    if (!query.exec() || !query.next())
+        return {};
+    return {query.value(0).toString(), query.value(1).toBool(), query.value(2).toBool(),
+            query.value(3).toString(), query.value(4).toLongLong(), query.value(5).toLongLong()};
+}
+
+bool Accounts::isAdmin(const QString& pCallsign)
+{
+    const User account = user(pCallsign);
+    return account.admin && !account.banned;
+}
+
+namespace
+{
+    Accounts::Result update(QSqlDatabase& pDb, const QString& pSql, const QVariantList& pValues)
+    {
+        QSqlQuery query(pDb);
+        query.prepare(pSql);
+        for (const QVariant& value : pValues)
+            query.addBindValue(value);
+        if (!query.exec())
+            return Accounts::Result::DatabaseError;
+        return query.numRowsAffected() > 0 ? Accounts::Result::Ok : Accounts::Result::NotFound;
+    }
+}
+
+Accounts::Result Accounts::setAdmin(const QString& pCallsign, bool pAdmin)
+{
+    return update(m_db, "UPDATE users SET admin = ? WHERE callsign = ?",
+                  {pAdmin ? 1 : 0, Signaling::normalizeCallsign(pCallsign)});
+}
+
+Accounts::Result Accounts::setBanned(const QString& pCallsign, bool pBanned, const QString& pReason)
+{
+    const Result result = update(m_db, "UPDATE users SET banned = ?, ban_reason = ? WHERE callsign = ?",
+                                 {pBanned ? 1 : 0, pBanned ? pReason.left(200) : QVariant(QMetaType(QMetaType::QString)),
+                                  Signaling::normalizeCallsign(pCallsign)});
+    if (result == Result::Ok && pBanned)
+        revokeTokens(pCallsign);
+    return result;
+}
+
+Accounts::Result Accounts::setPassword(const QString& pCallsign, const QString& pPassword)
+{
+    if (pPassword.size() < Signaling::MinPasswordChars)
+        return Result::WeakPassword;
+    const Result result = update(m_db, "UPDATE users SET password = ? WHERE callsign = ?",
+                                 {hashPassword(pPassword), Signaling::normalizeCallsign(pCallsign)});
+    if (result == Result::Ok)
+        revokeTokens(pCallsign);
+    return result;
+}
+
+Accounts::Result Accounts::deleteUser(const QString& pCallsign)
+{
+    // Its tokens go with it (ON DELETE CASCADE)
+    return update(m_db, "DELETE FROM users WHERE callsign = ?", {Signaling::normalizeCallsign(pCallsign)});
 }

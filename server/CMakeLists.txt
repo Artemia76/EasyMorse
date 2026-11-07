@@ -27,6 +27,8 @@ qt_add_resources(easymorse_server_lib server_web
         web/index.html
         web/app.js
         web/style.css
+        web/admin.html
+        web/admin.js
 )
 
 qt_add_executable(easymorse-server main.cpp)

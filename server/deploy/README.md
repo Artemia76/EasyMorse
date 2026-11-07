@@ -1,7 +1,8 @@
 # Deploying the EasyMorse server
 
-`easymorse-server` puts EasyMorse users in touch: accounts, rooms, calls,
-and a STUN/TURN relay for the connections that cannot go direct. Morse
+`easymorse-server` puts EasyMorse users in touch: accounts, rooms (every
+member is connected to the others by itself), an administration page, and a
+STUN/TURN relay for the connections that cannot go direct. Morse
 itself goes peer to peer between the applications, end to end encrypted:
 the server never sees it.
 
@@ -41,6 +42,26 @@ Then use `easymorse-server.service` (systemd, adjust the domain and address)
 behind a reverse proxy doing HTTPS, for instance Caddy with the `Caddyfile`
 of this directory.
 
+## Administration
+
+The page `https://<your domain>/admin.html` lists the accounts (online or not,
+room, last login) and moderates them: disconnect, suspend with a reason shown
+to the user, reactivate, give a new password, make or remove administrators,
+delete. Actions are written to the server log.
+
+Nobody is an administrator at first: create your account (web page or
+application), then name it from the command line, server running or not:
+
+```sh
+# Docker
+docker compose exec easymorse easymorse-server --database /data/easymorse.db --grant-admin F4IKZ
+# systemd
+sudo easymorse-server --database /var/lib/easymorse/easymorse.db --grant-admin F4IKZ
+```
+
+`--revoke-admin CALLSIGN` removes the rights. Other administrators can then be
+named from the page.
+
 ## Options
 
 | Option | Default | Meaning |
@@ -53,6 +74,7 @@ of this directory.
 | `--external-address` | none | Public IP announced for relayed sessions |
 | `--turn-port` | `3478` | STUN/TURN UDP port |
 | `--relay-ports` | any | UDP port range for relayed sessions |
+| `--grant-admin`, `--revoke-admin` | | Change the administrator rights of an account, then exit |
 
 ## Security notes
 
@@ -60,3 +82,6 @@ of this directory.
 - Login and registration attempts are limited per address; WebSocket messages
   are limited in size and rate.
 - TURN credentials are random, issued to logged in users and valid 12 hours.
+- Rooms hold 8 members at most: each one keeps a link with every other.
+- Suspending, disconnecting or changing the password of an account revokes its
+  tokens: the application has to log in again.

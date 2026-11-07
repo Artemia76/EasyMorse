@@ -181,9 +181,12 @@ void Server::setupRoutes()
         switch (m_accounts.login(callsign, password, token))
         {
         case Accounts::Result::Ok:
-            return json({{"callsign", Signaling::normalizeCallsign(callsign)}, {"token", token}});
+            return json({{"callsign", Signaling::normalizeCallsign(callsign)}, {"token", token},
+                         {"admin", m_accounts.isAdmin(callsign)}});
         case Accounts::Result::WrongCredentials:
             return error(Status::Unauthorized, "wrong_credentials", "Wrong callsign or password");
+        case Accounts::Result::Banned:
+            return error(Status::Forbidden, "banned", m_accounts.user(callsign).banReason);
         default:
             return error(Status::InternalServerError, "server_error", "Server error");
         }
@@ -192,6 +195,26 @@ void Server::setupRoutes()
     m_http.route("/api/v1/logout", Method::Post, [this](const QHttpServerRequest& pRequest) {
         m_accounts.revokeToken(bearerToken(pRequest));
         return QHttpServerResponse(Status::NoContent);
+    });
+
+    m_http.route("/api/v1/me", Method::Get, [this](const QHttpServerRequest& pRequest) {
+        const QString callsign = m_accounts.callsignForToken(bearerToken(pRequest));
+        if (callsign.isEmpty())
+            return error(Status::Unauthorized, "bad_token", "Unknown or expired token, log in again");
+        return json({{"callsign", callsign}, {"admin", m_accounts.isAdmin(callsign)}});
+    });
+
+    // Administration: accounts list and moderation
+    m_http.route("/api/v1/admin/users", Method::Get, [this](const QHttpServerRequest& pRequest) {
+        if (administrator(pRequest).isEmpty())
+            return error(Status::Forbidden, "forbidden", "Administrators only");
+        return json(adminUsers());
+    });
+    m_http.route("/api/v1/admin/users", Method::Post, [this](const QHttpServerRequest& pRequest) {
+        const QString admin = administrator(pRequest);
+        if (admin.isEmpty())
+            return error(Status::Forbidden, "forbidden", "Administrators only");
+        return adminAction(admin, QJsonDocument::fromJson(pRequest.body()).object());
     });
 
     m_http.route("/api/v1/rooms", Method::Get, [this]() {
@@ -451,4 +474,110 @@ QStringList Server::members(const QString& pRoom) const
         list.append(member->callsign);
     list.sort();
     return list;
+}
+
+void Server::dropCallsign(const QString& pCallsign, const QString& pCode, const QString& pMessage)
+{
+    Client* client = clientByCallsign(pCallsign);
+    if (!client)
+        return;
+    sendError(client, pCode, pMessage);
+    leaveRoom(client);
+    client->callsign.clear();
+    client->socket->close(QWebSocketProtocol::CloseCodePolicyViolated, pCode);
+}
+
+QString Server::administrator(const QHttpServerRequest& pRequest)
+{
+    const QString callsign = m_accounts.callsignForToken(bearerToken(pRequest));
+    return (!callsign.isEmpty() && m_accounts.isAdmin(callsign)) ? callsign : QString();
+}
+
+QJsonObject Server::adminUsers()
+{
+    // Who is connected, and where
+    QHash<QString, QString> online;
+    for (const auto& [socket, client] : m_clients)
+    {
+        if (!client->callsign.isEmpty())
+            online.insert(client->callsign, m_roomNames.value(client->room));
+    }
+    QJsonArray users;
+    for (const Accounts::User& user : m_accounts.users())
+    {
+        QJsonObject entry{{"callsign", user.callsign}, {"admin", user.admin}, {"banned", user.banned},
+                          {"created", user.created}, {"online", online.contains(user.callsign)}};
+        if (user.banned && !user.banReason.isEmpty())
+            entry.insert("reason", user.banReason);
+        if (user.lastLogin > 0)
+            entry.insert("lastLogin", user.lastLogin);
+        if (!online.value(user.callsign).isEmpty())
+            entry.insert("room", online.value(user.callsign));
+        users.append(entry);
+    }
+    return {{"users", users}, {"online", online.size()}};
+}
+
+QHttpServerResponse Server::adminAction(const QString& pAdmin, const QJsonObject& pRequest)
+{
+    using Status = QHttpServerResponse::StatusCode;
+    const QString action = pRequest.value("action").toString();
+    const QString callsign = Signaling::normalizeCallsign(pRequest.value("callsign").toString());
+    if (callsign.isEmpty())
+        return error(Status::BadRequest, "invalid_callsign", "callsign is required");
+    // An administrator cannot lock themselves out
+    static const QSet<QString> notOnSelf = {"ban", "delete", "revoke", "kick"};
+    if (callsign == pAdmin && notOnSelf.contains(action))
+        return error(Status::BadRequest, "self", "Not on your own account");
+
+    Accounts::Result result = Accounts::Result::Ok;
+    if (action == "ban")
+    {
+        const QString reason = pRequest.value("reason").toString().simplified().left(200);
+        result = m_accounts.setBanned(callsign, true, reason);
+        if (result == Accounts::Result::Ok)
+            dropCallsign(callsign, "banned", reason);
+    }
+    else if (action == "unban")
+        result = m_accounts.setBanned(callsign, false);
+    else if (action == "kick")
+    {
+        // Logged out everywhere: the application asks for the password again
+        result = m_accounts.user(callsign).callsign.isEmpty() ? Accounts::Result::NotFound : Accounts::Result::Ok;
+        if (result == Accounts::Result::Ok)
+        {
+            m_accounts.revokeTokens(callsign);
+            dropCallsign(callsign, "kicked", "Disconnected by a moderator");
+        }
+    }
+    else if (action == "grant" || action == "revoke")
+        result = m_accounts.setAdmin(callsign, action == "grant");
+    else if (action == "password")
+    {
+        result = m_accounts.setPassword(callsign, pRequest.value("password").toString());
+        if (result == Accounts::Result::Ok)
+            dropCallsign(callsign, "kicked", "Password changed by a moderator");
+    }
+    else if (action == "delete")
+    {
+        result = m_accounts.deleteUser(callsign);
+        if (result == Accounts::Result::Ok)
+            dropCallsign(callsign, "kicked", "Account deleted by a moderator");
+    }
+    else
+        return error(Status::BadRequest, "bad_request", "Unknown action");
+
+    switch (result)
+    {
+    case Accounts::Result::Ok:
+        qInfo("admin %s: %s %s", qPrintable(pAdmin), qPrintable(action), qPrintable(callsign));
+        return QHttpServerResponse(Status::NoContent);
+    case Accounts::Result::NotFound:
+        return error(Status::NotFound, "not_found", "No such account");
+    case Accounts::Result::WeakPassword:
+        return error(Status::BadRequest, "weak_password",
+                     QString("At least %1 characters").arg(Signaling::MinPasswordChars));
+    default:
+        return error(Status::InternalServerError, "server_error", "Server error");
+    }
 }

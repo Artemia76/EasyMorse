@@ -33,6 +33,7 @@
 
 #include <cstdio>
 
+#include "accounts.h"
 #include "server.h"
 
 int main(int argc, char* argv[])
@@ -54,8 +55,36 @@ int main(int argc, char* argv[])
     const QCommandLineOption turnPort("turn-port", "STUN/TURN UDP port (default 3478).", "port", "3478");
     const QCommandLineOption externalAddress("external-address", "Public IP address announced for relayed sessions.", "address");
     const QCommandLineOption relayPorts("relay-ports", "UDP port range for relayed sessions, e.g. 49160-49200.", "range");
-    parser.addOptions({listen, port, database, trustProxy, rooms, publicHost, turnPort, externalAddress, relayPorts});
+    const QCommandLineOption grantAdmin("grant-admin", "Make this account an administrator, then exit.", "callsign");
+    const QCommandLineOption revokeAdmin("revoke-admin", "Remove the administrator rights of this account, then exit.", "callsign");
+    parser.addOptions({listen, port, database, trustProxy, rooms, publicHost, turnPort, externalAddress, relayPorts,
+                       grantAdmin, revokeAdmin});
     parser.process(app);
+
+    // Administrators are named from the command line: the first one has nobody to name it
+    if (parser.isSet(grantAdmin) || parser.isSet(revokeAdmin))
+    {
+        Accounts accounts;
+        if (!accounts.open(parser.value(database)))
+        {
+            std::fprintf(stderr, "Cannot open the database %s\n", qPrintable(parser.value(database)));
+            return 1;
+        }
+        const bool grant = parser.isSet(grantAdmin);
+        const QString callsign = parser.value(grant ? grantAdmin : revokeAdmin);
+        switch (accounts.setAdmin(callsign, grant))
+        {
+        case Accounts::Result::Ok:
+            std::printf("%s is %s an administrator\n", qPrintable(callsign.toUpper()), grant ? "now" : "no longer");
+            return 0;
+        case Accounts::Result::NotFound:
+            std::fprintf(stderr, "No account %s: create it first (web page or application)\n", qPrintable(callsign));
+            return 1;
+        default:
+            std::fprintf(stderr, "Database error\n");
+            return 1;
+        }
+    }
 
     Server::Config config;
     config.address = QHostAddress(parser.value(listen));
