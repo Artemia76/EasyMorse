@@ -47,6 +47,8 @@ namespace Key
     constexpr const char* StunServer = "network/StunServer";
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
     constexpr const char* ReceiveDecodeMode = "network/ReceiveDecodeMode";
+    constexpr const char* ServerUrl = "server/Url";
+    constexpr const char* ServerToken = "server/Token";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
     constexpr const char* DecoderGapMs = "decoder/GapMs";
@@ -74,6 +76,8 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
     m_receiveDecodeMode = qBound(0, m_store->value(Key::ReceiveDecodeMode, 0).toInt(), 2);
+    m_serverUrl = m_store->value(Key::ServerUrl).toString();
+    m_serverToken = m_store->value(Key::ServerToken).toString();
 }
 
 Settings::~Settings() = default;
@@ -188,6 +192,23 @@ void Settings::setReceiveDecodeMode(int pMode)
 {
     if (store(Key::ReceiveDecodeMode, m_receiveDecodeMode, qBound(0, pMode, 2)))
         emit receiveDecodeModeChanged();
+}
+
+void Settings::setServerUrl(const QString& pUrl)
+{
+    QString url = pUrl.trimmed();
+    // A bare host name means HTTPS
+    if (!url.isEmpty() && !url.contains("://"))
+        url.prepend("https://");
+    while (url.endsWith(u'/'))
+        url.chop(1);
+    if (store(Key::ServerUrl, m_serverUrl, url))
+        emit serverUrlChanged();
+}
+
+void Settings::setServerToken(const QString& pToken)
+{
+    store(Key::ServerToken, m_serverToken, pToken);
 }
 
 void Settings::decoderEstimates(double& pDotMs, double& pDashMs, double& pGapMs) const

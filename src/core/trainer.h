@@ -40,6 +40,7 @@
 #include "keyer/keyerinput.h"
 #include "morse/keydecoder.h"
 #include "morse/sequencer.h"
+#include "net/lobby.h"
 #include "net/peersession.h"
 
 class Settings;
@@ -58,6 +59,7 @@ class Trainer : public QObject
     Q_PROPERTY(ManualKeyer* manualKeyer READ manualKeyer CONSTANT)
     // Remote station
     Q_PROPERTY(PeerSession* session READ session CONSTANT)
+    Q_PROPERTY(Lobby* lobby READ lobby CONSTANT)
     Q_PROPERTY(bool remoteKeyDown READ isRemoteKeyDown NOTIFY remoteKeyDownChanged)
     Q_PROPERTY(bool remoteActive READ isRemoteActive NOTIFY remoteActiveChanged)
     Q_PROPERTY(double remoteDecoderSpeed READ remoteDecoderSpeed NOTIFY remoteDecoderSpeedChanged)
@@ -76,6 +78,7 @@ public:
     KeyDecoder*     decoder() { return &m_decoder; }
     ManualKeyer*    manualKeyer() { return &m_manualKeyer; }
     PeerSession*    session() { return &m_session; }
+    Lobby*          lobby() { return &m_lobby; }
     KeyDecoder*     remoteDecoder() { return &m_remoteDecoder; }
 #ifdef EASYMORSE_HAS_SERIALPORT
     SerialKeyer*    serialKeyer() const { return m_serialKeyer; }
@@ -137,6 +140,7 @@ private:
     KeyDecoder              m_decoder;
     ManualKeyer             m_manualKeyer;
     PeerSession             m_session;
+    Lobby                   m_lobby;
     KeyDecoder              m_remoteDecoder;
     QTimer                  m_remoteIdleTimer;
     bool                    m_remoteActive = false;

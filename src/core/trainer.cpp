@@ -36,6 +36,7 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     : QObject(parent)
     , m_settings(pSettings)
     , m_sequencer(&m_audio)
+    , m_lobby(&m_session)
 {
     // Playback
     connect(&m_sequencer, &MorseSequencer::charPlayed, this, &Trainer::charPlayed);
@@ -95,6 +96,17 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
         }
     });
     applySessionSettings();
+    // A call uses the servers given by the match-making server; back to ours after
+    connect(&m_lobby, &Lobby::callStateChanged, this, [this] {
+        if (m_lobby.callState() == Lobby::CallState::Idle)
+            applySessionSettings();
+    });
+    SignalingClient* client = m_lobby.client();
+    client->setServerUrl(QUrl(m_settings->serverUrl()));
+    connect(m_settings, &Settings::serverUrlChanged, this, [this, client] {
+        client->setServerUrl(QUrl(m_settings->serverUrl()));
+    });
+    connect(client, &SignalingClient::tokenChanged, m_settings, &Settings::setServerToken);
     connect(m_settings, &Settings::callsignChanged, this, &Trainer::applySessionSettings);
     connect(m_settings, &Settings::stunServerChanged, this, &Trainer::applySessionSettings);
     connect(m_settings, &Settings::jitterDelayMsChanged, this, &Trainer::applySessionSettings);
@@ -146,6 +158,7 @@ Trainer::~Trainer()
 {
     // Members are destroyed in reverse order: the session, closing, would
     // report to slots using the remote decoder and timer already destroyed
+    disconnect(&m_lobby, nullptr, this, nullptr);
     disconnect(&m_session, nullptr, this, nullptr);
     disconnect(m_session.remoteKeyer(), nullptr, this, nullptr);
     m_session.stop();
@@ -156,6 +169,9 @@ void Trainer::start()
 {
     restartAudio();
     reopenSerial();
+    // Back on the match-making server with the token of the last login
+    if (!m_settings->serverUrl().isEmpty() && !m_settings->serverToken().isEmpty())
+        m_lobby.client()->resume(m_settings->serverToken());
 }
 
 void Trainer::addKeyer(KeyerInput* pKeyer)
@@ -303,6 +319,7 @@ void Trainer::applySessionSettings()
     stun.host = (colon > 0 && portOk) ? server.left(colon) : server;
     stun.port = static_cast<quint16>((portOk && port > 0 && port < 65536) ? port : 3478);
     m_session.setStunServer(stun);
+    m_session.setTurnServer({});
 }
 
 void Trainer::restartAudio()

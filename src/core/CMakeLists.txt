@@ -37,11 +37,13 @@ qt_add_library(easymorse_core STATIC
     morse/sequencer.cpp morse/sequencer.h
 
     net/jitterbuffer.cpp net/jitterbuffer.h
+    net/lobby.cpp net/lobby.h
     net/peerlink.cpp net/peerlink.h
     net/peersession.cpp net/peersession.h
     net/protocol.cpp net/protocol.h
     net/remotekeyer.h
     net/securechannel.cpp net/securechannel.h
+    net/signalingclient.cpp net/signalingclient.h
 
     settings/settings.cpp settings/settings.h
 
@@ -56,6 +58,9 @@ target_link_libraries(easymorse_core
         easymorse_settings
         Qt6::Core
         Qt6::Gui
+        Qt6::Network
+        Qt6::WebSockets
+        easymorse_protocol
     PRIVATE
         EasyMorse::miniaudio
         EasyMorse::monocypher

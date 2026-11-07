@@ -65,6 +65,8 @@ class Settings : public QObject
     Q_PROPERTY(int jitterDelayMs READ jitterDelayMs WRITE setJitterDelayMs NOTIFY jitterDelayMsChanged)
     // What is shown of the received Morse: 0 nothing (listen), 1 after the message, 2 live
     Q_PROPERTY(int receiveDecodeMode READ receiveDecodeMode WRITE setReceiveDecodeMode NOTIFY receiveDecodeModeChanged)
+    // Match-making server
+    Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
 
 public:
     static constexpr int MinFrequency = 200;
@@ -97,6 +99,11 @@ public:
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
     int     receiveDecodeMode() const { return m_receiveDecodeMode; }
+    QString serverUrl() const { return m_serverUrl; }
+    ///
+    /// \brief token of the last login, to reconnect without the password
+    ///
+    QString serverToken() const { return m_serverToken; }
 
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
@@ -115,6 +122,8 @@ public:
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
     void    setReceiveDecodeMode(int pMode);
+    void    setServerUrl(const QString& pUrl);
+    void    setServerToken(const QString& pToken);
 
     ///
     /// \brief decoder estimates learnt in the previous session (0 when unknown)
@@ -140,6 +149,7 @@ signals:
     void    stunServerChanged();
     void    jitterDelayMsChanged();
     void    receiveDecodeModeChanged();
+    void    serverUrlChanged();
 
 private:
     template <typename T>
@@ -163,6 +173,8 @@ private:
     QString     m_stunServer;
     int         m_jitterDelayMs;
     int         m_receiveDecodeMode;
+    QString     m_serverUrl;
+    QString     m_serverToken;
 };
 
 #endif // SETTINGS_H

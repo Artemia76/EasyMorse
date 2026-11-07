@@ -49,7 +49,7 @@ option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServe
 # =======================================================================
 # Dependencies
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 LinguistTools
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Network WebSockets Qml Quick QuickControls2 LinguistTools
                     OPTIONAL_COMPONENTS SerialPort)
 if(EASYMORSE_BUILD_SERVER)
     find_package(Qt6 OPTIONAL_COMPONENTS Network HttpServer WebSockets Sql)
