@@ -66,62 +66,73 @@ ApplicationWindow {
         }
     }
 
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        ControlsPanel {
-            visible: window.wide
-            Layout.preferredWidth: 320
-            Layout.fillHeight: true
-        }
-
-        ToolSeparator {
-            visible: window.wide
-            orientation: Qt.Vertical
-            Layout.fillHeight: true
-        }
-
-        ColumnLayout {
+        RowLayout {
             spacing: 0
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            TabBar {
-                id: tabs
-                Layout.fillWidth: true
-                onCurrentIndexChanged: window.currentPage = currentIndex
-
-                TabButton { text: qsTr("Send"); width: implicitWidth }
-                TabButton { text: qsTr("Key"); width: implicitWidth }
-                TabButton { text: qsTr("Network"); width: implicitWidth }
-                TabButton { text: qsTr("Glossary"); width: implicitWidth }
-                TabButton { text: qsTr("Log"); width: implicitWidth }
-                TabButton { text: qsTr("Options"); width: implicitWidth }
-                TabButton {
-                    text: qsTr("Settings")
-                    width: window.wide ? 0 : implicitWidth
-                    visible: !window.wide
-                }
+            ControlsPanel {
+                visible: window.wide
+                Layout.preferredWidth: 320
+                Layout.fillHeight: true
             }
 
-            StackLayout {
-                currentIndex: tabs.currentIndex
+            ToolSeparator {
+                visible: window.wide
+                orientation: Qt.Vertical
+                Layout.fillHeight: true
+            }
+
+            ColumnLayout {
+                spacing: 0
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                SendPage {}
-                KeyPage {}
-                NetworkPage {}
-                GlossaryPage {
-                    onPlayRequested: (text) => {
-                        Trainer.play(text)
+                TabBar {
+                    id: tabs
+                    Layout.fillWidth: true
+                    onCurrentIndexChanged: window.currentPage = currentIndex
+
+                    TabButton { text: qsTr("Send"); width: implicitWidth }
+                    TabButton { text: qsTr("Key"); width: implicitWidth }
+                    TabButton { text: qsTr("Network"); width: implicitWidth }
+                    TabButton { text: qsTr("Glossary"); width: implicitWidth }
+                    TabButton { text: qsTr("Log"); width: implicitWidth }
+                    TabButton { text: qsTr("Options"); width: implicitWidth }
+                    TabButton {
+                        text: qsTr("Settings")
+                        width: window.wide ? 0 : implicitWidth
+                        visible: !window.wide
                     }
                 }
-                LogPage {}
-                OptionsPage {}
-                ControlsPanel {}
+
+                StackLayout {
+                    currentIndex: tabs.currentIndex
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    SendPage {}
+                    KeyPage {}
+                    NetworkPage {}
+                    GlossaryPage {
+                        onPlayRequested: (text) => {
+                            Trainer.play(text)
+                        }
+                    }
+                    LogPage {}
+                    OptionsPage {}
+                    ControlsPanel {}
+                }
             }
+        }
+
+        // Decoded text, whatever the page shown
+        DecoderPanel {
+            Layout.fillWidth: true
         }
     }
 }

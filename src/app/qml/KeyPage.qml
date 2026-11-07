@@ -6,97 +6,36 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 import EasyMorse
 
-// Morse key and real time decoding of what is keyed
+// Morse key; what is keyed is decoded at the bottom of the window
 Page {
     id: root
 
-    Connections {
-        target: Trainer
-        function onCharDecoded(pText, pPattern) {
-            // Unknown patterns are shown as received to help the learner
-            decoded.insert(decoded.length, pText.length > 0 ? pText : "[" + pPattern + "]")
-        }
-        function onWordGap() { decoded.insert(decoded.length, " ") }
-    }
-
-    GridLayout {
+    ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
-        columns: root.width > root.height ? 2 : 1
-        columnSpacing: 24
-        rowSpacing: 16
+        spacing: 12
 
-        ColumnLayout {
-            spacing: 12
+        KeyPad {
+            id: pad
             Layout.fillWidth: true
             Layout.fillHeight: true
-
-            KeyPad {
-                id: pad
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.minimumHeight: 160
-            }
-            Label {
-                // Dots and dashes of the character being keyed
-                text: Trainer.decoderPattern.replace(/\./g, "·").replace(/-/g, "−") || " "
-                font.pixelSize: 36
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-            }
-            Label {
-                text: qsTr("Space bar (key focused), Alt key or serial key")
-                opacity: 0.7
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-            }
+            Layout.minimumHeight: 160
         }
-
-        ColumnLayout {
-            spacing: 8
+        Label {
+            // Dots and dashes of the character being keyed
+            text: Trainer.decoderPattern.replace(/\./g, "·").replace(/-/g, "−") || " "
+            font.pixelSize: 36
+            horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            RowLayout {
-                Layout.fillWidth: true
-                Label {
-                    text: qsTr("Decoded at %1 WPM").arg(Math.round(Trainer.decoderSpeed))
-                          + (MorseSettings.decoderAutoAdapt ? "" : " " + qsTr("(locked)"))
-                    font.bold: true
-                    Layout.fillWidth: true
-                }
-                Button {
-                    text: qsTr("Clear")
-                    flat: true
-                    onClicked: decoded.clear()
-                }
-            }
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                TextArea {
-                    id: decoded
-                    readOnly: true
-                    wrapMode: TextEdit.Wrap
-                    font.pixelSize: 24
-                    font.family: "monospace"
-                    // Keep the last characters visible
-                    onTextChanged: cursorPosition = length
-
-                    // Hint instead of placeholderText, which Material turns into a floating label
-                    Label {
-                        anchors.fill: parent
-                        anchors.margins: 16
-                        visible: decoded.length === 0
-                        text: qsTr("Decoded text appears here as you key")
-                        wrapMode: Text.WordWrap
-                        opacity: 0.5
-                        // Not the large monospace font of the text area
-                        font: Qt.application.font
-                    }
-                }
-            }
+        }
+        Label {
+            text: qsTr("Space bar (key focused), Alt key or serial key")
+                  + " · " + qsTr("Decoded at %1 WPM").arg(Math.round(Trainer.decoderSpeed))
+                  + (MorseSettings.decoderAutoAdapt ? "" : " " + qsTr("(locked)"))
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+            Layout.fillWidth: true
         }
     }
 }

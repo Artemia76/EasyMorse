@@ -21,20 +21,6 @@ Page {
                                  || session.state === PeerSession.Inviting
                                  || session.state === PeerSession.Connecting
 
-    // Received Morse: finished messages, and the one in progress with its sender
-    property string receivedText
-    property string currentText
-    property string currentFrom
-    property bool revealed: false
-    readonly property bool hearing: root.connected || Trainer.lobby.connectedCount > 0
-
-    function flushMessage() {
-        if (root.currentText.trim().length > 0)
-            root.receivedText += qsTr("%1: ").arg(root.currentFrom) + root.currentText.trim() + "\n"
-        root.currentText = ""
-        root.revealed = false
-    }
-
     function stateText() {
         switch (session.state) {
         case PeerSession.Preparing: return qsTr("Preparing your invitation…")
@@ -53,23 +39,6 @@ Page {
         case "srflx": return qsTr("direct, through the Internet")
         case "relay": return qsTr("through a relay server")
         default: return ""
-        }
-    }
-
-    Connections {
-        target: Trainer
-        function onRemoteCharDecoded(pFrom, pText, pPattern) {
-            // Another station keys: a new line
-            if (pFrom !== root.currentFrom)
-                root.flushMessage()
-            root.currentFrom = pFrom
-            root.currentText += pText.length > 0 ? pText : "[" + pPattern + "]"
-        }
-        function onRemoteWordGap(pFrom) { if (pFrom === root.currentFrom) root.currentText += " " }
-        function onRemoteActiveChanged() {
-            // Message over: it joins the finished ones
-            if (!Trainer.remoteActive)
-                root.flushMessage()
         }
     }
 
@@ -222,88 +191,6 @@ Page {
                         visible: (root.connected || root.busy) && root.manual
                         text: root.connected ? qsTr("Disconnect") : qsTr("Cancel")
                         onClicked: root.session.stop()
-                    }
-                }
-            }
-
-            GroupBox {
-                title: qsTr("Reception")
-                Layout.fillWidth: true
-                Layout.leftMargin: 12
-                Layout.rightMargin: 12
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 8
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Rectangle {
-                            // Lit while the correspondent's key is down
-                            width: 18; height: 18; radius: 9
-                            color: Trainer.remoteKeyDown ? Material.accent : Material.color(Material.Grey)
-                        }
-                        Label {
-                            text: Trainer.remoteCallsign.length > 0 && root.hearing
-                                  ? qsTr("%1 at %2 WPM").arg(Trainer.remoteCallsign).arg(Math.round(Trainer.remoteDecoderSpeed))
-                                  : qsTr("Nothing received yet")
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
-                    }
-                    // Own row: the labels are long once translated
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Label { text: qsTr("Show") }
-                        ComboBox {
-                            model: [qsTr("Nothing, listen"), qsTr("After the message"), qsTr("Live")]
-                            currentIndex: MorseSettings.receiveDecodeMode
-                            onActivated: (index) => MorseSettings.receiveDecodeMode = index
-                            implicitContentWidthPolicy: ComboBox.WidestText
-                            Layout.fillWidth: true
-                        }
-                    }
-
-                    TextArea {
-                        readOnly: true
-                        wrapMode: TextEdit.Wrap
-                        font.pixelSize: 20
-                        font.family: "monospace"
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 140
-                        text: {
-                            const mode = MorseSettings.receiveDecodeMode
-                            if (mode === 0)
-                                return ""
-                            const current = root.currentText.length > 0 ? qsTr("%1: ").arg(root.currentFrom) : ""
-                            if (mode === 2 || root.revealed)
-                                return root.receivedText + current + root.currentText
-                            return root.receivedText + (current.length > 0 ? current + "…" : "")
-                        }
-                        onTextChanged: cursorPosition = length
-
-                        Label {
-                            anchors.centerIn: parent
-                            visible: MorseSettings.receiveDecodeMode === 0
-                            width: parent.width - 32
-                            horizontalAlignment: Text.AlignHCenter
-                            wrapMode: Text.WordWrap
-                            text: qsTr("Listen and copy what you hear. Choose what to show above to check yourself.")
-                            opacity: 0.5
-                            font: Qt.application.font
-                        }
-                    }
-                    RowLayout {
-                        Button {
-                            visible: MorseSettings.receiveDecodeMode === 1 && root.currentText.length > 0 && !root.revealed
-                            text: qsTr("Reveal now")
-                            onClicked: root.revealed = true
-                        }
-                        Button {
-                            text: qsTr("Clear")
-                            flat: true
-                            onClicked: { root.receivedText = ""; root.currentText = ""; root.currentFrom = "" }
-                        }
                     }
                 }
             }
