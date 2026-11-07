@@ -36,6 +36,8 @@ ApplicationWindow {
     // Phone: navigation at the bottom, sound and speed on a page of their own
     readonly property bool wide: width >= 800
     readonly property bool roomy: width >= 1040
+    // Low windows (phones held sideways): tighter header, strip and navigation
+    readonly property bool compact: height < 560
     readonly property int pageCount: 6
     readonly property int controlsPage: 6
     property int currentPage: 0
@@ -71,7 +73,7 @@ ApplicationWindow {
     readonly property bool inRoom: client.state === SignalingClient.Online && client.room.length > 0
 
     header: Rectangle {
-        implicitHeight: 56
+        implicitHeight: window.compact ? 44 : 56
         color: Theme.chrome
 
         Rectangle {
@@ -88,8 +90,8 @@ ApplicationWindow {
             spacing: 12
 
             Item {
-                Layout.preferredWidth: 34
-                Layout.preferredHeight: 34
+                Layout.preferredWidth: window.compact ? 28 : 34
+                Layout.preferredHeight: window.compact ? 28 : 34
                 Image {
                     // The walrus ("morse" in French) of the original icon
                     id: logo
@@ -158,24 +160,24 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.preferredWidth: window.roomy ? 196 : 68
 
-                ColumnLayout {
+                // Scrolls when the window is too low for all the pages
+                ListView {
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 4
-
-                    Repeater {
-                        model: 6
-                        NavButton {
-                            required property int index
-                            text: window.pages[index].title
-                            icon.source: window.pages[index].icon
-                            compact: !window.roomy
-                            checked: window.currentPage === index
-                            onClicked: window.currentPage = index
-                            Layout.fillWidth: true
-                        }
+                    anchors.margins: window.compact ? 8 : 12
+                    spacing: window.compact ? 2 : 4
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+                    model: 6
+                    delegate: NavButton {
+                        required property int index
+                        width: ListView.view.width
+                        height: window.compact ? 38 : 44
+                        text: window.pages[index].title
+                        icon.source: window.pages[index].icon
+                        compact: !window.roomy
+                        checked: window.currentPage === index
+                        onClicked: window.currentPage = index
                     }
-                    Item { Layout.fillHeight: true }
                 }
                 Rectangle {
                     anchors.right: parent.right
@@ -224,6 +226,7 @@ ApplicationWindow {
 
         // Decoded text, whatever the page shown
         DecoderPanel {
+            compact: window.compact
             Layout.fillWidth: true
         }
 

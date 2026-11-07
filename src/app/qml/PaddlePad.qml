@@ -63,12 +63,13 @@ Item {
                         Label {
                             text: paddle.dash ? "−" : "·"
                             font.family: Theme.monoFont
-                            font.pixelSize: 56
+                            font.pixelSize: Math.max(24, Math.min(56, paddle.height * 0.3))
                             font.weight: Font.Bold
                             color: Theme.accentInk
                             Layout.alignment: Qt.AlignHCenter
                         }
                         Label {
+                            visible: paddle.height >= 120
                             text: paddle.dash ? qsTr("Dashes") : qsTr("Dots")
                             font.pixelSize: 15
                             font.weight: Font.DemiBold

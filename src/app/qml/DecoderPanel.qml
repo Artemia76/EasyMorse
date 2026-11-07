@@ -17,7 +17,10 @@ Pane {
     readonly property var sessions: [Trainer.session].concat(Trainer.lobby.peers)
     property int connectedCount: 0
     readonly property int nameWidth: root.width < 520 ? 72 : 104
-    readonly property int textSize: root.width < 520 ? 17 : 20
+    readonly property int textSize: root.compact ? 16 : root.width < 520 ? 17 : 20
+
+    // Low window: no title, a smaller text, clearing on our own line
+    property bool compact: false
 
     signal clearRequested()
 
@@ -37,16 +40,19 @@ Pane {
     }
     leftPadding: 16
     rightPadding: 16
-    topPadding: 8
-    bottomPadding: 12
+    topPadding: root.compact ? 4 : 8
+    bottomPadding: root.compact ? 4 : 12
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 4
+        spacing: root.compact ? 0 : 4
 
         RowLayout {
+            // In compact mode only needed for the correspondents' choice
+            visible: !root.compact || root.connectedCount > 0
             Layout.fillWidth: true
             Label {
+                visible: !root.compact
                 text: qsTr("Decoded").toUpperCase()
                 color: Theme.muted
                 font.pixelSize: 12
@@ -128,6 +134,15 @@ Pane {
                 horizontalAlignment: Text.AlignRight
                 visible: root.width >= 520
                 Layout.preferredWidth: 84
+            }
+            Button {
+                visible: root.compact && root.connectedCount === 0
+                text: qsTr("Clear")
+                flat: true
+                font.pixelSize: 13
+                Material.foreground: Theme.accentText
+                Layout.preferredHeight: 36
+                onClicked: root.clearRequested()
             }
         }
 

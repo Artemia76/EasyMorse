@@ -10,13 +10,15 @@ Page {
     id: root
 
     readonly property bool iambic: MorseSettings.keyerMode === 1
+    // Phone held sideways: the key keeps the room, the pattern and hint go
+    readonly property bool compact: height < 380
 
     background: null
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 24
-        spacing: 16
+        anchors.margins: root.compact ? 12 : 24
+        spacing: root.compact ? 8 : 16
 
         RowLayout {
             Layout.fillWidth: true
@@ -51,6 +53,7 @@ Page {
             font.pixelSize: 44
             color: Theme.accentText
             horizontalAlignment: Text.AlignHCenter
+            visible: !root.compact
             Layout.fillWidth: true
             Layout.preferredHeight: 60
         }
@@ -58,7 +61,7 @@ Page {
             visible: !root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.minimumHeight: 160
+            Layout.minimumHeight: 80
             Layout.maximumHeight: 340
             Layout.alignment: Qt.AlignHCenter
         }
@@ -66,7 +69,7 @@ Page {
             visible: root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.minimumHeight: 160
+            Layout.minimumHeight: 80
             Layout.maximumHeight: 300
         }
         Label {
@@ -78,8 +81,9 @@ Page {
             color: Theme.muted
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
+            visible: !root.compact
             Layout.fillWidth: true
         }
-        Item { Layout.fillHeight: true; Layout.maximumHeight: 40 }
+        Item { visible: !root.compact; Layout.fillHeight: true; Layout.maximumHeight: 40 }
     }
 }
