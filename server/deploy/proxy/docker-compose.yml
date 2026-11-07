@@ -13,7 +13,9 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - ${EASYMORSE_DATA:-/var/lib/easymorse}:/data
+      # A Docker volume by default (no root needed); a host directory works
+      # too if it belongs to the easymorse user of the image
+      - ${EASYMORSE_DATA:-easymorse-data}:/data
     command:
       - --listen=127.0.0.1
       - --port=${EASYMORSE_PORT:-18180}
@@ -23,3 +25,6 @@ services:
       - --external-address=${EASYMORSE_PUBLIC_IP}
       - --turn-port=${EASYMORSE_TURN_PORT:-3478}
       - --relay-ports=${EASYMORSE_RELAY_PORTS:-49160-49200}
+
+volumes:
+  easymorse-data:

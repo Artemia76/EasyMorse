@@ -68,12 +68,10 @@ server alone, listening on `127.0.0.1`, behind that server's HTTPS.
    With another nginx, put the two locations of `nginx-easymorse.conf` in the
    server block of the domain and open the same UDP ports.
 
-3. Start it (`.env` from `.env.example`; the data directory belongs to the
-   `easymorse` user of the image):
+3. Start it (`.env` from `.env.example`; the database is in the Docker volume
+   `easymorse-data` unless `EASYMORSE_DATA` names a host directory):
 
    ```sh
-   sudo mkdir -p /var/lib/easymorse
-   sudo chown "$(docker run --rm --entrypoint id easymorse-server -u)" /var/lib/easymorse
    docker compose up -d
    curl https://easymorse.example.org/api/v1/status
    ```
