@@ -46,18 +46,22 @@ private slots:
             received.append({down, time});
         });
         const QList<QPair<bool, int>> keyed = {{true, 60}, {false, 60}, {true, 180}, {false, 0}};
+        QList<qint64> sentAt;
         for (const auto& [down, hold] : keyed)
         {
-            alice.sendKey(down, MonotonicClock::nowMs());
+            sentAt.append(MonotonicClock::nowMs());
+            alice.sendKey(down, sentAt.last());
             QTest::qWait(hold);
         }
         QTRY_COMPARE_WITH_TIMEOUT(received.size(), 4, 3000);
         QVERIFY(received[0].first && !received[1].first && received[2].first && !received[3].first);
-        // Durations within a few ms (timers of the test itself are not exact)
+        // Compared with what was really sent: the timers of the test are not exact
         const qint64 dot = received[1].second - received[0].second;
         const qint64 dash = received[3].second - received[2].second;
-        QVERIFY2(qAbs(dot - 60) < 25, qPrintable(QString::number(dot)));
-        QVERIFY2(qAbs(dash - 180) < 25, qPrintable(QString::number(dash)));
+        const qint64 sentDot = sentAt[1] - sentAt[0];
+        const qint64 sentDash = sentAt[3] - sentAt[2];
+        QVERIFY2(qAbs(dot - sentDot) < 25, qPrintable(QString("%1 / %2").arg(dot).arg(sentDot)));
+        QVERIFY2(qAbs(dash - sentDash) < 25, qPrintable(QString("%1 / %2").arg(dash).arg(sentDash)));
     }
 
     void exchangesTextAndRoundTrip()

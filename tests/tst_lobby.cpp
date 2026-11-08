@@ -201,6 +201,17 @@ private slots:
         QTRY_COMPARE_WITH_TIMEOUT(alice.client()->state(), SignalingClient::State::Offline, 5000);
 
         again.client()->logout();
+        // The logout request is asynchronous: wait for the server to revoke the token
+        const auto tokenAccepted = [&] {
+            QNetworkAccessManager network;
+            QNetworkRequest request(QUrl(serverUrl().toString() + "/api/v1/me"));
+            request.setRawHeader("Authorization", "Bearer " + saved.toLatin1());
+            std::unique_ptr<QNetworkReply> reply(network.get(request));
+            QSignalSpy finished(reply.get(), &QNetworkReply::finished);
+            finished.wait(2000);
+            return reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 401;
+        };
+        QTRY_VERIFY_WITH_TIMEOUT(!tokenAccepted(), 5000);
         Station third;
         third.client()->setServerUrl(serverUrl());
         QSignalSpy error(third.client(), &SignalingClient::errorOccurred);
