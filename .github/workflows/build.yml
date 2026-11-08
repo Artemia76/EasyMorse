@@ -21,6 +21,7 @@ jobs:
           - name: Linux
             os: ubuntu-24.04
             preset: release
+            configure: -DEASYMORSE_DEPLOY_QT=ON
           - name: Windows
             os: windows-2022
             preset: windows-release
@@ -56,7 +57,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure
-        run: cmake --preset ${{ matrix.preset }}
+        run: cmake --preset ${{ matrix.preset }} ${{ matrix.configure }}
 
       - name: Build
         run: cmake --build --preset ${{ matrix.preset }}
@@ -76,6 +77,20 @@ jobs:
       - name: Package
         working-directory: out/build/${{ matrix.preset }}
         run: cpack
+
+      - name: Install and start the packages (Linux)
+        if: runner.os == 'Linux'
+        working-directory: out/build/${{ matrix.preset }}
+        run: |
+          sudo apt-get install -y xvfb "./$(ls easymorse_*.deb)"
+          # Without the variables of the Qt used to build: only the bundled one counts
+          clean_env="env -i PATH=$PATH HOME=$HOME LANG=C.UTF-8 QT_QUICK_BACKEND=software"
+          $clean_env xvfb-run -a easymorse --self-test
+          mkdir archive
+          tar -xzf easymorse-*.tar.gz -C archive
+          $clean_env xvfb-run -a archive/*/bin/easymorse --self-test
+          sudo apt-get remove -y easymorse
+          test ! -e /usr/bin/easymorse
 
       - name: AppImage (Linux)
         if: runner.os == 'Linux'
