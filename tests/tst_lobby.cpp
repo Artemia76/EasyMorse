@@ -208,6 +208,41 @@ private slots:
         QVERIFY(error.wait(5000));
         QCOMPARE(third.client()->state(), SignalingClient::State::Offline);
     }
+
+    // A server which went away must not hold the login form forever
+    void unreachableServerCanBeLeft()
+    {
+        SignalingClient client;
+        QSignalSpy token(&client, &SignalingClient::tokenChanged);
+        const QUrl closed(QStringLiteral("http://127.0.0.1:9"));
+        client.setServerUrl(closed);
+
+        // Another address: the token of the old server is forgotten
+        client.resume("old-token");
+        QCOMPARE(client.state(), SignalingClient::State::Connecting);
+        QTest::qWait(200);
+        client.setServerUrl(closed);    // same address: still trying
+        QCOMPARE(client.state(), SignalingClient::State::Connecting);
+        client.setServerUrl(QUrl(QStringLiteral("http://127.0.0.1:7")));
+        QCOMPARE(client.state(), SignalingClient::State::Offline);
+        QCOMPARE(token.count(), 1);
+        QVERIFY(token.first().first().toString().isEmpty());
+
+        // Giving up by hand
+        client.resume("old-token");
+        QCOMPARE(client.state(), SignalingClient::State::Connecting);
+        client.logout();
+        QCOMPARE(client.state(), SignalingClient::State::Offline);
+
+        // A login takes over from the reconnection, which does not come back
+        client.resume("old-token");
+        QSignalSpy error(&client, &SignalingClient::errorOccurred);
+        client.login("F4ABC", "password123");
+        QCOMPARE(client.state(), SignalingClient::State::LoggingIn);
+        QVERIFY(error.wait(5000));
+        QTest::qWait(2500);
+        QCOMPARE(client.state(), SignalingClient::State::Offline);
+    }
 };
 
 QTEST_GUILESS_MAIN(TestLobby)

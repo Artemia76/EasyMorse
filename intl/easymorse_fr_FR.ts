@@ -1326,7 +1326,7 @@
 <context>
     <name>ServerPanel</name>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="55"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="61"/>
         <source>Server</source>
         <translation>Serveur</translation>
     </message>
@@ -1355,122 +1355,127 @@
         <translation type="vanished">connecté</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="33"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
         <source>through the relay</source>
         <translation>par le relais</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="33"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
         <source>direct</source>
         <translation>direct</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="35"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="37"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="38"/>
         <source>no connection, trying again…</source>
         <translation>pas de liaison, nouvel essai…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="39"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="40"/>
         <source>connecting…</source>
         <translation>connexion…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="68"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="74"/>
         <source>Server address</source>
         <translation>Adresse du serveur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="77"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="83"/>
         <source>Callsign</source>
         <translation>Indicatif</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="82"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="88"/>
         <source>Callsign or first name</source>
         <translation>Indicatif ou prénom</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="88"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="94"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="92"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="98"/>
         <source>At least 8 characters</source>
         <translation>8 caractères au moins</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="103"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="109"/>
         <source>Connecting…</source>
         <translation>Connexion…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="103"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="109"/>
         <source>Log in</source>
         <translation>Se connecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="113"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="119"/>
         <source>Create account</source>
         <translation>Créer un compte</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="130"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="138"/>
+        <source>Trying to reach %1…</source>
+        <translation>Connexion à %1…</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
         <source>No server? Exchange invitations with your correspondent below.</source>
         <translation>Pas de serveur ? Échangez des invitations avec votre correspondant ci-dessous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="148"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="175"/>
         <source>Logged in as %1</source>
         <translation>Connecté en tant que %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="184"/>
         <source>Choose a room</source>
         <translation>Choisissez un salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="165"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="192"/>
         <source>Log out</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="180"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="207"/>
         <source>Room</source>
         <translation>Salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="183"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="210"/>
         <source>Join</source>
         <translation>Rejoindre</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="191"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="218"/>
         <source>Leave</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="198"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="225"/>
         <source>Type a room name or choose one, then join it.</source>
         <translation>Tapez le nom d&apos;un salon ou choisissez-en un, puis rejoignez-le.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="326"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="353"/>
         <source>Room messages</source>
         <translation>Messages du salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="346"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="373"/>
         <source>No message yet.</source>
         <translation>Pas encore de message.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="157"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="184"/>
         <source>Room %1</source>
         <translation>Salon %1</translation>
     </message>
@@ -1479,27 +1484,27 @@
         <translation type="vanished">Choisissez ou saisissez un salon, puis rejoignez-le</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="199"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="226"/>
         <source>You hear the members of the room and they hear you: key when you like.</source>
         <translation>Vous entendez les membres du salon et ils vous entendent : manipulez quand vous voulez.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="200"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="227"/>
         <source>Nobody else in this room yet.</source>
         <translation>Personne d&apos;autre dans ce salon pour l&apos;instant.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="262"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="289"/>
         <source>(you)</source>
         <translation>(vous)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="288"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="315"/>
         <source>Security code</source>
         <translation>Code de sécurité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="300"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="327"/>
         <source>Security code: %1 sees the same one, unless someone is in the middle.</source>
         <translation>Code de sécurité : %1 voit le même, sauf si quelqu&apos;un s&apos;est glissé entre vous.</translation>
     </message>
@@ -1512,8 +1517,9 @@
         <translation type="vanished">Appel de %1…</translation>
     </message>
     <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="144"/>
         <source>Cancel</source>
-        <translation type="vanished">Annuler</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>In a session with %1</source>
@@ -1524,13 +1530,13 @@
         <translation type="vanished">Raccrocher</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="353"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="380"/>
         <source>Message to the room</source>
         <translation>Message au salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="362"/>
-        <location filename="../src/app/qml/ServerPanel.qml" line="364"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="389"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="391"/>
         <source>Send</source>
         <translation>Envoyer</translation>
     </message>
@@ -1538,77 +1544,77 @@
 <context>
     <name>SignalingClient</name>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="96"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="120"/>
         <source>Set the server address first</source>
         <translation>Indiquez d&apos;abord l&apos;adresse du serveur</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="109"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="135"/>
         <source>Server unreachable: %1</source>
         <translation>Serveur injoignable : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="264"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="285"/>
         <source>Invalid callsign: 2 to 16 letters, digits, &apos;/&apos; or &apos;-&apos;</source>
         <translation>Indicatif invalide : 2 à 16 lettres, chiffres, « / » ou « - »</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="266"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="287"/>
         <source>The password needs at least 8 characters</source>
         <translation>Le mot de passe doit faire au moins 8 caractères</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="268"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="289"/>
         <source>This callsign is already registered</source>
         <translation>Cet indicatif est déjà enregistré</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="270"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="291"/>
         <source>Wrong callsign or password</source>
         <translation>Indicatif ou mot de passe incorrect</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="272"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="293"/>
         <source>Too many attempts, try again later</source>
         <translation>Trop de tentatives, réessayez plus tard</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="274"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="295"/>
         <source>Session expired, log in again</source>
         <translation>Session expirée, reconnectez-vous</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="276"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="297"/>
         <source>Logged in from somewhere else</source>
         <translation>Connecté depuis un autre poste</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="278"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="299"/>
         <source>This account is suspended</source>
         <translation>Ce compte est suspendu</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="279"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="300"/>
         <source>This account is suspended: %1</source>
         <translation>Ce compte est suspendu : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="281"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="302"/>
         <source>Disconnected by a moderator</source>
         <translation>Déconnecté par un modérateur</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="283"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="304"/>
         <source>This room is full</source>
         <translation>Ce salon est complet</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="285"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="306"/>
         <source>This operator is no longer in the room</source>
         <translation>Cet opérateur n&apos;est plus dans le salon</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="286"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="307"/>
         <source>Server error</source>
         <translation>Erreur du serveur</translation>
     </message>

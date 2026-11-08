@@ -66,8 +66,9 @@ public:
 
     ///
     /// \brief server address, e.g. https://morse.example.org (http for tests)
+    /// Another address ends the session: a token is only valid on its server.
     ///
-    void    setServerUrl(const QUrl& pUrl) { m_serverUrl = pUrl; }
+    void    setServerUrl(const QUrl& pUrl);
     QUrl    serverUrl() const { return m_serverUrl; }
 
     State       state() const { return m_state; }
@@ -109,6 +110,10 @@ signals:
 private:
     void    authenticate(const QString& pPath, const QString& pCallsign, const QString& pPassword);
     void    openSocket();
+    ///
+    /// \brief forget the token and stop connecting, nothing sent to the server
+    ///
+    void    dropSession();
     void    onMessage(const QString& pText);
     void    send(const QJsonObject& pMessage);
     void    setState(State pState);

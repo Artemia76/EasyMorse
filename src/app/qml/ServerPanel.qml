@@ -14,8 +14,9 @@ ColumnLayout {
     readonly property var lobby: Trainer.lobby
     readonly property var client: Trainer.lobby.client
     readonly property bool online: client.state === SignalingClient.Online
-    readonly property bool busy: client.state === SignalingClient.LoggingIn
-                                 || client.state === SignalingClient.Connecting
+    readonly property bool loggingIn: client.state === SignalingClient.LoggingIn
+    // Lasts as long as the server does not answer: the form must stay usable
+    readonly property bool reconnecting: client.state === SignalingClient.Connecting
     readonly property bool inRoom: online && client.room.length > 0
     readonly property bool sessionOpen: Trainer.session.state !== PeerSession.Idle
                                         && Trainer.session.state !== PeerSession.Disconnected
@@ -44,7 +45,12 @@ ColumnLayout {
         target: root.client
         function onChatReceived(pFrom, pText) { roomChat.append({ from: pFrom, message: pText }) }
         function onRoomChanged() { if (root.client.room.length === 0) roomChat.clear() }
-        function onStateChanged() { if (root.online) root.client.refreshRooms() }
+        function onStateChanged() {
+            if (root.online) {
+                loginPassword.clear()
+                root.client.refreshRooms()
+            }
+        }
     }
 
     ListModel { id: roomChat }
@@ -70,7 +76,7 @@ ColumnLayout {
                     text: MorseSettings.serverUrl
                     placeholderText: "morse.example.org"
                     inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoAutoUppercase
-                    enabled: !root.busy
+                    enabled: !root.loggingIn
                     onEditingFinished: MorseSettings.serverUrl = text
                     Layout.fillWidth: true
                 }
@@ -81,7 +87,7 @@ ColumnLayout {
                     text: MorseSettings.callsign
                     placeholderText: qsTr("Callsign or first name")
                     font.family: Theme.monoFont
-                    enabled: !root.busy && !root.sessionOpen
+                    enabled: !root.loggingIn && !root.sessionOpen
                     onEditingFinished: MorseSettings.callsign = text
                     Layout.fillWidth: true
                 }
@@ -90,7 +96,7 @@ ColumnLayout {
                     id: loginPassword
                     echoMode: TextInput.Password
                     placeholderText: qsTr("At least 8 characters")
-                    enabled: !root.busy
+                    enabled: !root.loggingIn
                     Layout.fillWidth: true
                     onAccepted: loginButton.clicked()
                 }
@@ -100,10 +106,10 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Button {
                     id: loginButton
-                    text: root.busy ? qsTr("Connecting…") : qsTr("Log in")
+                    text: root.loggingIn ? qsTr("Connecting…") : qsTr("Log in")
                     Material.background: Theme.accent
                     Material.foreground: Theme.accentInk
-                    enabled: !root.busy && MorseSettings.serverUrl.length > 0 && loginPassword.text.length > 0
+                    enabled: !root.loggingIn && MorseSettings.serverUrl.length > 0 && loginPassword.text.length > 0
                     onClicked: {
                         root.client.login(loginCallsign.text, loginPassword.text)
                         loginPassword.clear()
@@ -112,11 +118,32 @@ ColumnLayout {
                 Button {
                     text: qsTr("Create account")
                     flat: true
-                    enabled: !root.busy && MorseSettings.serverUrl.length > 0 && loginPassword.text.length > 0
+                    enabled: !root.loggingIn && MorseSettings.serverUrl.length > 0 && loginPassword.text.length > 0
                     onClicked: {
                         root.client.registerAccount(loginCallsign.text, loginPassword.text)
                         loginPassword.clear()
                     }
+                }
+            }
+            RowLayout {
+                visible: root.reconnecting
+                spacing: 8
+                Layout.fillWidth: true
+                BusyIndicator {
+                    running: root.reconnecting
+                    Layout.preferredWidth: 32
+                    Layout.preferredHeight: 32
+                }
+                Label {
+                    text: qsTr("Trying to reach %1…").arg(MorseSettings.serverUrl)
+                    color: Theme.muted
+                    wrapMode: Text.WrapAnywhere
+                    Layout.fillWidth: true
+                }
+                Button {
+                    text: qsTr("Cancel")
+                    flat: true
+                    onClicked: root.client.logout()
                 }
             }
             Label {

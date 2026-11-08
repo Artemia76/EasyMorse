@@ -73,6 +73,30 @@ SignalingClient::~SignalingClient()
     m_socket->disconnect(this);
 }
 
+void SignalingClient::setServerUrl(const QUrl& pUrl)
+{
+    if (pUrl == m_serverUrl)
+        return;
+    dropSession();
+    m_serverUrl = pUrl;
+}
+
+void SignalingClient::dropSession()
+{
+    m_reconnectTimer.stop();
+    m_wantedRoom.clear();
+    if (!m_token.isEmpty())
+    {
+        m_token.clear();
+        emit tokenChanged(QString());
+    }
+    if (m_socket->state() == QAbstractSocket::ConnectedState)
+        m_socket->close();
+    else
+        m_socket->abort();
+    setState(State::Offline);
+}
+
 QUrl SignalingClient::apiUrl(const QString& pPath) const
 {
     QUrl url = m_serverUrl;
@@ -94,6 +118,8 @@ void SignalingClient::authenticate(const QString& pPath, const QString& pCallsig
 {
     if (!m_serverUrl.isValid() || m_serverUrl.host().isEmpty())
         return fail(tr("Set the server address first"));
+    // A login replaces a reconnection still in progress
+    dropSession();
     setState(State::LoggingIn);
     QNetworkRequest request(apiUrl(pPath));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -136,7 +162,6 @@ void SignalingClient::openSocket()
 
 void SignalingClient::logout()
 {
-    m_reconnectTimer.stop();
     if (!m_token.isEmpty())
     {
         QNetworkRequest request(apiUrl("/api/v1/logout"));
@@ -144,11 +169,7 @@ void SignalingClient::logout()
         QNetworkReply* reply = m_network->post(request, QByteArray());
         connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
     }
-    m_token.clear();
-    m_wantedRoom.clear();
-    emit tokenChanged(QString());
-    m_socket->close();
-    setState(State::Offline);
+    dropSession();
 }
 
 void SignalingClient::refreshRooms()
