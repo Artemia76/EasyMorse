@@ -25,7 +25,7 @@ jobs:
             os: windows-2022
             preset: windows-release
           - name: macOS
-            os: macos-14
+            os: macos-15
             preset: release
 
     steps:
@@ -128,12 +128,10 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
-          host: linux
+          host: all_os
           target: android
           arch: android_arm64_v8a
           modules: qtwebsockets
-          # Qt for Android needs the desktop Qt of the same version
-          autodesktop: true
           cache: true
 
       - name: Install Ninja
@@ -189,7 +187,7 @@ jobs:
 
   ios:
     name: iOS (unsigned)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -203,7 +201,6 @@ jobs:
           target: ios
           arch: ios
           modules: qtwebsockets
-          autodesktop: true
           cache: true
 
       - name: Configure
