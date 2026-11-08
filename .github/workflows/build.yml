@@ -89,7 +89,7 @@ jobs:
             out/build/${{ matrix.preset }}/*.tar.gz
             out/build/${{ matrix.preset }}/*.deb
             out/build/${{ matrix.preset }}/*.zip
-            out/build/${{ matrix.preset }}/*.exe
+            out/build/${{ matrix.preset }}/easymorse-*.exe
             out/build/${{ matrix.preset }}/*.dmg
             out/build/${{ matrix.preset }}/*.AppImage
           if-no-files-found: error
