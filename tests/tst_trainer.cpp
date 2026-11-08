@@ -226,23 +226,26 @@ private slots:
         QVERIFY(!trainer.isKeyDown());
         trainer.manualKeyer()->release();
 
-        // "A": dot, then dash, from a quick squeeze
+        // "A": dot, then dash, from a quick squeeze. The dash paddle is released
+        // as soon as the dash starts, whatever the load of the machine.
+        int edges = 0;
+        const auto releaseOnDash = connect(&trainer, &Trainer::keyDownChanged, this, [&] {
+            if (++edges == 3)
+                trainer.manualPaddles()->setDash(false);
+        }, Qt::QueuedConnection);
         trainer.manualPaddles()->setDot(true);
         QVERIFY(trainer.isKeyDown());
         QVERIFY(trainer.isDotPaddle());
-        QTest::qWait(20);
         trainer.manualPaddles()->setDash(true);
         trainer.manualPaddles()->setDot(false);
-        QTest::qWait(90);
-        trainer.manualPaddles()->setDash(false);
         QVERIFY(decoded.wait(2000));
         QCOMPARE(decoded.at(0).at(0).toString(), QString("A"));
+        disconnect(releaseOnDash);
 
         // Left-handed: the dot paddle sends dashes
         settings.setPaddlesReversed(true);
         trainer.manualPaddles()->setDot(true);
         QVERIFY(trainer.isDashPaddle());
-        QTest::qWait(60);
         trainer.manualPaddles()->setDot(false);
         QVERIFY(decoded.wait(2000));
         QCOMPARE(decoded.at(1).at(0).toString(), QString("T"));
