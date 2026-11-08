@@ -4,7 +4,15 @@ EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
 play any text in Morse (with Farnsworth timing, background noise and filter),
 key Morse yourself with a straight key or iambic paddles, and watch it being
 decoded in real time, whatever your speed. Practise with other operators over
-the Internet (see below). Android/iOS support is planned.
+the Internet (see below). Runs on Linux, Windows, macOS and Android.
+
+## Download
+
+Installers and packages are on the
+[releases page](https://github.com/Artemia76/EasyMorse/releases): AppImage,
+`.deb` and `.tar.gz` for Linux, installer and `.zip` for Windows, `.dmg` for
+macOS, `.apk` for Android (arm64, Android 9 or later). `SHA256SUMS` lists the
+checksum of each file.
 
 ## Keys
 
