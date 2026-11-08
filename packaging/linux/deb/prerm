@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+if [ "$1" = "remove" ]; then
+    rm -f /usr/bin/easymorse \
+        /usr/share/applications/easymorse.desktop \
+        /usr/share/icons/hicolor/256x256/apps/easymorse.png
+fi

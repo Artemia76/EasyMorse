@@ -1,0 +1,12 @@
+#!/bin/sh
+# The package lives in /opt with its own Qt: make it visible to the system.
+set -e
+if [ "$1" = "configure" ]; then
+    ln -sf /opt/easymorse/bin/easymorse /usr/bin/easymorse
+    ln -sf /opt/easymorse/share/applications/easymorse.desktop /usr/share/applications/easymorse.desktop
+    mkdir -p /usr/share/icons/hicolor/256x256/apps
+    ln -sf /opt/easymorse/share/icons/hicolor/256x256/apps/easymorse.png /usr/share/icons/hicolor/256x256/apps/easymorse.png
+    if command -v update-desktop-database > /dev/null; then
+        update-desktop-database -q /usr/share/applications || true
+    fi
+fi
