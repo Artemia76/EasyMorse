@@ -117,6 +117,9 @@ Useful options:
 `easymorse --self-test [--screenshots <dir>]` shows every page at desktop and
 phone size and fails on QML warnings (it runs in `ctest`).
 
+With `-DEASYMORSE_DEPLOY_QT=ON` the Linux packages bundle Qt, as the published
+ones do; the `.deb` then installs to `/opt/easymorse`.
+
 `cpack` produces a `.deb` and a `.tar.gz` on Linux, an Inno Setup installer and
 a `.zip` on Windows, and a `.dmg` on macOS. The same packages are built by the
 GitHub Actions workflow for every push.
