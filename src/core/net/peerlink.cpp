@@ -30,6 +30,10 @@
 
 #include <juice/juice.h>
 
+#ifdef Q_OS_DARWIN
+#include <csignal>
+#endif
+
 #include "tools/clogger.h"
 
 ///
@@ -120,6 +124,11 @@ PeerLink::PeerLink(QObject* parent)
 {
     // libjuice messages go to the application log (from libjuice threads)
     static const bool logRouted = [] {
+#ifdef Q_OS_DARWIN
+        // On Apple systems a UDP sendto() can fail with EPIPE, and libjuice
+        // cannot ask not to get the signal that would kill the application
+        std::signal(SIGPIPE, SIG_IGN);
+#endif
         juice_set_log_level(JUICE_LOG_LEVEL_WARN);
         juice_set_log_handler([](juice_log_level_t pLevel, const char* pMessage) {
             CLogger::instance()->log(QString("ICE: %1").arg(QString::fromUtf8(pMessage)),
