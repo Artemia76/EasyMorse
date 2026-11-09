@@ -28,6 +28,8 @@ jobs:
           - name: macOS
             os: macos-15
             preset: release
+            # Runs on both Intel and Apple Silicon Macs
+            configure: '"-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64"'
 
     steps:
       - uses: actions/checkout@v4
