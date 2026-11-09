@@ -115,6 +115,10 @@ elseif(IOS)
     set_target_properties(easymorse PROPERTIES
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "io.github.artemia76.easymorse"
         XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+        # Direct connections to the stations of the local network (merged by Xcode with Qt's Info.plist)
+        XCODE_ATTRIBUTE_GENERATE_INFOPLIST_FILE YES
+        XCODE_ATTRIBUTE_INFOPLIST_KEY_NSLocalNetworkUsageDescription
+            "EasyMorse connects directly to the other stations of your local network for live Morse sessions."
     )
 elseif(WIN32)
     target_sources(easymorse PRIVATE "${PROJECT_SOURCE_DIR}/EasyMorse.rc")
