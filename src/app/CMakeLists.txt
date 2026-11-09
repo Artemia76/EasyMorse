@@ -179,4 +179,14 @@ if(EASYMORSE_DEPLOY_QT)
         set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
         include(InstallRequiredSystemLibraries)
     endif()
+    if(APPLE)
+        # Deploying modifies Qt's signed libraries, and Apple Silicon Macs
+        # refuse code whose signature is broken: sign the whole bundle again
+        install(CODE [[
+            execute_process(
+                COMMAND codesign --force --deep --sign - "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/easymorse.app"
+                COMMAND_ERROR_IS_FATAL ANY
+            )
+        ]])
+    endif()
 endif()
