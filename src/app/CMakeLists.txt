@@ -38,6 +38,7 @@ qt_add_qml_module(easymorse
         qml/NavButton.qml
         qml/Segmented.qml
         qml/PaddlePad.qml
+        qml/SafeAreaProbe.qml
     RESOURCES
         icons/send.svg
         icons/key.svg

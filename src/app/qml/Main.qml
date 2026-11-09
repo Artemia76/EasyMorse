@@ -17,6 +17,9 @@ ApplicationWindow {
     minimumHeight: 480
     visible: true
     title: "EasyMorse " + Qt.application.version
+    // iOS: drawn up to the edges of the screen (undefined before Qt 6.9, the
+    // window then stays inside the safe area and the margins below are 0)
+    flags: Qt.platform.os === "ios" ? Qt.Window | Qt.ExpandedClientAreaHint : Qt.Window
     color: Theme.ground
     font.family: Theme.uiFont
     font.pixelSize: 14
@@ -38,6 +41,17 @@ ApplicationWindow {
     readonly property bool roomy: width >= 1040
     // Low windows (phones held sideways): tighter header, strip and navigation
     readonly property bool compact: height < 560
+    // Room taken by the notch and the home indicator: ApplicationWindow keeps
+    // its content clear of it, the header and the navigation bar extend into it
+    Loader {
+        id: safeArea
+        active: Qt.platform.os === "ios" && Qt.ExpandedClientAreaHint !== undefined
+        source: "SafeAreaProbe.qml"
+    }
+    readonly property int safeTop: safeArea.item ? safeArea.item.marginTop : 0
+    readonly property int safeBottom: safeArea.item ? safeArea.item.marginBottom : 0
+    readonly property int safeLeft: safeArea.item ? safeArea.item.marginLeft : 0
+    readonly property int safeRight: safeArea.item ? safeArea.item.marginRight : 0
     readonly property int pageCount: 6
     readonly property int controlsPage: 6
     property int currentPage: 0
@@ -73,7 +87,7 @@ ApplicationWindow {
     readonly property bool inRoom: client.state === SignalingClient.Online && client.room.length > 0
 
     header: Rectangle {
-        implicitHeight: window.compact ? 44 : 56
+        implicitHeight: (window.compact ? 44 : 56) + window.safeTop
         color: Theme.chrome
 
         Rectangle {
@@ -85,8 +99,9 @@ ApplicationWindow {
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
+            anchors.topMargin: window.safeTop
+            anchors.leftMargin: 16 + window.safeLeft
+            anchors.rightMargin: 16 + window.safeRight
             spacing: 12
 
             Item {
@@ -146,6 +161,8 @@ ApplicationWindow {
 
     ColumnLayout {
         anchors.fill: parent
+        // The navigation bar of phones goes down to the edge of the screen
+        anchors.bottomMargin: window.wide ? 0 : -window.safeBottom
         spacing: 0
 
         RowLayout {
@@ -235,7 +252,7 @@ ApplicationWindow {
             visible: !window.wide
             color: Theme.chrome
             Layout.fillWidth: true
-            implicitHeight: 64
+            implicitHeight: 64 + window.safeBottom
 
             Rectangle {
                 width: parent.width
@@ -245,6 +262,7 @@ ApplicationWindow {
             RowLayout {
                 anchors.fill: parent
                 anchors.topMargin: 4
+                anchors.bottomMargin: window.safeBottom
                 spacing: 0
 
                 Repeater {
