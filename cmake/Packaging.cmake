@@ -36,6 +36,8 @@ if(WIN32)
 elseif(APPLE)
     set(CPACK_GENERATOR "DragNDrop")
     set(CPACK_DMG_VOLUME_NAME "EasyMorse")
+    # Only the application in the disk image, not the bare server binary
+    set(CPACK_COMPONENTS_ALL Unspecified)
 else()
     set(CPACK_GENERATOR "TGZ;DEB")
     set(CPACK_DEBIAN_PACKAGE_SECTION "hamradio")

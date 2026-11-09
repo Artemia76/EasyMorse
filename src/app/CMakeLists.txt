@@ -154,7 +154,13 @@ if(UNIX AND NOT APPLE)
         RENAME easymorse.png)
 endif()
 
-install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/README.md" DESTINATION ${CMAKE_INSTALL_DOCDIR})
+if(APPLE)
+    # Inside the bundle: a disk image shows the application and nothing else
+    set(_doc_destination "easymorse.app/Contents/Resources")
+else()
+    set(_doc_destination "${CMAKE_INSTALL_DOCDIR}")
+endif()
+install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/README.md" DESTINATION "${_doc_destination}")
 
 if(EASYMORSE_DEPLOY_QT)
     # Also deploys the QML modules used by the interface
