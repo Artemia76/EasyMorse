@@ -1,8 +1,10 @@
 # EasyMorse
 
 EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
-play any text in Morse (with Farnsworth timing, band noise through an adjustable
-receiver filter and random fading, the QSB),
+play any text in Morse (with Farnsworth timing) through simulated HF band
+conditions: band noise behind a receiver filter, fading (QSB), auroral flutter,
+static crashes (QRN), man made noise, AGC, and in contest conditions stations
+calling above and below you, all adjustable or chosen from presets,
 key Morse yourself with a straight key or iambic paddles, and watch it being
 decoded in real time, whatever your speed. Practise with other operators over
 the Internet (see below). Runs on Linux, Windows, macOS and Android.
