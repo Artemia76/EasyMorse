@@ -134,6 +134,8 @@ qt_add_translations(easymorse
     SOURCE_TARGETS easymorse easymorse_core
     TS_FILES "${PROJECT_SOURCE_DIR}/intl/easymorse_fr_FR.ts"
     RESOURCE_PREFIX /i18n
+    # Strings removed from the sources leave the translation file
+    LUPDATE_OPTIONS -no-obsolete
 )
 
 # =======================================================================

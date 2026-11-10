@@ -4,22 +4,22 @@
 <context>
     <name>AudioEngine</name>
     <message>
-        <location filename="../src/core/audio/AudioEngine.cpp" line="66"/>
+        <location filename="../src/core/audio/AudioEngine.cpp" line="64"/>
         <source>Audio: no audio system available</source>
         <translation>Audio : aucun système audio disponible</translation>
     </message>
     <message>
-        <location filename="../src/core/audio/AudioEngine.cpp" line="132"/>
+        <location filename="../src/core/audio/AudioEngine.cpp" line="130"/>
         <source>Audio: device &quot;%1&quot; not found, using default output</source>
         <translation>Audio : périphérique « %1 » introuvable, sortie par défaut utilisée</translation>
     </message>
     <message>
-        <location filename="../src/core/audio/AudioEngine.cpp" line="137"/>
+        <location filename="../src/core/audio/AudioEngine.cpp" line="135"/>
         <source>Audio: failed to open the output device</source>
         <translation>Audio : impossible d&apos;ouvrir la sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/audio/AudioEngine.cpp" line="143"/>
+        <location filename="../src/core/audio/AudioEngine.cpp" line="141"/>
         <source>Audio: failed to start the output device</source>
         <translation>Audio : impossible de démarrer la sortie son</translation>
     </message>
@@ -54,6 +54,7 @@
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="84"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="108"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
@@ -65,6 +66,7 @@
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="92"/>
         <location filename="../src/app/qml/ControlsPanel.qml" line="99"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="116"/>
         <source>%1 %</source>
         <translation>%1 %</translation>
     </message>
@@ -75,24 +77,13 @@
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="107"/>
-        <source>Noise filter</source>
-        <translation>Filtre du bruit</translation>
+        <source>Bandwidth</source>
+        <translation>Bande passante</translation>
     </message>
     <message>
-        <source>Tone: %1 Hz</source>
-        <translation type="vanished">Tonalité : %1 Hz</translation>
-    </message>
-    <message>
-        <source>Volume: %1 %</source>
-        <translation type="vanished">Volume : %1 %</translation>
-    </message>
-    <message>
-        <source>Background noise: %1 %</source>
-        <translation type="vanished">Bruit de fond : %1 %</translation>
-    </message>
-    <message>
-        <source>Noise filter: %1</source>
-        <translation type="vanished">Filtre du bruit : %1</translation>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="115"/>
+        <source>QSB (fading)</source>
+        <translation>QSB (fading)</translation>
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="20"/>
@@ -100,31 +91,15 @@
         <translation>Vitesse</translation>
     </message>
     <message>
-        <source>Characters: %1 WPM</source>
-        <translation type="vanished">Caractères : %1 mots/min</translation>
-    </message>
-    <message>
-        <source>Effective: %1 WPM</source>
-        <translation type="vanished">Effective : %1 mots/min</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="62"/>
         <source>Characters are sent at their own speed, spaces are stretched to reach the effective speed.</source>
         <translation>Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse effective.</translation>
-    </message>
-    <message>
-        <source>Overall: %1 WPM</source>
-        <translation type="vanished">Globale : %1 mots/min</translation>
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="41"/>
         <location filename="../src/app/qml/ControlsPanel.qml" line="49"/>
         <source>Farnsworth spacing</source>
         <translation>Espacement Farnsworth</translation>
-    </message>
-    <message>
-        <source>Characters are sent at their own speed, spaces are stretched to reach the overall speed.</source>
-        <translation type="vanished">Les caractères sont émis à leur propre vitesse, les espaces sont allongés pour obtenir la vitesse globale.</translation>
     </message>
 </context>
 <context>
@@ -133,14 +108,6 @@
         <location filename="../src/app/qml/DecoderPanel.qml" line="56"/>
         <source>Decoded</source>
         <translation>Décodage</translation>
-    </message>
-    <message>
-        <source>Correspondents</source>
-        <translation type="vanished">Correspondants</translation>
-    </message>
-    <message>
-        <source>Nothing, listen</source>
-        <translation type="vanished">Rien, écoutez</translation>
     </message>
     <message>
         <location filename="../src/app/qml/DecoderPanel.qml" line="67"/>
@@ -163,10 +130,6 @@
         <location filename="../src/app/qml/DecoderPanel.qml" line="66"/>
         <source>After</source>
         <translation>Après</translation>
-    </message>
-    <message>
-        <source>Show the correspondents: %1</source>
-        <translation type="vanished">Afficher les correspondants : %1</translation>
     </message>
     <message>
         <location filename="../src/app/qml/DecoderPanel.qml" line="69"/>
@@ -213,10 +176,6 @@
         <source>Press</source>
         <translation>Appuyer</translation>
     </message>
-    <message>
-        <source>Press and hold</source>
-        <translation type="vanished">Appuyer et maintenir</translation>
-    </message>
 </context>
 <context>
     <name>KeyPage</name>
@@ -259,30 +218,6 @@
         <location filename="../src/app/qml/KeyPage.qml" line="80"/>
         <source>Space bar (key focused), %1 or serial key</source>
         <translation>Barre d&apos;espace (touche sélectionnée), %1 ou manipulateur série</translation>
-    </message>
-    <message>
-        <source>Left Ctrl: dots · Right Ctrl: dashes · serial paddles</source>
-        <translation type="vanished">Ctrl gauche : points · Ctrl droit : traits · palettes série</translation>
-    </message>
-    <message>
-        <source>Space bar (key focused), Alt key or serial key</source>
-        <translation type="vanished">Barre d&apos;espace (touche sélectionnée), touche Alt ou manipulateur série</translation>
-    </message>
-    <message>
-        <source>Decoded at %1 WPM</source>
-        <translation type="vanished">Décodé à %1 mots/min</translation>
-    </message>
-    <message>
-        <source>(locked)</source>
-        <translation type="vanished">(verrouillé)</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="vanished">Vider</translation>
-    </message>
-    <message>
-        <source>Decoded text appears here as you key</source>
-        <translation type="vanished">Le texte décodé s&apos;affiche ici pendant que vous manipulez</translation>
     </message>
 </context>
 <context>
@@ -384,26 +319,6 @@
         <translation>Pas de sortie son</translation>
     </message>
     <message>
-        <source>Decoder %1 WPM</source>
-        <translation type="vanished">Décodeur %1 mots/min</translation>
-    </message>
-    <message>
-        <source>Incoming call</source>
-        <translation type="vanished">Appel entrant</translation>
-    </message>
-    <message>
-        <source>%1 is calling you for a Morse session.</source>
-        <translation type="vanished">%1 vous appelle pour une session de morse.</translation>
-    </message>
-    <message>
-        <source>Accept</source>
-        <translation type="vanished">Accepter</translation>
-    </message>
-    <message>
-        <source>Decline</source>
-        <translation type="vanished">Refuser</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/Main.qml" line="63"/>
         <source>Send</source>
         <translation>Émission</translation>
@@ -460,157 +375,6 @@
         <location filename="../src/app/qml/Main.qml" line="265"/>
         <source>More</source>
         <translation>Plus</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="vanished">Réglages</translation>
-    </message>
-</context>
-<context>
-    <name>MainWindow</name>
-    <message>
-        <source>Play</source>
-        <translation type="vanished">Jouer</translation>
-    </message>
-    <message>
-        <source>toolBar</source>
-        <translation type="vanished">Barre d&apos;Outils</translation>
-    </message>
-    <message>
-        <source>Glossary</source>
-        <translation type="vanished">Glossaire</translation>
-    </message>
-    <message>
-        <source>Options</source>
-        <translation type="vanished">Options</translation>
-    </message>
-    <message>
-        <source>Low Pass Filter = %1 Hz</source>
-        <translation type="vanished">Filtre passe-bas = %1 Hz</translation>
-    </message>
-    <message>
-        <source>Output Sound Card</source>
-        <translation type="vanished">Sortie Carte Son</translation>
-    </message>
-    <message>
-        <source>Serial Port</source>
-        <translation type="vanished">Port Série</translation>
-    </message>
-    <message>
-        <source>Sound Freq=%1 Hz</source>
-        <translation type="vanished">Fréquence Note=%1 Hz</translation>
-    </message>
-    <message>
-        <source>Sound Level = %1 %</source>
-        <translation type="vanished">Volume Sonore = %1 %</translation>
-    </message>
-    <message>
-        <source>Word Speed = %1 WPM</source>
-        <translation type="vanished">Vitesse Mot = %1 WPM</translation>
-    </message>
-    <message>
-        <source>Noise Mixing = %1</source>
-        <translation type="vanished">Mixage Bruit Blanc = %1</translation>
-    </message>
-    <message>
-        <source>Low Pass Filter = %1 %</source>
-        <translation type="vanished">Filtre Passe Bas = %1 %</translation>
-    </message>
-    <message>
-        <source>Use Farnsworth</source>
-        <translation type="vanished">Utiliser la méthode Farnsworth</translation>
-    </message>
-    <message>
-        <source>Char Speed = %1 WPM</source>
-        <translation type="vanished">Vitesse des caractères = %1 WPM</translation>
-    </message>
-    <message>
-        <source>Morse Decode</source>
-        <translation type="vanished">Décodage morse</translation>
-    </message>
-    <message>
-        <source>Debug</source>
-        <translation type="vanished">Débogage</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="vanished">Aucun</translation>
-    </message>
-    <message>
-        <source>Normal</source>
-        <translation type="vanished">Normal</translation>
-    </message>
-    <message>
-        <source>Verbose</source>
-        <translation type="vanished">Détaillé</translation>
-    </message>
-    <message>
-        <source>*</source>
-        <translation type="vanished">*</translation>
-    </message>
-    <message>
-        <source>About</source>
-        <translation type="vanished">A Propos</translation>
-    </message>
-    <message>
-        <source>Welcome to EasyMorse</source>
-        <translation type="vanished">Bienvenue sur EasyMorse</translation>
-    </message>
-    <message>
-        <source>Failed to open Serial port...</source>
-        <translation type="vanished">Impossible d&apos;ouvrie le port série...</translation>
-    </message>
-    <message>
-        <source>Error occured on audio device</source>
-        <translation type="vanished">Une erreur est survenir sur la carte audio</translation>
-    </message>
-    <message>
-        <source>Noise Mixing = %1 %</source>
-        <translation type="vanished">Mixage Bruit Blanc = %1</translation>
-    </message>
-    <message>
-        <source>Failed to load font</source>
-        <translation type="vanished">Impossible de charger la police de caractère</translation>
-    </message>
-    <message>
-        <source>Serial port %1 not found</source>
-        <translation type="vanished">Port série %1 introuvable</translation>
-    </message>
-    <message>
-        <source>No sound output, check the audio options</source>
-        <translation type="vanished">Pas de sortie son, vérifiez les options audio</translation>
-    </message>
-    <message>
-        <source>Nothing to play, or no sound output</source>
-        <translation type="vanished">Rien à jouer, ou pas de sortie son</translation>
-    </message>
-    <message>
-        <source>Stop</source>
-        <translation type="vanished">Arrêter</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="vanished">Vider</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation type="vanished">Sauvergarder</translation>
-    </message>
-    <message>
-        <source>Web File (*.htm *.html)</source>
-        <translation type="vanished">Fichier Web (*.htm *html)</translation>
-    </message>
-    <message>
-        <source>An Error occur while opening </source>
-        <translation type="vanished">Une erreur est survenue lors de l&apos;ouverture de </translation>
-    </message>
-    <message>
-        <source>Decoder: %1 WPM%2  %3</source>
-        <translation type="vanished">Décodeur : %1 WPM%2  %3</translation>
-    </message>
-    <message>
-        <source> (locked)</source>
-        <translation type="vanished"> (verrouillé)</translation>
     </message>
 </context>
 <context>
@@ -681,18 +445,6 @@
         <translation>Connexion</translation>
     </message>
     <message>
-        <source>Your callsign</source>
-        <translation type="vanished">Votre indicatif</translation>
-    </message>
-    <message>
-        <source>Callsign or first name</source>
-        <translation type="vanished">Indicatif ou prénom</translation>
-    </message>
-    <message>
-        <source>%1: </source>
-        <translation type="vanished">%1 : </translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/NetworkPage.qml" line="93"/>
         <source>1. Prepare your invitation and send it to your correspondent (mail, chat…).
 2. Paste the invitation they send you and connect. Each of you does both steps.</source>
@@ -760,50 +512,6 @@
         <translation>Annuler</translation>
     </message>
     <message>
-        <source>Reception</source>
-        <translation type="vanished">Réception</translation>
-    </message>
-    <message>
-        <source>%1 at %2 WPM</source>
-        <translation type="vanished">%1 à %2 mots/min</translation>
-    </message>
-    <message>
-        <source>Correspondent at %1 WPM</source>
-        <translation type="vanished">Correspondant à %1 mots/min</translation>
-    </message>
-    <message>
-        <source>Nothing received yet</source>
-        <translation type="vanished">Rien reçu pour l&apos;instant</translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="vanished">Afficher</translation>
-    </message>
-    <message>
-        <source>Nothing, listen</source>
-        <translation type="vanished">Rien, écoutez</translation>
-    </message>
-    <message>
-        <source>After the message</source>
-        <translation type="vanished">Après le message</translation>
-    </message>
-    <message>
-        <source>Live</source>
-        <translation type="vanished">En direct</translation>
-    </message>
-    <message>
-        <source>Listen and copy what you hear. Choose what to show above to check yourself.</source>
-        <translation type="vanished">Écoutez et notez ce que vous entendez. Choisissez ci-dessus quoi afficher pour vous corriger.</translation>
-    </message>
-    <message>
-        <source>Reveal now</source>
-        <translation type="vanished">Révéler maintenant</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="vanished">Vider</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/NetworkPage.qml" line="202"/>
         <source>Messages</source>
         <translation>Messages</translation>
@@ -822,97 +530,6 @@
         <location filename="../src/app/qml/NetworkPage.qml" line="238"/>
         <source>Me</source>
         <translation>Moi</translation>
-    </message>
-</context>
-<context>
-    <name>Options</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">Options</translation>
-    </message>
-    <message>
-        <source>Morse Key</source>
-        <translation type="vanished">Manipulateur</translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="vanished">Activer</translation>
-    </message>
-    <message>
-        <source>Choose a port or type a device path</source>
-        <translation type="vanished">Choisissez un port ou saisissez un chemin de périphérique</translation>
-    </message>
-    <message>
-        <source>When unchecked, the decoder expects the character speed set in the main window</source>
-        <translation type="vanished">Si décoché, le décodeur attend la vitesse des caractères réglée dans la fenêtre principale</translation>
-    </message>
-    <message>
-        <source>Decoder adapts to the sender speed</source>
-        <translation type="vanished">Le décodeur s&apos;adapte à la vitesse de l&apos;opérateur</translation>
-    </message>
-    <message>
-        <source>Morse</source>
-        <translation type="vanished">Morse</translation>
-    </message>
-    <message>
-        <source>Audio</source>
-        <translation type="vanished">Audio</translation>
-    </message>
-    <message>
-        <source>Output Sound Card</source>
-        <translation type="vanished">Carte son de sortie</translation>
-    </message>
-    <message>
-        <source>Buffer size (keyer latency)</source>
-        <translation type="vanished">Taille du tampon (latence du manipulateur)</translation>
-    </message>
-    <message>
-        <source>Smaller is more responsive. Increase it if you hear crackles.</source>
-        <translation type="vanished">Plus petit = plus réactif. Augmentez-le si vous entendez des craquements.</translation>
-    </message>
-    <message>
-        <source> ms</source>
-        <translation type="vanished"> ms</translation>
-    </message>
-    <message>
-        <source>Sound Level = %1 %</source>
-        <translation type="obsolete">Volume Sonore = %1 %</translation>
-    </message>
-    <message>
-        <source>Sound Freq=%1 Hz</source>
-        <translation type="obsolete">Fréquence Note=%1 Hz</translation>
-    </message>
-    <message>
-        <source>Noise Mixing = %1 %</source>
-        <translation type="obsolete">Mixage Bruit Blanc = %1</translation>
-    </message>
-    <message>
-        <source>Low Pass Filter = %1 %</source>
-        <translation type="obsolete">Filtre Passe Bas = %1 %</translation>
-    </message>
-    <message>
-        <source>Serial Port</source>
-        <translation type="vanished">Port série</translation>
-    </message>
-    <message>
-        <source>Char Speed = %1 WPM</source>
-        <translation type="vanished">Vitesse des caractères = %1 WPM</translation>
-    </message>
-    <message>
-        <source>Word Speed = %1 WPM</source>
-        <translation type="vanished">Vitesse des mots = %1 WPM</translation>
-    </message>
-    <message>
-        <source>Use Farnsworth</source>
-        <translation type="vanished">Utiliser la méthode Farnsworth</translation>
-    </message>
-    <message>
-        <source>Options</source>
-        <translation type="vanished">Options</translation>
-    </message>
-    <message>
-        <source>System default</source>
-        <translation type="vanished">Par défaut du système</translation>
     </message>
 </context>
 <context>
@@ -993,10 +610,6 @@
         <location filename="../src/app/qml/OptionsPage.qml" line="133"/>
         <source>Dashes on the left contact, for left-handed operators</source>
         <translation>Traits sur le contact gauche, pour les gauchers</translation>
-    </message>
-    <message>
-        <source>The keyer sends at the character speed. Keyboard: Alt is the straight key; left and right Ctrl are the paddles, as USB paddle adapters send them.</source>
-        <translation type="vanished">Le manipulateur iambique émet à la vitesse des caractères. Au clavier : Alt sert de pioche ; Ctrl gauche et Ctrl droit sont les palettes, comme les envoient les adaptateurs USB.</translation>
     </message>
     <message>
         <location filename="../src/app/qml/OptionsPage.qml" line="20"/>
@@ -1257,10 +870,6 @@
         <translation>Texte à émettre</translation>
     </message>
     <message>
-        <source>Text to send in Morse</source>
-        <translation type="vanished">Texte à émettre en morse</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/SendPage.qml" line="93"/>
         <source>Stop</source>
         <translation>Arrêter</translation>
@@ -1300,10 +909,6 @@
         <source>Hold the Alt key or use the Key page to answer.</source>
         <translation>Maintenez Alt ou passez sur Manipulateur pour répondre.</translation>
     </message>
-    <message>
-        <source>Hold the Alt key or use the Key tab to answer.</source>
-        <translation type="vanished">Maintenez la touche Alt ou utilisez l&apos;onglet Manipulateur pour répondre.</translation>
-    </message>
 </context>
 <context>
     <name>SerialKeyer</name>
@@ -1329,30 +934,6 @@
         <location filename="../src/app/qml/ServerPanel.qml" line="61"/>
         <source>Server</source>
         <translation>Serveur</translation>
-    </message>
-    <message>
-        <source>%1 declined the call</source>
-        <translation type="vanished">%1 a refusé l&apos;appel</translation>
-    </message>
-    <message>
-        <source>%1 is busy</source>
-        <translation type="vanished">%1 est occupé</translation>
-    </message>
-    <message>
-        <source>%1 left the room</source>
-        <translation type="vanished">%1 a quitté le salon</translation>
-    </message>
-    <message>
-        <source>%1 did not answer</source>
-        <translation type="vanished">%1 n&apos;a pas répondu</translation>
-    </message>
-    <message>
-        <source>connected through the relay</source>
-        <translation type="vanished">connecté par le relais</translation>
-    </message>
-    <message>
-        <source>connected</source>
-        <translation type="vanished">connecté</translation>
     </message>
     <message>
         <location filename="../src/app/qml/ServerPanel.qml" line="34"/>
@@ -1480,10 +1061,6 @@
         <translation>Salon %1</translation>
     </message>
     <message>
-        <source>Choose or type a room, then join it</source>
-        <translation type="vanished">Choisissez ou saisissez un salon, puis rejoignez-le</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/ServerPanel.qml" line="226"/>
         <source>You hear the members of the room and they hear you: key when you like.</source>
         <translation>Vous entendez les membres du salon et ils vous entendent : manipulez quand vous voulez.</translation>
@@ -1509,25 +1086,9 @@
         <translation>Code de sécurité : %1 voit le même, sauf si quelqu&apos;un s&apos;est glissé entre vous.</translation>
     </message>
     <message>
-        <source>Call</source>
-        <translation type="vanished">Appeler</translation>
-    </message>
-    <message>
-        <source>Calling %1…</source>
-        <translation type="vanished">Appel de %1…</translation>
-    </message>
-    <message>
         <location filename="../src/app/qml/ServerPanel.qml" line="144"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
-    </message>
-    <message>
-        <source>In a session with %1</source>
-        <translation type="vanished">En session avec %1</translation>
-    </message>
-    <message>
-        <source>Hang up</source>
-        <translation type="vanished">Raccrocher</translation>
     </message>
     <message>
         <location filename="../src/app/qml/ServerPanel.qml" line="380"/>
@@ -1554,67 +1115,67 @@
         <translation>Serveur injoignable : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="285"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="284"/>
         <source>Invalid callsign: 2 to 16 letters, digits, &apos;/&apos; or &apos;-&apos;</source>
         <translation>Indicatif invalide : 2 à 16 lettres, chiffres, « / » ou « - »</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="287"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="286"/>
         <source>The password needs at least 8 characters</source>
         <translation>Le mot de passe doit faire au moins 8 caractères</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="289"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="288"/>
         <source>This callsign is already registered</source>
         <translation>Cet indicatif est déjà enregistré</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="291"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="290"/>
         <source>Wrong callsign or password</source>
         <translation>Indicatif ou mot de passe incorrect</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="293"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="292"/>
         <source>Too many attempts, try again later</source>
         <translation>Trop de tentatives, réessayez plus tard</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="295"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="294"/>
         <source>Session expired, log in again</source>
         <translation>Session expirée, reconnectez-vous</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="297"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="296"/>
         <source>Logged in from somewhere else</source>
         <translation>Connecté depuis un autre poste</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="299"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="298"/>
         <source>This account is suspended</source>
         <translation>Ce compte est suspendu</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="300"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="299"/>
         <source>This account is suspended: %1</source>
         <translation>Ce compte est suspendu : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="302"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="301"/>
         <source>Disconnected by a moderator</source>
         <translation>Déconnecté par un modérateur</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="304"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="303"/>
         <source>This room is full</source>
         <translation>Ce salon est complet</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="306"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="305"/>
         <source>This operator is no longer in the room</source>
         <translation>Cet opérateur n&apos;est plus dans le salon</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="307"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="306"/>
         <source>Server error</source>
         <translation>Erreur du serveur</translation>
     </message>
@@ -1622,22 +1183,22 @@
 <context>
     <name>Trainer</name>
     <message>
-        <location filename="../src/core/trainer.cpp" line="297"/>
+        <location filename="../src/core/trainer.cpp" line="298"/>
         <source>Nothing to play, or no sound output</source>
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="426"/>
+        <location filename="../src/core/trainer.cpp" line="427"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="545"/>
+        <location filename="../src/core/trainer.cpp" line="546"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="558"/>
+        <location filename="../src/core/trainer.cpp" line="559"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>
