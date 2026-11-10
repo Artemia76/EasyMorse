@@ -3,6 +3,7 @@
 
 qt_add_library(easymorse_core STATIC
     audio/AudioEngine.cpp audio/AudioEngine.h
+    audio/radiochannel.cpp audio/radiochannel.h
     audio/DefaultParameters.h
     audio/IOscillatorFunction.h
     audio/Saw.cpp
