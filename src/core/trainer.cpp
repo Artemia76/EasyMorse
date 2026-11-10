@@ -115,12 +115,13 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     m_audio.setFrequency(m_settings->toneFrequency());
     m_audio.setGain(m_settings->volume());
     m_audio.setNoiseRatio(m_settings->noiseLevel());
-    m_audio.setNoiseCutoff(m_settings->noiseFilter());
-    m_audio.noiseOn();
+    m_audio.setBandwidth(m_settings->bandwidth());
+    m_audio.setQsbDepth(m_settings->qsbDepth());
     connect(m_settings, &Settings::toneFrequencyChanged, this, [this] { m_audio.setFrequency(m_settings->toneFrequency()); });
     connect(m_settings, &Settings::volumeChanged, this, [this] { m_audio.setGain(m_settings->volume()); });
     connect(m_settings, &Settings::noiseLevelChanged, this, [this] { m_audio.setNoiseRatio(m_settings->noiseLevel()); });
-    connect(m_settings, &Settings::noiseFilterChanged, this, [this] { m_audio.setNoiseCutoff(m_settings->noiseFilter()); });
+    connect(m_settings, &Settings::bandwidthChanged, this, [this] { m_audio.setBandwidth(m_settings->bandwidth()); });
+    connect(m_settings, &Settings::qsbDepthChanged, this, [this] { m_audio.setQsbDepth(m_settings->qsbDepth()); });
 
     // Device changes are grouped: the options dialog changes several at once
     const auto scheduleAudioRestart = [this] {

@@ -100,15 +100,23 @@ ScrollView {
                     from: 0; to: 1; stepSize: 0.01
                     display: (v) => Math.round(v * 100)
                     value: MorseSettings.noiseLevel
-                    enabled: !Trainer.playing
                     onMoved: (v) => MorseSettings.noiseLevel = v
                 }
+                // Receiver filter: a narrow one removes noise
                 LabeledSlider {
-                    text: qsTr("Noise filter")
-                    from: 0; to: 1000; stepSize: 10
-                    value: MorseSettings.noiseFilter
-                    enabled: !Trainer.playing
-                    onMoved: (v) => MorseSettings.noiseFilter = v
+                    text: qsTr("Bandwidth")
+                    format: qsTr("%1 Hz")
+                    from: 100; to: 3000; stepSize: 50
+                    value: MorseSettings.bandwidth
+                    onMoved: (v) => MorseSettings.bandwidth = v
+                }
+                // Random fading of the received signal (not of the own key)
+                LabeledSlider {
+                    text: qsTr("QSB (fading)")
+                    format: qsTr("%1 %")
+                    from: 0; to: 100; stepSize: 5
+                    value: MorseSettings.qsbDepth
+                    onMoved: (v) => MorseSettings.qsbDepth = v
                 }
             }
         }

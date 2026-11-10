@@ -4,31 +4,6 @@
 qt_add_library(easymorse_core STATIC
     audio/AudioEngine.cpp audio/AudioEngine.h
     audio/radiochannel.cpp audio/radiochannel.h
-    audio/DefaultParameters.h
-    audio/IOscillatorFunction.h
-    audio/Saw.cpp
-    audio/Sine.cpp
-    audio/Square.cpp
-    audio/Triangle.cpp
-    audio/envelope/Envelope.cpp audio/envelope/Envelope.h
-    audio/envelope/IEnvelope.h
-    audio/envelope/NoEnvelope.h
-    audio/filter/BandpassFilter.cpp audio/filter/BandpassFilter.h
-    audio/filter/FilterTypes.h
-    audio/filter/HighpassFilter.cpp audio/filter/HighpassFilter.h
-    audio/filter/IFilter.h
-    audio/filter/LowpassFilter.cpp audio/filter/LowpassFilter.h
-    audio/filter/NoFilter.h
-    audio/modulation/ModulationValue.cpp audio/modulation/ModulationValue.h
-    audio/oscillator/ILfo.h
-    audio/oscillator/Lfo.cpp audio/oscillator/Lfo.h
-    audio/oscillator/NoOscillator.h
-    audio/voice/INoise.h
-    audio/voice/IVoice.h
-    audio/voice/Noise.cpp audio/voice/Noise.h
-    audio/voice/Voice.cpp audio/voice/Voice.h
-    audio/voicemanager/Param.cpp audio/voicemanager/Param.h
-    audio/voicemanager/VoiceManager.cpp audio/voicemanager/VoiceManager.h
 
     keyer/keyerinput.cpp keyer/keyerinput.h
     keyer/iambickeyer.cpp keyer/iambickeyer.h

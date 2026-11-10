@@ -45,7 +45,8 @@ class Settings : public QObject
     Q_PROPERTY(int toneFrequency READ toneFrequency WRITE setToneFrequency NOTIFY toneFrequencyChanged)
     Q_PROPERTY(int volume READ volume WRITE setVolume NOTIFY volumeChanged)
     Q_PROPERTY(double noiseLevel READ noiseLevel WRITE setNoiseLevel NOTIFY noiseLevelChanged)
-    Q_PROPERTY(int noiseFilter READ noiseFilter WRITE setNoiseFilter NOTIFY noiseFilterChanged)
+    Q_PROPERTY(int bandwidth READ bandwidth WRITE setBandwidth NOTIFY bandwidthChanged)
+    Q_PROPERTY(int qsbDepth READ qsbDepth WRITE setQsbDepth NOTIFY qsbDepthChanged)
     // Morse speed
     Q_PROPERTY(int wordSpeed READ wordSpeed WRITE setWordSpeed NOTIFY wordSpeedChanged)
     Q_PROPERTY(int charSpeed READ charSpeed WRITE setCharSpeed NOTIFY charSpeedChanged)
@@ -79,6 +80,8 @@ class Settings : public QObject
 public:
     static constexpr int MinFrequency = 200;
     static constexpr int MaxFrequency = 1200;
+    static constexpr int MinBandwidth = 100;
+    static constexpr int MaxBandwidth = 3000;
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
@@ -96,7 +99,14 @@ public:
     int     toneFrequency() const { return m_toneFrequency; }
     int     volume() const { return m_volume; }
     double  noiseLevel() const { return m_noiseLevel; }
-    int     noiseFilter() const { return m_noiseFilter; }
+    ///
+    /// \brief width of the receiver filter applied to the noise, in Hz
+    ///
+    int     bandwidth() const { return m_bandwidth; }
+    ///
+    /// \brief depth of the random fading of the received signal, in %
+    ///
+    int     qsbDepth() const { return m_qsbDepth; }
     int     wordSpeed() const { return m_wordSpeed; }
     int     charSpeed() const { return m_charSpeed; }
     bool    farnsworth() const { return m_farnsworth; }
@@ -125,7 +135,8 @@ public:
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
     void    setNoiseLevel(double pLevel);
-    void    setNoiseFilter(int pValue);
+    void    setBandwidth(int pHz);
+    void    setQsbDepth(int pPercent);
     void    setWordSpeed(int pWpm);
     void    setCharSpeed(int pWpm);
     void    setFarnsworth(bool pOn);
@@ -158,7 +169,8 @@ signals:
     void    toneFrequencyChanged();
     void    volumeChanged();
     void    noiseLevelChanged();
-    void    noiseFilterChanged();
+    void    bandwidthChanged();
+    void    qsbDepthChanged();
     void    wordSpeedChanged();
     void    charSpeedChanged();
     void    farnsworthChanged();
@@ -186,7 +198,8 @@ private:
     int         m_toneFrequency;
     int         m_volume;
     double      m_noiseLevel;
-    int         m_noiseFilter;
+    int         m_bandwidth;
+    int         m_qsbDepth;
     int         m_wordSpeed;
     int         m_charSpeed;
     bool        m_farnsworth;

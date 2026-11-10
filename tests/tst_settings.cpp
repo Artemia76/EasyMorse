@@ -61,6 +61,10 @@ private slots:
         QCOMPARE(settings.volume(), 100);
         settings.setNoiseLevel(-1.0);
         QCOMPARE(settings.noiseLevel(), 0.0);
+        settings.setBandwidth(10);
+        QCOMPARE(settings.bandwidth(), Settings::MinBandwidth);
+        settings.setQsbDepth(150);
+        QCOMPARE(settings.qsbDepth(), 100);
         settings.setCharSpeed(1000);
         QCOMPARE(settings.charSpeed(), Settings::MaxSpeed);
         settings.setDecoderReactivity(7);

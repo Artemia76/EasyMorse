@@ -30,7 +30,6 @@
 
 #include <miniaudio.h>
 
-#include "audio/voicemanager/VoiceManager.h"
 #include "tools/clogger.h"
 
 struct AudioEngine::Device
@@ -49,7 +48,6 @@ struct AudioEngine::Device
 AudioEngine::AudioEngine(QObject* parent)
     : QObject(parent)
     , m_device(std::make_unique<Device>())
-    , m_voices(std::make_unique<VoiceManager>())
 {
     // EASYMORSE_AUDIO_BACKEND=null gives a silent device running in real time (tests, headless)
     const ma_backend nullBackend[] = {ma_backend_null};
@@ -212,19 +210,14 @@ void AudioEngine::setNoiseRatio(double pRatio)
     post({AudioEvent::Type::NoiseRatio, 0, pRatio, 0, 0});
 }
 
-void AudioEngine::setNoiseCutoff(int pValue)
+void AudioEngine::setBandwidth(int pHz)
 {
-    post({AudioEvent::Type::NoiseCutoff, 0, static_cast<double>(pValue), 0, 0});
+    post({AudioEvent::Type::Bandwidth, 0, static_cast<double>(pHz), 0, 0});
 }
 
-void AudioEngine::noiseOn()
+void AudioEngine::setQsbDepth(int pPercent)
 {
-    post({AudioEvent::Type::NoiseOn, 0, 0.0, 0, 0});
-}
-
-void AudioEngine::noiseOff()
-{
-    post({AudioEvent::Type::NoiseOff, 0, 0.0, 0, 0});
+    post({AudioEvent::Type::QsbDepth, 0, static_cast<double>(pPercent), 0, 0});
 }
 
 /*
@@ -272,7 +265,7 @@ void AudioEngine::drainNotifications()
 AUDIO THREAD
 */
 
-void AudioEngine::apply(const AudioEvent& pEvent, double pTime)
+void AudioEngine::apply(const AudioEvent& pEvent)
 {
     switch (pEvent.type)
     {
@@ -282,22 +275,20 @@ void AudioEngine::apply(const AudioEvent& pEvent, double pTime)
             m_keyDown[pEvent.id] = (pEvent.type == AudioEvent::Type::KeyDown);
         break;
     case AudioEvent::Type::Frequency:
-        m_frequency = pEvent.value;
+        m_channel.setFrequency(pEvent.value);
         break;
     case AudioEvent::Type::Gain:
-        m_voices->setGain(static_cast<int>(pEvent.value));
+        // 100 % gives the level of the previous versions
+        m_channel.setGain(pEvent.value / 1000.0);
         break;
     case AudioEvent::Type::NoiseRatio:
-        m_voices->setNoiseRatio(pEvent.value);
+        m_channel.setNoiseLevel(pEvent.value);
         break;
-    case AudioEvent::Type::NoiseCutoff:
-        m_voices->setCutOffFrequency(static_cast<int>(pEvent.value));
+    case AudioEvent::Type::Bandwidth:
+        m_channel.setBandwidth(pEvent.value);
         break;
-    case AudioEvent::Type::NoiseOn:
-        m_voices->noiseOn(pTime);
-        break;
-    case AudioEvent::Type::NoiseOff:
-        m_voices->noiseOff(pTime);
+    case AudioEvent::Type::QsbDepth:
+        m_channel.setQsbDepth(pEvent.value / 100.0);
         break;
     case AudioEvent::Type::Cancel:
         m_cancelGeneration = pEvent.generation;
@@ -308,33 +299,19 @@ void AudioEngine::apply(const AudioEvent& pEvent, double pTime)
         break;
     }
 
-    // Start or stop the tone when the combined key state changes
-    bool keyed = false;
-    for (bool down : m_keyDown)
-        keyed = keyed || down;
-    if (keyed && !m_tone)
-    {
-        m_keyFrequency = m_frequency;
-        m_voices->noteOn(m_keyFrequency, pTime);
-    }
-    else if (!keyed && m_tone)
-    {
-        m_voices->noteOff(m_keyFrequency, pTime);
-    }
-    m_tone = keyed;
+    m_channel.setSidetone(m_keyDown[static_cast<int>(KeySource::Local)]);
+    m_channel.setSignal(m_keyDown[static_cast<int>(KeySource::Sequencer)]
+                        || m_keyDown[static_cast<int>(KeySource::Remote)]);
 }
 
 void AudioEngine::render(float* pOutput, unsigned int pFrameCount)
 {
-    const double timeStep = 1.0 / SampleRate;
-
     // Commands from the GUI apply at the start of the buffer
     while (auto event = m_immediate.pop())
-        apply(*event, m_frame * timeStep);
+        apply(*event);
 
     for (unsigned int i = 0; i < pFrameCount; ++i, ++m_frame)
     {
-        const double time = m_frame * timeStep;
         // Scheduled events apply at their exact frame (or now if late)
         while (const AudioEvent* event = m_scheduled.front())
         {
@@ -345,10 +322,10 @@ void AudioEngine::render(float* pOutput, unsigned int pFrameCount)
             }
             if (event->frame > m_frame)
                 break;
-            apply(*event, time);
+            apply(*event);
             m_scheduled.pop();
         }
-        const float value = static_cast<float>(m_voices->getSample(time));
+        const float value = m_channel.next();
         *pOutput++ = value; // left
         *pOutput++ = value; // right
     }

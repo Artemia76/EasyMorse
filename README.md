@@ -1,7 +1,8 @@
 # EasyMorse
 
 EasyMorse is a Qt 6 application to learn Morse code by ear and by hand:
-play any text in Morse (with Farnsworth timing, background noise and filter),
+play any text in Morse (with Farnsworth timing, band noise through an adjustable
+receiver filter and random fading, the QSB),
 key Morse yourself with a straight key or iambic paddles, and watch it being
 decoded in real time, whatever your speed. Practise with other operators over
 the Internet (see below). Runs on Linux, Windows, macOS and Android.
@@ -43,9 +44,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details: [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
 and the `LICENSE.GPLv3` file.
-
-The audio synthesizer is derived from
-[qt-port-synth](https://github.com/rluedek/qt-port-synth) by Rico Luedeke.
 
 ## Dependencies
 

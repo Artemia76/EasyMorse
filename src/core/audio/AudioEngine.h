@@ -23,8 +23,8 @@
 /****************************************************************************
 * AudioEngine.h is part of EasyMorse project
 *
-* Audio output based on miniaudio. The synthesizer only lives in the real
-* time audio thread: the GUI thread talks to it through lock-free queues,
+* Audio output based on miniaudio. The radio channel (tone, noise, fading)
+* only lives in the real time audio thread: the GUI thread talks to it through lock-free queues,
 * either with immediate commands (keyer, settings) or with events scheduled
 * at an exact frame (Morse playback).
 * **************************************************************************/
@@ -39,12 +39,12 @@
 #include <atomic>
 #include <memory>
 
+#include "audio/radiochannel.h"
 #include "tools/spscqueue.h"
 
-class VoiceManager;
-
 ///
-/// \brief Who is pressing the key. The tone sounds while at least one source is down.
+/// \brief Who is pressing the key. The local key sounds as a clean sidetone,
+/// the others as the received signal (with QSB).
 ///
 enum class KeySource : int
 {
@@ -63,9 +63,8 @@ struct AudioEvent
         Frequency,      // Hz in value
         Gain,           // 0..100 in value
         NoiseRatio,     // 0..1 in value
-        NoiseCutoff,    // low pass filter slider value (1/1000 of the band) in value
-        NoiseOn,
-        NoiseOff,
+        Bandwidth,      // Hz in value
+        QsbDepth,       // 0..100 in value
         Cancel,         // drop scheduled events older than generation
         Marker          // notify the GUI with id when reached
     };
@@ -103,9 +102,8 @@ public:
     void        setFrequency(double pFrequency);
     void        setGain(int pPercent);
     void        setNoiseRatio(double pRatio);
-    void        setNoiseCutoff(int pValue);
-    void        noiseOn();
-    void        noiseOff();
+    void        setBandwidth(int pHz);
+    void        setQsbDepth(int pPercent);
 
     // Scheduling, GUI thread only
     qint64      framesRendered() const;
@@ -125,12 +123,11 @@ private:
     struct Device;
 
     void        render(float* pOutput, unsigned int pFrameCount);
-    void        apply(const AudioEvent& pEvent, double pTime);
+    void        apply(const AudioEvent& pEvent);
     void        post(const AudioEvent& pEvent);
     void        drainNotifications();
 
     std::unique_ptr<Device>         m_device;
-    std::unique_ptr<VoiceManager>   m_voices;
     QString                         m_deviceName;
     int                             m_periodMs = 10;
     quint32                         m_generation = 0;
@@ -144,10 +141,8 @@ private:
     // Audio thread state
     qint64                          m_frame = 0;
     quint32                         m_cancelGeneration = 0;
-    double                          m_frequency = 900.0;
-    double                          m_keyFrequency = 900.0;
     bool                            m_keyDown[static_cast<int>(KeySource::Count)] = {};
-    bool                            m_tone = false;
+    RadioChannel                    m_channel{SampleRate};
 };
 
 #endif // AUDIOENGINE_H

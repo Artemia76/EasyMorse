@@ -33,7 +33,8 @@ namespace Key
     constexpr const char* ToneFrequency = "Synth/SoundFreq";
     constexpr const char* Volume = "Synth/SoundLevel";
     constexpr const char* NoiseLevel = "Synth/NoiseCorrelation";
-    constexpr const char* NoiseFilter = "Synth/NoiseFilter";
+    constexpr const char* Bandwidth = "Synth/Bandwidth";
+    constexpr const char* QsbDepth = "Synth/QsbDepth";
     constexpr const char* WordSpeed = "Morse/WordSpeed";
     constexpr const char* CharSpeed = "Morse/CharSpeed";
     constexpr const char* Farnsworth = "Morse/FarnsWorth";
@@ -68,7 +69,8 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_toneFrequency = qBound(MinFrequency, m_store->value(Key::ToneFrequency, 900).toInt(), MaxFrequency);
     m_volume = qBound(0, m_store->value(Key::Volume, 100).toInt(), 100);
     m_noiseLevel = qBound(0.0, m_store->value(Key::NoiseLevel, 0.0).toDouble(), 1.0);
-    m_noiseFilter = qMax(0, m_store->value(Key::NoiseFilter, 0).toInt());
+    m_bandwidth = qBound(MinBandwidth, m_store->value(Key::Bandwidth, 500).toInt(), MaxBandwidth);
+    m_qsbDepth = qBound(0, m_store->value(Key::QsbDepth, 0).toInt(), 100);
     m_wordSpeed = qBound(MinSpeed, m_store->value(Key::WordSpeed, 12).toInt(), MaxSpeed);
     m_charSpeed = qBound(MinSpeed, m_store->value(Key::CharSpeed, 18).toInt(), MaxSpeed);
     m_farnsworth = m_store->value(Key::Farnsworth, true).toBool();
@@ -130,10 +132,16 @@ void Settings::setNoiseLevel(double pLevel)
         emit noiseLevelChanged();
 }
 
-void Settings::setNoiseFilter(int pValue)
+void Settings::setBandwidth(int pHz)
 {
-    if (store(Key::NoiseFilter, m_noiseFilter, qMax(0, pValue)))
-        emit noiseFilterChanged();
+    if (store(Key::Bandwidth, m_bandwidth, qBound(MinBandwidth, pHz, MaxBandwidth)))
+        emit bandwidthChanged();
+}
+
+void Settings::setQsbDepth(int pPercent)
+{
+    if (store(Key::QsbDepth, m_qsbDepth, qBound(0, pPercent, 100)))
+        emit qsbDepthChanged();
 }
 
 void Settings::setWordSpeed(int pWpm)
