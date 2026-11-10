@@ -42,6 +42,7 @@
 #include "audio/AudioEngine.h"
 #include "keyer/iambickeyer.h"
 #include "keyer/keyerinput.h"
+#include "morse/contestgenerator.h"
 #include "morse/keydecoder.h"
 #include "morse/sequencer.h"
 #include "net/lobby.h"
@@ -163,6 +164,7 @@ private slots:
     void            applyDecoderMode();
     void            applyKeyerMode();
     void            onPaddlesChanged(qint64 pTimeMs);
+    void            applyBandConditions();
 
 private:
     void            setKeyDown(bool pDown, qint64 pTimeMs);
@@ -219,6 +221,9 @@ private:
     qint64                  m_playStartMs = 0;
     bool                    m_playKeyDown = false;
     QTimer                  m_playKeyTimer;
+    // Background stations of the band (contest)
+    ContestGenerator        m_contest;
+    int                     m_contestStations = 0;
 };
 
 #endif // TRAINER_H

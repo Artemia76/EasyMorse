@@ -50,6 +50,21 @@ private slots:
         QVERIFY(trainer.decoderPattern().isEmpty());
     }
 
+    void backgroundStationsAreNotDecoded()
+    {
+        Settings settings(newSettingsFile());
+        settings.setBandPreset(Settings::Contest);
+        Trainer trainer(&settings);
+        trainer.start();
+        QVERIFY(trainer.isAudioRunning());
+        QSignalSpy decoded(&trainer, &Trainer::charDecoded);
+        QSignalSpy finished(trainer.audio(), &AudioEngine::stationFinished);
+        // The stations keep sending: each message that ends is followed by another
+        QTRY_VERIFY_WITH_TIMEOUT(finished.count() >= 2, 20000);
+        QCOMPARE(decoded.count(), 0);
+        QVERIFY(!trainer.isKeyDown());
+    }
+
     void keysAreCombined()
     {
         Settings settings(newSettingsFile());

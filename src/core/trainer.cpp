@@ -26,6 +26,8 @@
 
 #include "trainer.h"
 
+#include <QRandomGenerator>
+
 #include "settings/settings.h"
 #include "tools/clogger.h"
 #ifdef EASYMORSE_HAS_SERIALPORT
@@ -36,6 +38,7 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     : QObject(parent)
     , m_settings(pSettings)
     , m_sequencer(&m_audio)
+    , m_contest(AudioEngine::SampleRate, QRandomGenerator::global()->generate64())
 {
     // Playback
     connect(&m_sequencer, &MorseSequencer::charPlayed, this, [this](int pIndex) {
@@ -114,14 +117,15 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     // Sound follows the settings
     m_audio.setFrequency(m_settings->toneFrequency());
     m_audio.setGain(m_settings->volume());
-    m_audio.setNoiseRatio(m_settings->noiseLevel());
-    m_audio.setBandwidth(m_settings->bandwidth());
-    m_audio.setQsbDepth(m_settings->qsbDepth());
+    applyBandConditions();
     connect(m_settings, &Settings::toneFrequencyChanged, this, [this] { m_audio.setFrequency(m_settings->toneFrequency()); });
     connect(m_settings, &Settings::volumeChanged, this, [this] { m_audio.setGain(m_settings->volume()); });
-    connect(m_settings, &Settings::noiseLevelChanged, this, [this] { m_audio.setNoiseRatio(m_settings->noiseLevel()); });
-    connect(m_settings, &Settings::bandwidthChanged, this, [this] { m_audio.setBandwidth(m_settings->bandwidth()); });
-    connect(m_settings, &Settings::qsbDepthChanged, this, [this] { m_audio.setQsbDepth(m_settings->qsbDepth()); });
+    connect(m_settings, &Settings::bandChanged, this, &Trainer::applyBandConditions);
+    // A background station has ended its message: it sends the next one
+    connect(&m_audio, &AudioEngine::stationFinished, this, [this](int pSlot) {
+        if (pSlot < m_contestStations)
+            m_audio.sendStation(m_contest.next(pSlot));
+    });
 
     // Device changes are grouped: the options dialog changes several at once
     const auto scheduleAudioRestart = [this] {
@@ -574,4 +578,30 @@ void Trainer::applyDecoderMode()
     // A locked decoder expects the character speed
     if (!autoAdapt)
         m_decoder.setSpeed(m_settings->charSpeed());
+}
+
+void Trainer::applyBandConditions()
+{
+    using P = band::BandSimulator::Parameter;
+    m_audio.setBand(P::NoiseLevel, m_settings->noiseLevel());
+    m_audio.setBand(P::Bandwidth, m_settings->bandwidth());
+    m_audio.setBand(P::QsbDepth, m_settings->qsbDepth() / 100.0);
+    m_audio.setBand(P::QsbRate, m_settings->qsbRate() / 100.0);
+    m_audio.setBand(P::Flutter, m_settings->flutter());
+    m_audio.setBand(P::QrnLevel, m_settings->qrnLevel() / 100.0);
+    m_audio.setBand(P::QrnRate, m_settings->qrnRate());
+    m_audio.setBand(P::ManMade, m_settings->manMade() / 100.0);
+    m_audio.setBand(P::Agc, m_settings->agc() ? 1.0 : 0.0);
+
+    // Background stations: new ones start, the others fall silent
+    const int stations = m_settings->contestStations();
+    for (int slot = m_contestStations; slot < stations; ++slot)
+        m_audio.sendStation(m_contest.next(slot));
+    for (int slot = stations; slot < m_contestStations; ++slot)
+    {
+        band::StationScript silence;
+        silence.slot = slot;
+        m_audio.sendStation(silence);
+    }
+    m_contestStations = stations;
 }

@@ -23,8 +23,8 @@
 /****************************************************************************
 * AudioEngine.h is part of EasyMorse project
 *
-* Audio output based on miniaudio. The radio channel (tone, noise, fading)
-* only lives in the real time audio thread: the GUI thread talks to it through lock-free queues,
+* Audio output based on miniaudio. The band simulator (signals, noises,
+* fading, receiver) only lives in the real time audio thread: the GUI thread talks to it through lock-free queues,
 * either with immediate commands (keyer, settings) or with events scheduled
 * at an exact frame (Morse playback).
 * **************************************************************************/
@@ -39,12 +39,12 @@
 #include <atomic>
 #include <memory>
 
-#include "audio/radiochannel.h"
+#include "audio/band/bandsimulator.h"
 #include "tools/spscqueue.h"
 
 ///
 /// \brief Who is pressing the key. The local key sounds as a clean sidetone,
-/// the others as the received signal (with QSB).
+/// the others as the station received, with the band conditions.
 ///
 enum class KeySource : int
 {
@@ -62,11 +62,10 @@ struct AudioEvent
         KeyUp,          // source in id
         Frequency,      // Hz in value
         Gain,           // 0..100 in value
-        NoiseRatio,     // 0..1 in value
-        Bandwidth,      // Hz in value
-        QsbDepth,       // 0..100 in value
+        Band,           // band::BandSimulator::Parameter in id, its value in value
         Cancel,         // drop scheduled events older than generation
-        Marker          // notify the GUI with id when reached
+        Marker,         // notify the GUI with id when reached
+        StationFinished // notification: background station id has ended its message
     };
     Type        type = Type::Marker;
     qint64      frame = 0;          // scheduled events only
@@ -101,9 +100,11 @@ public:
     void        keyUp(KeySource pSource);
     void        setFrequency(double pFrequency);
     void        setGain(int pPercent);
-    void        setNoiseRatio(double pRatio);
-    void        setBandwidth(int pHz);
-    void        setQsbDepth(int pPercent);
+    void        setBand(band::BandSimulator::Parameter pParameter, double pValue);
+    ///
+    /// \brief play a message of a background station (see stationFinished)
+    ///
+    bool        sendStation(const band::StationScript& pScript);
 
     // Scheduling, GUI thread only
     qint64      framesRendered() const;
@@ -118,6 +119,7 @@ public:
 
 signals:
     void        markerReached(quint32 pGeneration, int pId);
+    void        stationFinished(int pSlot);
 
 private:
     struct Device;
@@ -136,13 +138,14 @@ private:
     SpscQueue<AudioEvent, 1024>     m_immediate;
     SpscQueue<AudioEvent, 4096>     m_scheduled;
     SpscQueue<AudioEvent, 1024>     m_notifications;
+    SpscQueue<band::StationScript, 16> m_stations;
     std::atomic<qint64>             m_framesRendered{0};
 
     // Audio thread state
     qint64                          m_frame = 0;
     quint32                         m_cancelGeneration = 0;
     bool                            m_keyDown[static_cast<int>(KeySource::Count)] = {};
-    RadioChannel                    m_channel{SampleRate};
+    band::BandSimulator             m_band{SampleRate};
 };
 
 #endif // AUDIOENGINE_H

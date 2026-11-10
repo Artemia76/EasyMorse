@@ -33,8 +33,16 @@ namespace Key
     constexpr const char* ToneFrequency = "Synth/SoundFreq";
     constexpr const char* Volume = "Synth/SoundLevel";
     constexpr const char* NoiseLevel = "Synth/NoiseCorrelation";
-    constexpr const char* Bandwidth = "Synth/Bandwidth";
-    constexpr const char* QsbDepth = "Synth/QsbDepth";
+    constexpr const char* BandPreset = "Band/Preset";
+    constexpr const char* Bandwidth = "Band/Bandwidth";
+    constexpr const char* QsbDepth = "Band/QsbDepth";
+    constexpr const char* QsbRate = "Band/QsbRate";
+    constexpr const char* Flutter = "Band/Flutter";
+    constexpr const char* QrnLevel = "Band/QrnLevel";
+    constexpr const char* QrnRate = "Band/QrnRate";
+    constexpr const char* ManMade = "Band/ManMade";
+    constexpr const char* Agc = "Band/Agc";
+    constexpr const char* ContestStations = "Band/ContestStations";
     constexpr const char* WordSpeed = "Morse/WordSpeed";
     constexpr const char* CharSpeed = "Morse/CharSpeed";
     constexpr const char* Farnsworth = "Morse/FarnsWorth";
@@ -69,8 +77,17 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_toneFrequency = qBound(MinFrequency, m_store->value(Key::ToneFrequency, 900).toInt(), MaxFrequency);
     m_volume = qBound(0, m_store->value(Key::Volume, 100).toInt(), 100);
     m_noiseLevel = qBound(0.0, m_store->value(Key::NoiseLevel, 0.0).toDouble(), 1.0);
+    // Settings of a version without presets: keep the noise chosen then
+    m_bandPreset = qBound(0, m_store->value(Key::BandPreset, m_noiseLevel > 0.0 ? Custom : Clean).toInt(), int(Custom));
     m_bandwidth = qBound(MinBandwidth, m_store->value(Key::Bandwidth, 500).toInt(), MaxBandwidth);
     m_qsbDepth = qBound(0, m_store->value(Key::QsbDepth, 0).toInt(), 100);
+    m_qsbRate = qBound(MinQsbRate, m_store->value(Key::QsbRate, 10).toInt(), MaxQsbRate);
+    m_flutter = qBound(0, m_store->value(Key::Flutter, 0).toInt(), MaxFlutter);
+    m_qrnLevel = qBound(0, m_store->value(Key::QrnLevel, 0).toInt(), 100);
+    m_qrnRate = qBound(0, m_store->value(Key::QrnRate, 0).toInt(), MaxQrnRate);
+    m_manMade = qBound(0, m_store->value(Key::ManMade, 0).toInt(), 100);
+    m_agc = m_store->value(Key::Agc, false).toBool();
+    m_contestStations = qBound(0, m_store->value(Key::ContestStations, 0).toInt(), MaxContestStations);
     m_wordSpeed = qBound(MinSpeed, m_store->value(Key::WordSpeed, 12).toInt(), MaxSpeed);
     m_charSpeed = qBound(MinSpeed, m_store->value(Key::CharSpeed, 18).toInt(), MaxSpeed);
     m_farnsworth = m_store->value(Key::Farnsworth, true).toBool();
@@ -114,6 +131,65 @@ bool Settings::store(const char* pKey, T& pMember, const T& pValue)
     return true;
 }
 
+template <typename T>
+void Settings::setBandValue(const char* pKey, T& pMember, const T& pValue)
+{
+    if (!store(pKey, pMember, pValue))
+        return;
+    store(Key::BandPreset, m_bandPreset, int(Custom));
+    emit bandChanged();
+}
+
+namespace
+{
+    struct Conditions
+    {
+        double  noiseLevel;
+        int     bandwidth;
+        int     qsbDepth;
+        int     qsbRate;        // 1/100 Hz
+        int     flutter;        // Hz
+        int     qrnLevel;
+        int     qrnRate;        // per minute
+        int     manMade;
+        bool    agc;
+        int     contestStations;
+    };
+
+    // In the order of Settings::BandPreset
+    constexpr Conditions Presets[] = {
+        // noise  BW   QSB rate flutter QRN rate man AGC   stations
+        {0.00,   500,   0, 10,  0,   0,  0,   0, false, 0},   // Clean
+        {0.15,   500,  30,  8,  0,   0,  0,   0, true,  0},   // Quiet band
+        {0.35,   500,  50, 15,  0,  50, 30,   0, true,  1},   // 40 m in summer
+        {0.25,   500,  40, 12,  0,  10,  6,   0, true,  6},   // Contest
+        {0.30,   500,  60, 50, 25,   0,  0,   0, true,  0},   // Aurora
+        {0.50,   500,  20, 10,  0,   0,  0,  50, true,  0},   // Urban
+    };
+}
+
+void Settings::setBandPreset(int pPreset)
+{
+    pPreset = qBound(0, pPreset, int(Custom));
+    bool changed = store(Key::BandPreset, m_bandPreset, pPreset);
+    if (pPreset != Custom)
+    {
+        const Conditions& c = Presets[pPreset];
+        changed |= store(Key::NoiseLevel, m_noiseLevel, c.noiseLevel);
+        changed |= store(Key::Bandwidth, m_bandwidth, c.bandwidth);
+        changed |= store(Key::QsbDepth, m_qsbDepth, c.qsbDepth);
+        changed |= store(Key::QsbRate, m_qsbRate, c.qsbRate);
+        changed |= store(Key::Flutter, m_flutter, c.flutter);
+        changed |= store(Key::QrnLevel, m_qrnLevel, c.qrnLevel);
+        changed |= store(Key::QrnRate, m_qrnRate, c.qrnRate);
+        changed |= store(Key::ManMade, m_manMade, c.manMade);
+        changed |= store(Key::Agc, m_agc, c.agc);
+        changed |= store(Key::ContestStations, m_contestStations, c.contestStations);
+    }
+    if (changed)
+        emit bandChanged();
+}
+
 void Settings::setToneFrequency(int pHz)
 {
     if (store(Key::ToneFrequency, m_toneFrequency, qBound(MinFrequency, pHz, MaxFrequency)))
@@ -128,20 +204,52 @@ void Settings::setVolume(int pPercent)
 
 void Settings::setNoiseLevel(double pLevel)
 {
-    if (store(Key::NoiseLevel, m_noiseLevel, qBound(0.0, pLevel, 1.0)))
-        emit noiseLevelChanged();
+    setBandValue(Key::NoiseLevel, m_noiseLevel, qBound(0.0, pLevel, 1.0));
 }
 
 void Settings::setBandwidth(int pHz)
 {
-    if (store(Key::Bandwidth, m_bandwidth, qBound(MinBandwidth, pHz, MaxBandwidth)))
-        emit bandwidthChanged();
+    setBandValue(Key::Bandwidth, m_bandwidth, qBound(MinBandwidth, pHz, MaxBandwidth));
 }
 
 void Settings::setQsbDepth(int pPercent)
 {
-    if (store(Key::QsbDepth, m_qsbDepth, qBound(0, pPercent, 100)))
-        emit qsbDepthChanged();
+    setBandValue(Key::QsbDepth, m_qsbDepth, qBound(0, pPercent, 100));
+}
+
+void Settings::setQsbRate(int pCentiHz)
+{
+    setBandValue(Key::QsbRate, m_qsbRate, qBound(MinQsbRate, pCentiHz, MaxQsbRate));
+}
+
+void Settings::setFlutter(int pHz)
+{
+    setBandValue(Key::Flutter, m_flutter, qBound(0, pHz, MaxFlutter));
+}
+
+void Settings::setQrnLevel(int pPercent)
+{
+    setBandValue(Key::QrnLevel, m_qrnLevel, qBound(0, pPercent, 100));
+}
+
+void Settings::setQrnRate(int pPerMinute)
+{
+    setBandValue(Key::QrnRate, m_qrnRate, qBound(0, pPerMinute, MaxQrnRate));
+}
+
+void Settings::setManMade(int pPercent)
+{
+    setBandValue(Key::ManMade, m_manMade, qBound(0, pPercent, 100));
+}
+
+void Settings::setAgc(bool pOn)
+{
+    setBandValue(Key::Agc, m_agc, pOn);
+}
+
+void Settings::setContestStations(int pCount)
+{
+    setBandValue(Key::ContestStations, m_contestStations, qBound(0, pCount, MaxContestStations));
 }
 
 void Settings::setWordSpeed(int pWpm)

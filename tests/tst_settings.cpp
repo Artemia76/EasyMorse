@@ -93,6 +93,42 @@ private slots:
         QCOMPARE(gap, 55.0);
     }
 
+    void bandPresets()
+    {
+        Settings settings(file("band.ini"));
+        QCOMPARE(settings.bandPreset(), int(Settings::Clean));
+        QCOMPARE(settings.noiseLevel(), 0.0);
+        QSignalSpy changed(&settings, &Settings::bandChanged);
+
+        settings.setBandPreset(Settings::Contest);
+        QCOMPARE(changed.count(), 1);
+        QCOMPARE(settings.bandPreset(), int(Settings::Contest));
+        QVERIFY(settings.contestStations() > 0);
+        QVERIFY(settings.noiseLevel() > 0.0);
+        QVERIFY(settings.agc());
+
+        // A value changed by hand: custom conditions, kept as they are
+        const int stations = settings.contestStations();
+        settings.setQrnLevel(80);
+        QCOMPARE(settings.bandPreset(), int(Settings::Custom));
+        QCOMPARE(settings.contestStations(), stations);
+        settings.setBandPreset(Settings::Custom);
+        QCOMPARE(settings.qrnLevel(), 80);
+
+        settings.setBandPreset(Settings::Aurora);
+        QVERIFY(settings.flutter() > 0);
+        QCOMPARE(settings.contestStations(), 0);
+        settings.setBandPreset(Settings::Clean);
+        QCOMPARE(settings.noiseLevel(), 0.0);
+        QCOMPARE(settings.flutter(), 0);
+        QCOMPARE(settings.qsbDepth(), 0);
+
+        settings.setBandPreset(Settings::Urban);
+        Settings reread(file("band.ini"));
+        QCOMPARE(reread.bandPreset(), int(Settings::Urban));
+        QCOMPARE(reread.manMade(), settings.manMade());
+    }
+
     void readsSettingsOfPreviousVersions()
     {
         {
@@ -105,6 +141,8 @@ private slots:
         Settings settings(file("legacy.ini"));
         QCOMPARE(settings.toneFrequency(), 650);
         QCOMPARE(settings.noiseLevel(), 0.25);
+        // The noise chosen then is kept: custom band conditions
+        QCOMPARE(settings.bandPreset(), int(Settings::Custom));
         QCOMPARE(settings.charSpeed(), 22);
         QVERIFY(settings.serialEnabled());
     }

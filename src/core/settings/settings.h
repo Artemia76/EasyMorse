@@ -44,9 +44,18 @@ class Settings : public QObject
     // Sound
     Q_PROPERTY(int toneFrequency READ toneFrequency WRITE setToneFrequency NOTIFY toneFrequencyChanged)
     Q_PROPERTY(int volume READ volume WRITE setVolume NOTIFY volumeChanged)
-    Q_PROPERTY(double noiseLevel READ noiseLevel WRITE setNoiseLevel NOTIFY noiseLevelChanged)
-    Q_PROPERTY(int bandwidth READ bandwidth WRITE setBandwidth NOTIFY bandwidthChanged)
-    Q_PROPERTY(int qsbDepth READ qsbDepth WRITE setQsbDepth NOTIFY qsbDepthChanged)
+    // Band conditions: a preset, or Custom once a value is changed by hand
+    Q_PROPERTY(int bandPreset READ bandPreset WRITE setBandPreset NOTIFY bandChanged)
+    Q_PROPERTY(double noiseLevel READ noiseLevel WRITE setNoiseLevel NOTIFY bandChanged)
+    Q_PROPERTY(int bandwidth READ bandwidth WRITE setBandwidth NOTIFY bandChanged)
+    Q_PROPERTY(int qsbDepth READ qsbDepth WRITE setQsbDepth NOTIFY bandChanged)
+    Q_PROPERTY(int qsbRate READ qsbRate WRITE setQsbRate NOTIFY bandChanged)
+    Q_PROPERTY(int flutter READ flutter WRITE setFlutter NOTIFY bandChanged)
+    Q_PROPERTY(int qrnLevel READ qrnLevel WRITE setQrnLevel NOTIFY bandChanged)
+    Q_PROPERTY(int qrnRate READ qrnRate WRITE setQrnRate NOTIFY bandChanged)
+    Q_PROPERTY(int manMade READ manMade WRITE setManMade NOTIFY bandChanged)
+    Q_PROPERTY(bool agc READ agc WRITE setAgc NOTIFY bandChanged)
+    Q_PROPERTY(int contestStations READ contestStations WRITE setContestStations NOTIFY bandChanged)
     // Morse speed
     Q_PROPERTY(int wordSpeed READ wordSpeed WRITE setWordSpeed NOTIFY wordSpeedChanged)
     Q_PROPERTY(int charSpeed READ charSpeed WRITE setCharSpeed NOTIFY charSpeedChanged)
@@ -78,10 +87,27 @@ class Settings : public QObject
     Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
 
 public:
+    enum BandPreset
+    {
+        Clean,          // nothing but the signal
+        QuietBand,      // light hiss, slow shallow fading
+        Summer40m,      // static crashes of thunderstorms
+        Contest,        // stations calling above and below
+        Aurora,         // rasping flutter, fast fading
+        Urban,          // mains buzz and a stray carrier
+        Custom
+    };
+    Q_ENUM(BandPreset)
+
     static constexpr int MinFrequency = 200;
     static constexpr int MaxFrequency = 1200;
     static constexpr int MinBandwidth = 100;
     static constexpr int MaxBandwidth = 3000;
+    static constexpr int MinQsbRate = 5;            // 1/100 Hz
+    static constexpr int MaxQsbRate = 100;
+    static constexpr int MaxFlutter = 50;           // Hz
+    static constexpr int MaxQrnRate = 60;           // crashes per minute
+    static constexpr int MaxContestStations = 8;
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
@@ -99,14 +125,31 @@ public:
     int     toneFrequency() const { return m_toneFrequency; }
     int     volume() const { return m_volume; }
     double  noiseLevel() const { return m_noiseLevel; }
+    int     bandPreset() const { return m_bandPreset; }
     ///
-    /// \brief width of the receiver filter applied to the noise, in Hz
+    /// \brief width of the receiver filter, in Hz
     ///
     int     bandwidth() const { return m_bandwidth; }
     ///
-    /// \brief depth of the random fading of the received signal, in %
+    /// \brief depth of the random fading of the received signals, in %
     ///
     int     qsbDepth() const { return m_qsbDepth; }
+    ///
+    /// \brief speed of the fading, in 1/100 Hz
+    ///
+    int     qsbRate() const { return m_qsbRate; }
+    ///
+    /// \brief Doppler spread of auroral signals, in Hz (0: none)
+    ///
+    int     flutter() const { return m_flutter; }
+    int     qrnLevel() const { return m_qrnLevel; }
+    int     qrnRate() const { return m_qrnRate; }
+    int     manMade() const { return m_manMade; }
+    bool    agc() const { return m_agc; }
+    ///
+    /// \brief number of background stations transmitting around the listening frequency
+    ///
+    int     contestStations() const { return m_contestStations; }
     int     wordSpeed() const { return m_wordSpeed; }
     int     charSpeed() const { return m_charSpeed; }
     bool    farnsworth() const { return m_farnsworth; }
@@ -135,8 +178,19 @@ public:
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
     void    setNoiseLevel(double pLevel);
+    ///
+    /// \brief setBandPreset applies the values of a preset (nothing for Custom)
+    ///
+    void    setBandPreset(int pPreset);
     void    setBandwidth(int pHz);
     void    setQsbDepth(int pPercent);
+    void    setQsbRate(int pCentiHz);
+    void    setFlutter(int pHz);
+    void    setQrnLevel(int pPercent);
+    void    setQrnRate(int pPerMinute);
+    void    setManMade(int pPercent);
+    void    setAgc(bool pOn);
+    void    setContestStations(int pCount);
     void    setWordSpeed(int pWpm);
     void    setCharSpeed(int pWpm);
     void    setFarnsworth(bool pOn);
@@ -168,9 +222,7 @@ public:
 signals:
     void    toneFrequencyChanged();
     void    volumeChanged();
-    void    noiseLevelChanged();
-    void    bandwidthChanged();
-    void    qsbDepthChanged();
+    void    bandChanged();
     void    wordSpeedChanged();
     void    charSpeedChanged();
     void    farnsworthChanged();
@@ -193,13 +245,26 @@ signals:
 private:
     template <typename T>
     bool    store(const char* pKey, T& pMember, const T& pValue);
+    ///
+    /// \brief setBandValue changes a band condition by hand: the preset becomes Custom
+    ///
+    template <typename T>
+    void    setBandValue(const char* pKey, T& pMember, const T& pValue);
 
     std::unique_ptr<QSettings>  m_store;
     int         m_toneFrequency;
     int         m_volume;
     double      m_noiseLevel;
+    int         m_bandPreset;
     int         m_bandwidth;
     int         m_qsbDepth;
+    int         m_qsbRate;
+    int         m_flutter;
+    int         m_qrnLevel;
+    int         m_qrnRate;
+    int         m_manMade;
+    bool        m_agc;
+    int         m_contestStations;
     int         m_wordSpeed;
     int         m_charSpeed;
     bool        m_farnsworth;

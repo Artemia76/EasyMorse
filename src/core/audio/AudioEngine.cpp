@@ -205,19 +205,14 @@ void AudioEngine::setGain(int pPercent)
     post({AudioEvent::Type::Gain, 0, static_cast<double>(pPercent), 0, 0});
 }
 
-void AudioEngine::setNoiseRatio(double pRatio)
+void AudioEngine::setBand(band::BandSimulator::Parameter pParameter, double pValue)
 {
-    post({AudioEvent::Type::NoiseRatio, 0, pRatio, 0, 0});
+    post({AudioEvent::Type::Band, 0, pValue, static_cast<int>(pParameter), 0});
 }
 
-void AudioEngine::setBandwidth(int pHz)
+bool AudioEngine::sendStation(const band::StationScript& pScript)
 {
-    post({AudioEvent::Type::Bandwidth, 0, static_cast<double>(pHz), 0, 0});
-}
-
-void AudioEngine::setQsbDepth(int pPercent)
-{
-    post({AudioEvent::Type::QsbDepth, 0, static_cast<double>(pPercent), 0, 0});
+    return m_stations.push(pScript);
 }
 
 /*
@@ -258,7 +253,12 @@ quint32 AudioEngine::cancelScheduled()
 void AudioEngine::drainNotifications()
 {
     while (auto event = m_notifications.pop())
-        emit markerReached(event->generation, event->id);
+    {
+        if (event->type == AudioEvent::Type::StationFinished)
+            emit stationFinished(event->id);
+        else
+            emit markerReached(event->generation, event->id);
+    }
 }
 
 /*
@@ -275,20 +275,16 @@ void AudioEngine::apply(const AudioEvent& pEvent)
             m_keyDown[pEvent.id] = (pEvent.type == AudioEvent::Type::KeyDown);
         break;
     case AudioEvent::Type::Frequency:
-        m_channel.setFrequency(pEvent.value);
+        m_band.setFrequency(pEvent.value);
         break;
     case AudioEvent::Type::Gain:
         // 100 % gives the level of the previous versions
-        m_channel.setGain(pEvent.value / 1000.0);
+        m_band.setGain(pEvent.value / 1000.0);
         break;
-    case AudioEvent::Type::NoiseRatio:
-        m_channel.setNoiseLevel(pEvent.value);
+    case AudioEvent::Type::Band:
+        m_band.set(static_cast<band::BandSimulator::Parameter>(pEvent.id), pEvent.value);
         break;
-    case AudioEvent::Type::Bandwidth:
-        m_channel.setBandwidth(pEvent.value);
-        break;
-    case AudioEvent::Type::QsbDepth:
-        m_channel.setQsbDepth(pEvent.value / 100.0);
+    case AudioEvent::Type::StationFinished:
         break;
     case AudioEvent::Type::Cancel:
         m_cancelGeneration = pEvent.generation;
@@ -299,8 +295,8 @@ void AudioEngine::apply(const AudioEvent& pEvent)
         break;
     }
 
-    m_channel.setSidetone(m_keyDown[static_cast<int>(KeySource::Local)]);
-    m_channel.setSignal(m_keyDown[static_cast<int>(KeySource::Sequencer)]
+    m_band.setSidetone(m_keyDown[static_cast<int>(KeySource::Local)]);
+    m_band.setSignal(m_keyDown[static_cast<int>(KeySource::Sequencer)]
                         || m_keyDown[static_cast<int>(KeySource::Remote)]);
 }
 
@@ -309,6 +305,11 @@ void AudioEngine::render(float* pOutput, unsigned int pFrameCount)
     // Commands from the GUI apply at the start of the buffer
     while (auto event = m_immediate.pop())
         apply(*event);
+    while (const band::StationScript* script = m_stations.front())
+    {
+        m_band.play(*script);
+        m_stations.pop();
+    }
 
     for (unsigned int i = 0; i < pFrameCount; ++i, ++m_frame)
     {
@@ -325,9 +326,11 @@ void AudioEngine::render(float* pOutput, unsigned int pFrameCount)
             apply(*event);
             m_scheduled.pop();
         }
-        const float value = m_channel.next();
+        const float value = m_band.next();
         *pOutput++ = value; // left
         *pOutput++ = value; // right
     }
+    for (int slot = m_band.takeFinished(); slot >= 0; slot = m_band.takeFinished())
+        m_notifications.push({AudioEvent::Type::StationFinished, 0, 0.0, slot, 0});
     m_framesRendered.store(m_frame, std::memory_order_release);
 }

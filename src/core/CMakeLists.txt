@@ -3,7 +3,6 @@
 
 qt_add_library(easymorse_core STATIC
     audio/AudioEngine.cpp audio/AudioEngine.h
-    audio/radiochannel.cpp audio/radiochannel.h
     audio/band/bandsimulator.cpp audio/band/bandsimulator.h
     audio/band/cwstation.h
     audio/band/dsp.h
@@ -15,6 +14,7 @@ qt_add_library(easymorse_core STATIC
 
     morse/keydecoder.cpp morse/keydecoder.h
     morse/morsecodec.cpp morse/morsecodec.h
+    morse/contestgenerator.cpp morse/contestgenerator.h
     morse/sequencer.cpp morse/sequencer.h
 
     net/jitterbuffer.cpp net/jitterbuffer.h
