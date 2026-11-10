@@ -86,8 +86,6 @@ public:
         return m_head.load(std::memory_order_acquire) == m_tail.load(std::memory_order_acquire);
     }
 
-    static constexpr std::size_t capacity() { return Capacity; }
-
 private:
     // Separate cache lines so producer and consumer do not fight over them
     alignas(64) std::atomic<std::size_t> m_head{0};

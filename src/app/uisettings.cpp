@@ -95,7 +95,7 @@ QVariantList UiSettings::languages() const
 
 int UiSettings::logLevel() const
 {
-    return static_cast<int>(CLogger::instance()->DebugLevel);
+    return static_cast<int>(CLogger::instance()->debugLevel());
 }
 
 void UiSettings::setLogLevel(int pLevel)
@@ -108,7 +108,7 @@ void UiSettings::setLogLevel(int pLevel)
 
 QString UiSettings::logFilter() const
 {
-    return CLogger::instance()->getFilter();
+    return CLogger::instance()->filter();
 }
 
 void UiSettings::setLogFilter(const QString& pFilter)

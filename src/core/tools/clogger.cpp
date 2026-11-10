@@ -23,43 +23,23 @@
 /****************************************************************************
 ** clogger.cpp is part of EasyMorse project
 **
-** This singleton provide log messaging manager
+** Singleton gathering the messages shown in the log page: they go through
+** when they match the filter and the debug level.
 ****************************************************************************/
 
 #include "clogger.h"
 
-///
-/// \brief CLogger::CLogger
-/// \param parent
-///
-CLogger::CLogger(QObject* parent):
-    QObject(parent),
-    DebugLevel(m_DebugLevel)
+#include <QMutexLocker>
+
+CLogger::CLogger(QObject* pParent)
+    : QObject(pParent)
 {
     qRegisterMetaType<CL_DEBUG_LEVEL>("CL_DEBUG_LEVEL");
-    m_settings.beginGroup("Log");
-    m_DebugLevel = static_cast<CL_DEBUG_LEVEL>(m_settings.value("DebugLevel",LEVEL_NONE).toLongLong());
-    m_logToFile = m_settings.value("LogToFile",false).toBool();
-    m_filtreLog = m_settings.value("FiltreLog","*").toString();
-    m_settings.endGroup();
-    updatePattern();
+    m_debugLevel = static_cast<CL_DEBUG_LEVEL>(qBound<int>(LEVEL_NONE, m_settings.value("Log/DebugLevel", LEVEL_NONE).toInt(), LEVEL_VERBOSE));
+    m_filter = m_settings.value("Log/FiltreLog", "*").toString();
+    m_rx.setPattern(QRegularExpression::wildcardToRegularExpression(m_filter));
 }
 
-///
-/// \brief CLogger::~CLogger
-///
-CLogger::~CLogger()
-{
-    m_settings.beginGroup("Log");
-    m_settings.setValue("DebugLevel",m_DebugLevel);
-    m_settings.setValue("LogToFile",m_logToFile);
-    m_settings.endGroup();
-}
-
-///
-/// \brief CLogger::instance
-/// \return
-///
 CLogger* CLogger::instance()
 {
     // Initialisation of a function static is thread-safe since C++11
@@ -67,67 +47,36 @@ CLogger* CLogger::instance()
     return &logger;
 }
 
-///
-/// \brief CLogger::setDebugLevel
-/// \param pLevel
-///
+CL_DEBUG_LEVEL CLogger::debugLevel() const
+{
+    QMutexLocker lock(&m_mutex);
+    return m_debugLevel;
+}
+
 void CLogger::setDebugLevel(CL_DEBUG_LEVEL pLevel)
 {
-    m_mutex.lock();
-    if (pLevel < LEVEL_NONE ) m_DebugLevel=LEVEL_NONE;
-    else if (pLevel > LEVEL_VERBOSE) m_DebugLevel=LEVEL_VERBOSE;
-    else m_DebugLevel = pLevel;
-    m_settings.beginGroup("Log");
-    m_settings.setValue("DebugLevel",QVariant(m_DebugLevel));
-    m_settings.endGroup();
-    m_mutex.unlock();
+    QMutexLocker lock(&m_mutex);
+    m_debugLevel = static_cast<CL_DEBUG_LEVEL>(qBound<int>(LEVEL_NONE, pLevel, LEVEL_VERBOSE));
+    m_settings.setValue("Log/DebugLevel", static_cast<int>(m_debugLevel));
 }
 
-///
-/// \brief CLogger::log
-/// \param Texte
-/// \param pColor
-/// \param pLevel
-///
-void CLogger::log (const QString& Texte,QColor pColor, CL_DEBUG_LEVEL pLevel)
+QString CLogger::filter() const
 {
-    m_mutex.lock();
-    QRegularExpressionMatch match = m_rx.match(Texte);
-    if ((match.hasMatch()&&(pLevel <= m_DebugLevel))||(pLevel==LEVEL_NONE))
-    {
-        emit(fireLog(Texte,pColor,pLevel));
-    }
-    m_mutex.unlock();
+    QMutexLocker lock(&m_mutex);
+    return m_filter;
 }
 
-///
-/// \brief CLogger::updatePattern
-///
-void CLogger::updatePattern()
-{
-    m_rx.setPattern(QRegularExpression::wildcardToRegularExpression(m_filtreLog));
-}
-
-///
-/// \brief CLogger::setFilter
-/// \param pFilter
-///
 void CLogger::setFilter(const QString& pFilter)
 {
-    m_mutex.lock();
-    m_filtreLog=pFilter;
-    updatePattern();
-    m_settings.beginGroup("Log");
-    m_settings.setValue("FiltreLog",m_filtreLog);
-    m_settings.endGroup();
-    m_mutex.unlock();
+    QMutexLocker lock(&m_mutex);
+    m_filter = pFilter;
+    m_rx.setPattern(QRegularExpression::wildcardToRegularExpression(m_filter));
+    m_settings.setValue("Log/FiltreLog", m_filter);
 }
 
-///
-/// \brief CLogger::getFilter
-/// \return
-///
-QString CLogger::getFilter()
+void CLogger::log(const QString& pMessage, QColor pColor, CL_DEBUG_LEVEL pLevel)
 {
-    return m_filtreLog;
+    QMutexLocker lock(&m_mutex);
+    if (pLevel == LEVEL_NONE || (pLevel <= m_debugLevel && m_rx.match(pMessage).hasMatch()))
+        emit fireLog(pMessage, pColor, pLevel);
 }

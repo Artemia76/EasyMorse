@@ -72,8 +72,6 @@ public:
     double  dotMs() const { return m_dot; }
     double  dashMs() const { return m_dash; }
     double  gapMs() const { return m_gap; }
-    double  charGapMs() const { return m_charGap; }
-    double  wordGapMs() const { return m_wordGap; }
     double  speed() const;
 
     ///
@@ -108,7 +106,6 @@ public slots:
     /// \param pTimeMs time of the change on a monotonic clock
     ///
     void    keyEdge(bool pDown, qint64 pTimeMs);
-    void    keyEdgeNow(bool pDown) { keyEdge(pDown, now()); }
     ///
     /// \brief advanceTo ends the current character / word if the silence is long enough
     ///

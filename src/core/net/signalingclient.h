@@ -104,7 +104,6 @@ signals:
     void    roomsChanged();
     void    chatReceived(const QString& pFrom, const QString& pText);
     void    signalReceived(const QString& pFrom, const QString& pKind, const QString& pData);
-    void    memberLeft(const QString& pCallsign);
     void    errorOccurred(const QString& pMessage);
 
 private:

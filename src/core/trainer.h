@@ -93,12 +93,8 @@ public:
     KeyDecoder*     decoder() { return &m_decoder; }
     ManualKeyer*    manualKeyer() { return &m_manualKeyer; }
     Paddles*        manualPaddles() { return &m_manualPaddles; }
-    IambicKeyer*    iambicKeyer() { return &m_iambic; }
     PeerSession*    session() { return &m_session; }
     Lobby*          lobby() { return &m_lobby; }
-#ifdef EASYMORSE_HAS_SERIALPORT
-    SerialKeyer*    serialKeyer() const { return m_serialKeyer; }
-#endif
 
     ///
     /// \brief addKeyer listens to another key (remote station...)

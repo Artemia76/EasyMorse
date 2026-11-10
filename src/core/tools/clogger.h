@@ -23,17 +23,18 @@
 /****************************************************************************
 ** clogger.h is part of EasyMorse project
 **
-** This singleton provide log messaging manager
+** Singleton gathering the messages shown in the log page: they go through
+** when they match the filter and the debug level.
 ****************************************************************************/
 
 #ifndef CLOGGER_H
 #define CLOGGER_H
 
-#include <QObject>
-#include <QSettings>
 #include <QColor>
-#include <QRegularExpression>
 #include <QMutex>
+#include <QObject>
+#include <QRegularExpression>
+#include <QSettings>
 
 enum CL_DEBUG_LEVEL
 {
@@ -48,27 +49,32 @@ class CLogger : public QObject
 {
     Q_OBJECT
 
-private:
-                            CLogger(QObject* pParent = nullptr);
-    void                    updatePattern();
-    CL_DEBUG_LEVEL          m_DebugLevel;
-    QSettings               m_settings;
-    bool                    m_logToFile;
-    QString                 m_filtreLog;
-    QRegularExpression      m_rx;
-    QMutex                  m_mutex;
-
 public:
-                            ~CLogger();
-    const CL_DEBUG_LEVEL&   DebugLevel;
     static CLogger*         instance();
-    void                    setDebugLevel (CL_DEBUG_LEVEL pLevel=LEVEL_NONE);
-    void                    log (const QString& pMessage="", QColor pColor = Qt::black,CL_DEBUG_LEVEL pLevel=LEVEL_NONE);
+
+    CL_DEBUG_LEVEL          debugLevel() const;
+    void                    setDebugLevel(CL_DEBUG_LEVEL pLevel);
+    QString                 filter() const;
+    ///
+    /// \brief setFilter keeps only the messages matching a wildcard pattern ("*" for all)
+    ///
     void                    setFilter(const QString& pFilter);
-    QString                 getFilter();
+    ///
+    /// \brief log a message; LEVEL_NONE messages always go through
+    ///
+    void                    log(const QString& pMessage, QColor pColor = Qt::black, CL_DEBUG_LEVEL pLevel = LEVEL_NONE);
 
 signals:
-    void                    fireLog (QString pMessage="", QColor pColor = Qt::black,CL_DEBUG_LEVEL pLevel=LEVEL_NONE);
+    void                    fireLog(const QString& pMessage, QColor pColor, CL_DEBUG_LEVEL pLevel);
+
+private:
+    explicit                CLogger(QObject* pParent = nullptr);
+
+    mutable QMutex          m_mutex;
+    QSettings               m_settings;
+    CL_DEBUG_LEVEL          m_debugLevel;
+    QString                 m_filter;
+    QRegularExpression      m_rx;
 };
 
 #endif // CLOGGER_H

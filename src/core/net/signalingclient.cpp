@@ -250,7 +250,6 @@ void SignalingClient::onMessage(const QString& pText)
         const QString member = message.value("callsign").toString();
         if (m_members.removeAll(member) > 0)
             emit roomChanged();
-        emit memberLeft(member);
     }
     else if (type == Signaling::Type::Chat)
     {
