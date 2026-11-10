@@ -60,7 +60,7 @@ private:
         double  wpm = 25.0;
         double  jitter = 0.0;       // timing errors of a hand sent signal
         float   offsetHz = 0.0f;
-        float   levelDb = 0.0f;
+        float   levelDb = 0.0f;         // -18..+6 dB from the station listened to
         float   edgeMs = 5.0f;
         float   chirpHz = 0.0f;
         int     serial = 1;

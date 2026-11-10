@@ -99,7 +99,7 @@ public:
         m_sampleRate = pSampleRate;
         m_period = pSampleRate / 100.0;
         m_untilPulse = m_period;
-        m_carrierOffset = pRandom.uniform(-350.0, 350.0);
+        m_carrierOffset = pRandom.uniform(-200.0, 200.0);
         m_drift = 0.0;
     }
     // 0..1
@@ -114,14 +114,14 @@ public:
         if (--m_untilPulse <= 0.0)
         {
             m_untilPulse += m_period + pRandom.uniform(-0.0002, 0.0002) * m_sampleRate;
-            out += 0.6 * m_level * pScale * pRandom.uniform(0.8, 1.2);
+            out += 2.5 * m_level * pScale * pRandom.uniform(0.8, 1.2);
         }
         // Stray carrier, drifting by +-15 Hz over 40 s
         m_drift += 2.0 * std::numbers::pi / (40.0 * m_sampleRate);
         const double frequency = m_carrierOffset + 15.0 * std::sin(m_drift);
         m_carrierPhase = std::fmod(m_carrierPhase + 2.0 * std::numbers::pi * frequency / m_sampleRate,
                                    2.0 * std::numbers::pi);
-        out += std::polar(0.15 * m_level, m_carrierPhase);
+        out += std::polar(0.25 * m_level, m_carrierPhase);
         return out;
     }
 

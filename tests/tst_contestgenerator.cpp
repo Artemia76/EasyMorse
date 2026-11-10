@@ -64,7 +64,7 @@ private slots:
                     QVERIFY(script.durations[d] > 0);
                 // Above or below the listening frequency, never on it
                 QVERIFY(std::abs(script.offsetHz) >= 80.0f && std::abs(script.offsetHz) <= 1500.0f);
-                QVERIFY(script.levelDb >= -25.0f && script.levelDb <= 5.0f);
+                QVERIFY(script.levelDb >= -18.0f && script.levelDb <= 6.0f);
             }
         }
         QVERIFY(cq > 20);

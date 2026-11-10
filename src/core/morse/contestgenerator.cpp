@@ -64,9 +64,10 @@ void ContestGenerator::newStation(Station& pStation)
     pStation.runner = m_random.uniform() < 0.6;
     pStation.wpm = m_random.uniform(18.0, 34.0);
     pStation.jitter = m_random.uniform() < 0.3 ? 0.06 : 0.0;
-    // Above or below, some only heard in the skirts of the filter
-    pStation.offsetHz = static_cast<float>((m_random.uniform() < 0.5 ? -1.0 : 1.0) * m_random.logUniform(80.0, 1500.0));
-    pStation.levelDb = static_cast<float>(m_random.uniform(-25.0, 5.0));
+    // Above or below: most in the filter, some only heard in its skirts
+    const double offset = m_random.uniform() < 0.7 ? m_random.uniform(80.0, 400.0) : m_random.uniform(400.0, 1500.0);
+    pStation.offsetHz = static_cast<float>((m_random.uniform() < 0.5 ? -1.0 : 1.0) * offset);
+    pStation.levelDb = static_cast<float>(m_random.uniform(-18.0, 6.0));
     pStation.edgeMs = m_random.uniform() < 0.1 ? 0.7f : static_cast<float>(m_random.uniform(3.0, 7.0));
     pStation.chirpHz = m_random.uniform() < 0.1 ? static_cast<float>(m_random.uniform(30.0, 120.0)) : 0.0f;
     pStation.serial = static_cast<int>(m_random.uniform(1.0, 400.0));
@@ -124,7 +125,7 @@ band::StationScript ContestGenerator::next(int pSlot)
     {
         newStation(station);
         // A new station: tune in at any time
-        pause = m_random.uniform(0.5, 6.0);
+        pause = m_random.uniform(0.2, 2.5);
     }
     double messagePause = 0.0;
     const QString text = message(station, messagePause);

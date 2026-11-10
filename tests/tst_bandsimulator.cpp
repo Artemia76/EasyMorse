@@ -243,6 +243,26 @@ private slots:
         QVERIFY(std::abs(rms(loud, 24000) - ToneRms) < ToneRms * 0.1);
     }
 
+    void agcDoesNotPopAfterAWordGap()
+    {
+        auto band = quietBand();
+        band.set(P::NoiseLevel, 0.1);
+        band.set(P::Agc, 1);
+        double steady = 0.0, peak = 0.0;
+        for (int word = 0; word < 6; ++word)
+        {
+            band.setSignal(true);
+            const auto tone = render(band, 0.3);
+            if (word > 0)
+                for (std::size_t i = 0; i < 960; ++i)
+                    peak = std::max(peak, double(std::abs(tone[i])));
+            steady = rms(tone, 4800) * std::numbers::sqrt2;
+            band.setSignal(false);
+            render(band, 0.45);        // word gap at 15 wpm
+        }
+        QVERIFY2(peak < 1.3 * steady, qPrintable(QString::number(peak / steady)));
+    }
+
     void stationsReportTheEndOfTheirMessage()
     {
         auto band = quietBand();

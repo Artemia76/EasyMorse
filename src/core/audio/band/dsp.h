@@ -182,8 +182,10 @@ private:
 };
 
 ///
-/// \brief Automatic gain control: fast attack, slow release. A strong
-/// signal pushes the noise down, as on a real receiver.
+/// \brief Automatic gain control with hang, as receivers use it for CW: fast
+/// attack, then the gain holds between characters and words before slowly
+/// coming back. A strong signal pushes the noise down; the gaps of a message
+/// do not let the noise surge nor make the next element pop.
 ///
 class Agc
 {
@@ -192,20 +194,31 @@ public:
 
     void setSampleRate(double pSampleRate)
     {
-        m_attack = 1.0 - std::exp(-1.0 / (0.005 * pSampleRate));
+        m_attack = 1.0 - std::exp(-1.0 / (0.001 * pSampleRate));
         m_release = 1.0 - std::exp(-1.0 / (0.300 * pSampleRate));
+        m_hangSamples = static_cast<int>(0.8 * pSampleRate);
     }
 
     double gain(double pMagnitude)
     {
-        m_envelope += (pMagnitude - m_envelope) * (pMagnitude > m_envelope ? m_attack : m_release);
+        if (pMagnitude > m_envelope)
+        {
+            m_envelope += (pMagnitude - m_envelope) * m_attack;
+            m_hang = m_hangSamples;
+        }
+        else if (m_hang > 0)
+            --m_hang;
+        else
+            m_envelope += (pMagnitude - m_envelope) * m_release;
         return std::min(MaxGain, 1.0 / std::max(m_envelope, 1e-6));
     }
 
 private:
     double  m_attack = 0.0;
     double  m_release = 0.0;
-    double  m_envelope = 0.0;
+    double  m_envelope = 1.0;       // start at unity gain: no pop on the first signal
+    int     m_hangSamples = 0;
+    int     m_hang = 0;
 };
 
 } // namespace band
