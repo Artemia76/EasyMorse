@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>fonts/morse.ttf</file>
         <file alias="fonts/Inter-Regular.ttf">3rdparty/fonts/inter/Inter-Regular.ttf</file>
         <file alias="fonts/Inter-Medium.ttf">3rdparty/fonts/inter/Inter-Medium.ttf</file>
         <file alias="fonts/Inter-SemiBold.ttf">3rdparty/fonts/inter/Inter-SemiBold.ttf</file>
@@ -9,11 +8,5 @@
         <file alias="fonts/JetBrainsMono-Medium.ttf">3rdparty/fonts/jetbrains-mono/JetBrainsMono-Medium.ttf</file>
         <file alias="fonts/JetBrainsMono-Bold.ttf">3rdparty/fonts/jetbrains-mono/JetBrainsMono-Bold.ttf</file>
         <file>gfx/Morse_128x128.png</file>
-        <file>gfx/connect2.png</file>
-        <file>gfx/connect2_R.png</file>
-        <file>gfx/connect2_V.png</file>
-        <file>gfx/help.png</file>
-        <file>gfx/network.png</file>
-        <file>gfx/Outils.png</file>
     </qresource>
 </RCC>
