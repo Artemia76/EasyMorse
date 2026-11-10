@@ -65,6 +65,10 @@ private slots:
         QCOMPARE(settings.bandwidth(), Settings::MinBandwidth);
         settings.setQsbDepth(150);
         QCOMPARE(settings.qsbDepth(), 100);
+        settings.setBreakInMs(-5);
+        QCOMPARE(settings.breakInMs(), 0);
+        settings.setBreakInMs(9000);
+        QCOMPARE(settings.breakInMs(), Settings::MaxBreakInMs);
         settings.setCharSpeed(1000);
         QCOMPARE(settings.charSpeed(), Settings::MaxSpeed);
         settings.setDecoderReactivity(7);
@@ -98,9 +102,14 @@ private slots:
         Settings settings(file("band.ini"));
         QCOMPARE(settings.bandPreset(), int(Settings::Clean));
         QCOMPARE(settings.noiseLevel(), 0.0);
+        QCOMPARE(settings.breakInMs(), 500);
         QSignalSpy changed(&settings, &Settings::bandChanged);
 
         settings.setBandPreset(Settings::Contest);
+        QCOMPARE(changed.count(), 1);
+        // The transceiver is not part of the band conditions
+        settings.setBreakInMs(200);
+        QCOMPARE(settings.bandPreset(), int(Settings::Contest));
         QCOMPARE(changed.count(), 1);
         QCOMPARE(settings.bandPreset(), int(Settings::Contest));
         QVERIFY(settings.contestStations() > 0);

@@ -93,6 +93,21 @@ ScrollView {
                     value: MorseSettings.volume
                     onMoved: (v) => MorseSettings.volume = v
                 }
+                // Semi break-in: the transceiver transmits while keying
+                LabeledSlider {
+                    text: qsTr("Back to receive")
+                    format: MorseSettings.breakInMs === 0 ? qsTr("QSK") : qsTr("%1 ms")
+                    from: 0; to: 1500; stepSize: 50
+                    value: MorseSettings.breakInMs
+                    onMoved: (v) => MorseSettings.breakInMs = v
+                }
+                Label {
+                    text: qsTr("The band is muted while you key, and comes back after this delay. QSK: heard between the elements.")
+                    wrapMode: Text.WordWrap
+                    color: Theme.muted
+                    font.pixelSize: 12
+                    Layout.fillWidth: true
+                }
             }
         }
 

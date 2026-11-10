@@ -27,7 +27,10 @@
 * up (band noise, static crashes, man made noise, the station listened to
 * and the stations around it) is summed in complex base band, goes through
 * the receiver filter and the AGC, and is brought to the tone frequency.
-* The sidetone of the own key is added afterwards, clean.
+* The sidetone of the own key is added afterwards, clean. While the
+* operator keys, the transceiver is transmitting: the receiver is muted and
+* comes back after the break-in delay (semi break-in), or between the
+* elements with no delay (full break-in, QSK).
 *
 * Runs in the real time audio thread: no allocation, no lock.
 * **************************************************************************/
@@ -56,6 +59,7 @@ public:
         QrnRate,        // static crashes per minute
         ManMade,        // 0..1
         Agc,            // 0 or 1
+        BreakIn,        // ms back to receive after the last key up, 0 = QSK
         Count
     };
     static constexpr int MaxStations = 8;
@@ -81,6 +85,7 @@ public:
     float   next();
 
     double  mainQsbGain() const { return m_main.qsbGain(m_qsbDepth); }
+    bool    isTransmitting() const { return m_sidetoneDown || m_txHold > 0; }
 
 private:
     double          m_sampleRate;
@@ -106,6 +111,13 @@ private:
     bool            m_sidetoneDown = false;
     double          m_sidetone = 0.0;     // raised cosine position
     double          m_edgeStep;
+
+    // Transmit / receive switching
+    int             m_breakInSamples;
+    int             m_txHold = 0;           // samples left before going back to receive
+    double          m_rxGain = 1.0;
+    double          m_muteStep;
+    double          m_unmuteStep;
 };
 
 } // namespace band

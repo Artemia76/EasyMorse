@@ -33,6 +33,7 @@ namespace Key
     constexpr const char* ToneFrequency = "Synth/SoundFreq";
     constexpr const char* Volume = "Synth/SoundLevel";
     constexpr const char* NoiseLevel = "Synth/NoiseCorrelation";
+    constexpr const char* BreakInMs = "Radio/BreakInMs";
     constexpr const char* BandPreset = "Band/Preset";
     constexpr const char* Bandwidth = "Band/Bandwidth";
     constexpr const char* QsbDepth = "Band/QsbDepth";
@@ -77,6 +78,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_toneFrequency = qBound(MinFrequency, m_store->value(Key::ToneFrequency, 900).toInt(), MaxFrequency);
     m_volume = qBound(0, m_store->value(Key::Volume, 100).toInt(), 100);
     m_noiseLevel = qBound(0.0, m_store->value(Key::NoiseLevel, 0.0).toDouble(), 1.0);
+    m_breakInMs = qBound(0, m_store->value(Key::BreakInMs, 500).toInt(), MaxBreakInMs);
     // Settings of a version without presets: keep the noise chosen then
     m_bandPreset = qBound(0, m_store->value(Key::BandPreset, m_noiseLevel > 0.0 ? Custom : Clean).toInt(), int(Custom));
     m_bandwidth = qBound(MinBandwidth, m_store->value(Key::Bandwidth, 500).toInt(), MaxBandwidth);
@@ -169,6 +171,12 @@ namespace
         {0.30,   500,  60, 50, 25,   0,  0,   0, true,  0},   // Aurora
         {0.50,   500,  20, 10,  0,   0,  0,  50, true,  0},   // Urban
     };
+}
+
+void Settings::setBreakInMs(int pMs)
+{
+    if (store(Key::BreakInMs, m_breakInMs, qBound(0, pMs, MaxBreakInMs)))
+        emit breakInMsChanged();
 }
 
 void Settings::setBandPreset(int pPreset)

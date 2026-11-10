@@ -54,8 +54,8 @@
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="83"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="158"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="183"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="173"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="198"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
@@ -66,152 +66,172 @@
     </message>
     <message>
         <location filename="../src/app/qml/ControlsPanel.qml" line="91"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="149"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="166"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="190"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="204"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="164"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="181"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="205"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="219"/>
         <source>%1 %</source>
         <translation>%1 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="101"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="119"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="98"/>
+        <source>Back to receive</source>
+        <translation>Retour en réception</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="99"/>
+        <source>QSK</source>
+        <translation>QSK</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="99"/>
+        <source>%1 ms</source>
+        <translation>%1 ms</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="105"/>
+        <source>The band is muted while you key, and comes back after this delay. QSK: heard between the elements.</source>
+        <translation>La bande se coupe pendant que vous manipulez et revient après ce délai. QSK : écoute entre les éléments.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="116"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="134"/>
         <source>Band conditions</source>
         <translation>Conditions de bande</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="114"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="129"/>
         <source>Clean</source>
         <translation>Propre</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="114"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="129"/>
         <source>Quiet band</source>
         <translation>Bande calme</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="114"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="129"/>
         <source>40 m in summer</source>
         <translation>40 m l’été</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="114"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="129"/>
         <source>Contest</source>
         <translation>Contest</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="115"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="130"/>
         <source>Aurora</source>
         <translation>Aurore</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="115"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="130"/>
         <source>Urban</source>
         <translation>Urbain</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="115"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="130"/>
         <source>Custom</source>
         <translation>Personnalisé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="122"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="137"/>
         <source>The signal alone, as from a practice oscillator.</source>
         <translation>Le signal seul, comme avec un oscillateur d’entraînement.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="123"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="138"/>
         <source>A light hiss and slow, shallow fading.</source>
         <translation>Un léger souffle et un fading lent et peu profond.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="124"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="139"/>
         <source>Static crashes of thunderstorms over the hiss.</source>
         <translation>Les craquements des orages par-dessus le souffle.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="125"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="140"/>
         <source>Busy band: stations call CQ and exchange reports above and below you.</source>
         <translation>Bande chargée : des stations lancent CQ et échangent des reports au-dessus et en dessous de vous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="126"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="141"/>
         <source>Auroral propagation: a rasping, fluttering tone that fades fast.</source>
         <translation>Propagation aurorale : une note râpeuse et tremblante, au fading rapide.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="127"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="142"/>
         <source>Mains buzz and a stray carrier from the neighbourhood.</source>
         <translation>Ronflement du secteur et porteuse parasite du voisinage.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="128"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="143"/>
         <source>Your own mix of the settings below.</source>
         <translation>Votre propre dosage des réglages ci-dessous.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="136"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="151"/>
         <source>Hide the details</source>
         <translation>Masquer les détails</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="136"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="151"/>
         <source>Adjust the details</source>
         <translation>Régler les détails</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="148"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="163"/>
         <source>Background noise</source>
         <translation>Bruit de fond</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="157"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="172"/>
         <source>Bandwidth</source>
         <translation>Bande passante</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="165"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="180"/>
         <source>QSB (fading)</source>
         <translation>QSB (fading)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="172"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="187"/>
         <source>Fading period</source>
         <translation>Période du fading</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="173"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="188"/>
         <source>about %1 s</source>
         <translation>environ %1 s</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="182"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="197"/>
         <source>Auroral flutter</source>
         <translation>Flutter auroral</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="189"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="204"/>
         <source>Static crashes (QRN)</source>
         <translation>Parasites atmosphériques (QRN)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="196"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="211"/>
         <source>Crashes per minute</source>
         <translation>Craquements par minute</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="203"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="218"/>
         <source>Man made noise</source>
         <translation>Bruit artificiel</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="210"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="225"/>
         <source>Stations around (contest)</source>
         <translation>Stations autour (contest)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="218"/>
-        <location filename="../src/app/qml/ControlsPanel.qml" line="225"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="233"/>
+        <location filename="../src/app/qml/ControlsPanel.qml" line="240"/>
         <source>Automatic gain control (AGC)</source>
         <translation>Contrôle automatique de gain (CAG)</translation>
     </message>
@@ -1313,22 +1333,22 @@
 <context>
     <name>Trainer</name>
     <message>
-        <location filename="../src/core/trainer.cpp" line="302"/>
+        <location filename="../src/core/trainer.cpp" line="306"/>
         <source>Nothing to play, or no sound output</source>
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="431"/>
+        <location filename="../src/core/trainer.cpp" line="435"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="550"/>
+        <location filename="../src/core/trainer.cpp" line="554"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="563"/>
+        <location filename="../src/core/trainer.cpp" line="567"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>

@@ -115,6 +115,44 @@ private slots:
             QVERIFY(std::abs(sidetone[i] - sidetone[i - 1]) <= maxStep);
     }
 
+    void receiverIsMutedWhileTransmitting()
+    {
+        auto band = quietBand();
+        band.set(P::NoiseLevel, 1.0);
+        const double noise = rms(render(band, 1.0), 4800);
+        QVERIFY(!band.isTransmitting());
+
+        // Keying: only the own sidetone is heard
+        band.setSidetone(true);
+        const auto sending = render(band, 0.3);
+        QVERIFY(band.isTransmitting());
+        QVERIFY2(std::abs(rms(sending, 480) - ToneRms) < ToneRms * 0.02, qPrintable(QString::number(rms(sending, 480) / ToneRms)));
+
+        // Key up: still on transmit for the 500 ms of the break-in delay
+        band.setSidetone(false);
+        const auto hold = render(band, 0.49);
+        QVERIFY(rms(hold, 480) < noise * 0.001);
+        QVERIFY(band.isTransmitting());
+        const auto back = render(band, 0.5);
+        QVERIFY(!band.isTransmitting());
+        QVERIFY(std::abs(rms(back, 960) / noise - 1.0) < 0.15);
+    }
+
+    void fullBreakInListensBetweenElements()
+    {
+        auto band = quietBand();
+        band.set(P::NoiseLevel, 1.0);
+        band.set(P::BreakIn, 0);
+        const double noise = rms(render(band, 1.0), 4800);
+        band.setSidetone(true);
+        render(band, 0.1);
+        band.setSidetone(false);
+        // A 60 ms element gap: the band is heard after the sidetone has faded
+        const auto gap = render(band, 0.06);
+        QVERIFY(!band.isTransmitting());
+        QVERIFY(std::abs(rms(gap, 960) / noise - 1.0) < 0.3);
+    }
+
     void filterSkirtsAreSteep()
     {
         // 500 Hz filter: -3 dB at 250 Hz from the tone, below -40 dB at 1 kHz

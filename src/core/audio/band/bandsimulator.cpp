@@ -35,6 +35,7 @@ namespace
     // Noise bandwidth of the 4th order Butterworth filter, relative to its cutoff
     constexpr double NoiseBandwidthRatio = 1.026;
     constexpr double FlutterShare = 0.85;
+    constexpr double DefaultBreakInMs = 500.0;
 }
 
 BandSimulator::BandSimulator(double pSampleRate, std::uint64_t pSeed)
@@ -43,6 +44,10 @@ BandSimulator::BandSimulator(double pSampleRate, std::uint64_t pSeed)
     // An impulse of amplitude 1 rings as loud as the tone through a 500 Hz filter
     , m_impulseScale(pSampleRate / ReferenceBandwidth)
     , m_edgeStep(1.0 / (0.005 * pSampleRate))
+    , m_breakInSamples(static_cast<int>(DefaultBreakInMs * 0.001 * pSampleRate))
+    // The receiver is muted before the sidetone rises, and comes back gently
+    , m_muteStep(1.0 / (0.002 * pSampleRate))
+    , m_unmuteStep(1.0 / (0.005 * pSampleRate))
 {
     m_qrn.setSampleRate(pSampleRate);
     m_manMade.reset(m_random, pSampleRate);
@@ -103,6 +108,9 @@ void BandSimulator::set(Parameter pParameter, double pValue)
     case Parameter::Agc:
         m_agcOn = pValue != 0.0;
         break;
+    case Parameter::BreakIn:
+        m_breakInSamples = static_cast<int>(std::clamp(pValue, 0.0, 5000.0) * 0.001 * m_sampleRate);
+        break;
     case Parameter::Count:
         break;
     }
@@ -142,11 +150,19 @@ float BandSimulator::next()
     m_phase = std::fmod(m_phase + 2.0 * std::numbers::pi * m_frequency / m_sampleRate, 2.0 * std::numbers::pi);
     const double received = (m_agcOn ? agc : 1.0) * (filtered * std::polar(1.0, m_phase)).real();
 
-    // Own sidetone, clean; the receiver is partly muted while sending
+    // Keying switches the transceiver to transmit: the receiver is muted
+    // until the break-in delay has passed since the last key up
+    if (m_sidetoneDown)
+        m_txHold = m_breakInSamples;
+    else if (m_txHold > 0)
+        --m_txHold;
+    m_rxGain = isTransmitting() ? std::max(0.0, m_rxGain - m_muteStep) : std::min(1.0, m_rxGain + m_unmuteStep);
+
+    // Own sidetone, clean
     m_sidetone = m_sidetoneDown ? std::min(1.0, m_sidetone + m_edgeStep) : std::max(0.0, m_sidetone - m_edgeStep);
     const double sidetone = 0.5 * (1.0 - std::cos(std::numbers::pi * m_sidetone));
 
-    return static_cast<float>(m_gain * (received * (1.0 - 0.5 * sidetone) + sidetone * std::cos(m_phase)));
+    return static_cast<float>(m_gain * (received * m_rxGain + sidetone * std::cos(m_phase)));
 }
 
 } // namespace band

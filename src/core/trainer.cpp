@@ -121,6 +121,10 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
     connect(m_settings, &Settings::toneFrequencyChanged, this, [this] { m_audio.setFrequency(m_settings->toneFrequency()); });
     connect(m_settings, &Settings::volumeChanged, this, [this] { m_audio.setGain(m_settings->volume()); });
     connect(m_settings, &Settings::bandChanged, this, &Trainer::applyBandConditions);
+    m_audio.setBand(band::BandSimulator::Parameter::BreakIn, m_settings->breakInMs());
+    connect(m_settings, &Settings::breakInMsChanged, this, [this] {
+        m_audio.setBand(band::BandSimulator::Parameter::BreakIn, m_settings->breakInMs());
+    });
     // A background station has ended its message: it sends the next one
     connect(&m_audio, &AudioEngine::stationFinished, this, [this](int pSlot) {
         if (pSlot < m_contestStations)

@@ -44,6 +44,8 @@ class Settings : public QObject
     // Sound
     Q_PROPERTY(int toneFrequency READ toneFrequency WRITE setToneFrequency NOTIFY toneFrequencyChanged)
     Q_PROPERTY(int volume READ volume WRITE setVolume NOTIFY volumeChanged)
+    // Transceiver: back to receive this long after the last key up (0 = QSK)
+    Q_PROPERTY(int breakInMs READ breakInMs WRITE setBreakInMs NOTIFY breakInMsChanged)
     // Band conditions: a preset, or Custom once a value is changed by hand
     Q_PROPERTY(int bandPreset READ bandPreset WRITE setBandPreset NOTIFY bandChanged)
     Q_PROPERTY(double noiseLevel READ noiseLevel WRITE setNoiseLevel NOTIFY bandChanged)
@@ -108,6 +110,7 @@ public:
     static constexpr int MaxFlutter = 50;           // Hz
     static constexpr int MaxQrnRate = 60;           // crashes per minute
     static constexpr int MaxContestStations = 8;
+    static constexpr int MaxBreakInMs = 2000;
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
@@ -125,6 +128,7 @@ public:
     int     toneFrequency() const { return m_toneFrequency; }
     int     volume() const { return m_volume; }
     double  noiseLevel() const { return m_noiseLevel; }
+    int     breakInMs() const { return m_breakInMs; }
     int     bandPreset() const { return m_bandPreset; }
     ///
     /// \brief width of the receiver filter, in Hz
@@ -182,6 +186,7 @@ public:
     /// \brief setBandPreset applies the values of a preset (nothing for Custom)
     ///
     void    setBandPreset(int pPreset);
+    void    setBreakInMs(int pMs);
     void    setBandwidth(int pHz);
     void    setQsbDepth(int pPercent);
     void    setQsbRate(int pCentiHz);
@@ -223,6 +228,7 @@ signals:
     void    toneFrequencyChanged();
     void    volumeChanged();
     void    bandChanged();
+    void    breakInMsChanged();
     void    wordSpeedChanged();
     void    charSpeedChanged();
     void    farnsworthChanged();
@@ -255,6 +261,7 @@ private:
     int         m_toneFrequency;
     int         m_volume;
     double      m_noiseLevel;
+    int         m_breakInMs;
     int         m_bandPreset;
     int         m_bandwidth;
     int         m_qsbDepth;
