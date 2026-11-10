@@ -23,7 +23,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(EasyMorse
-    VERSION 2.0.3
+    VERSION 2.1.0
     DESCRIPTION "Learn Morse code by ear and by hand"
     HOMEPAGE_URL "https://github.com/Artemia76/EasyMorse"
     LANGUAGES C CXX

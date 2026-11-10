@@ -444,47 +444,47 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="126"/>
+        <location filename="../src/app/qml/Main.qml" line="141"/>
         <source>No sound output</source>
         <translation>Pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="63"/>
+        <location filename="../src/app/qml/Main.qml" line="77"/>
         <source>Send</source>
         <translation>Émission</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="64"/>
+        <location filename="../src/app/qml/Main.qml" line="78"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="65"/>
+        <location filename="../src/app/qml/Main.qml" line="79"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="66"/>
+        <location filename="../src/app/qml/Main.qml" line="80"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="67"/>
+        <location filename="../src/app/qml/Main.qml" line="81"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="68"/>
+        <location filename="../src/app/qml/Main.qml" line="82"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="69"/>
+        <location filename="../src/app/qml/Main.qml" line="83"/>
         <source>Sound and speed</source>
         <translation>Son et vitesse</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/qml/Main.qml" line="132"/>
+        <location filename="../src/app/qml/Main.qml" line="147"/>
         <source>Room %1 · %n station(s)</source>
         <translation>
             <numerusform>Salon %1 · %n station</numerusform>
@@ -492,17 +492,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="141"/>
+        <location filename="../src/app/qml/Main.qml" line="156"/>
         <source>Decoder &lt;b&gt;%1&lt;/b&gt; WPM</source>
         <translation>Décodeur &lt;b&gt;%1&lt;/b&gt; mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="142"/>
+        <location filename="../src/app/qml/Main.qml" line="157"/>
         <source>locked</source>
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="265"/>
+        <location filename="../src/app/qml/Main.qml" line="283"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
