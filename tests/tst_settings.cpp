@@ -124,6 +124,8 @@ private slots:
         QCOMPARE(settings.qsbDepth(), 0);
 
         settings.setBandPreset(Settings::Urban);
+        // A preset is applied again on reading: values out of step are fixed
+        QSettings(file("band.ini"), QSettings::IniFormat).setValue("Band/ManMade", 3);
         Settings reread(file("band.ini"));
         QCOMPARE(reread.bandPreset(), int(Settings::Urban));
         QCOMPARE(reread.manMade(), settings.manMade());

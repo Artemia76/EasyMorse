@@ -88,6 +88,9 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_manMade = qBound(0, m_store->value(Key::ManMade, 0).toInt(), 100);
     m_agc = m_store->value(Key::Agc, false).toBool();
     m_contestStations = qBound(0, m_store->value(Key::ContestStations, 0).toInt(), MaxContestStations);
+    // A preset always sounds as in this version, even if its values were tuned since
+    if (m_bandPreset != Custom)
+        setBandPreset(m_bandPreset);
     m_wordSpeed = qBound(MinSpeed, m_store->value(Key::WordSpeed, 12).toInt(), MaxSpeed);
     m_charSpeed = qBound(MinSpeed, m_store->value(Key::CharSpeed, 18).toInt(), MaxSpeed);
     m_farnsworth = m_store->value(Key::Farnsworth, true).toBool();
