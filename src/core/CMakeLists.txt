@@ -4,6 +4,10 @@
 qt_add_library(easymorse_core STATIC
     audio/AudioEngine.cpp audio/AudioEngine.h
     audio/radiochannel.cpp audio/radiochannel.h
+    audio/band/bandsimulator.cpp audio/band/bandsimulator.h
+    audio/band/cwstation.h
+    audio/band/dsp.h
+    audio/band/noise.h
 
     keyer/keyerinput.cpp keyer/keyerinput.h
     keyer/iambickeyer.cpp keyer/iambickeyer.h
