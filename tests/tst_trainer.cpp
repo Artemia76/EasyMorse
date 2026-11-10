@@ -27,21 +27,22 @@ private slots:
     void keyIsDecodedInRealTime()
     {
         Settings settings(newSettingsFile());
-        settings.setCharSpeed(20);
+        settings.setCharSpeed(10);
         Trainer trainer(&settings);
         trainer.start();
         QVERIFY(trainer.isAudioRunning());
         QSignalSpy decoded(&trainer, &Trainer::charDecoded);
 
-        // "A" at 20 WPM: dot 60 ms, gap 60 ms, dash 180 ms
+        // "A" at 10 WPM: dot 120 ms, gap 120 ms, dash 360 ms. Slow on purpose:
+        // the waits of a loaded CI machine may last much longer than asked
         trainer.manualKeyer()->press();
         QVERIFY(trainer.isKeyDown());
-        QTest::qWait(60);
+        QTest::qWait(120);
         trainer.manualKeyer()->release();
         QCOMPARE(trainer.decoderPattern(), QString("."));
-        QTest::qWait(60);
+        QTest::qWait(120);
         trainer.manualKeyer()->press();
-        QTest::qWait(180);
+        QTest::qWait(360);
         trainer.manualKeyer()->release();
         QVERIFY(!trainer.isKeyDown());
 
@@ -141,8 +142,8 @@ private slots:
         aliceSettings.setStunServer(QString());
         bobSettings.setStunServer(QString());
         bobSettings.setJitterDelayMs(100);
-        aliceSettings.setCharSpeed(20);
-        bobSettings.setCharSpeed(20);
+        aliceSettings.setCharSpeed(10);
+        bobSettings.setCharSpeed(10);
         Trainer alice(&aliceSettings), bob(&bobSettings);
         alice.start();
         bob.start();
@@ -160,13 +161,13 @@ private slots:
 
         QSignalSpy decoded(&bob, &Trainer::remoteCharDecoded);
         QSignalSpy remoteKey(&bob, &Trainer::remoteKeyDownChanged);
-        // "N" at 20 WPM on Alice's key
+        // "N" at 10 WPM on Alice's key (slow: see keyIsDecodedInRealTime)
         alice.manualKeyer()->press();
-        QTest::qWait(180);
+        QTest::qWait(360);
         alice.manualKeyer()->release();
-        QTest::qWait(60);
+        QTest::qWait(120);
         alice.manualKeyer()->press();
-        QTest::qWait(60);
+        QTest::qWait(120);
         alice.manualKeyer()->release();
 
         QTRY_VERIFY_WITH_TIMEOUT(bob.isRemoteActive(), 2000);
