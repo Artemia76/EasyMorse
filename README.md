@@ -38,6 +38,13 @@ Serial port wiring, as usual for Morse software: DTR and RTS are kept active to
 feed the contacts. A straight key closes CTS or DSR; paddles close CTS or DCD
 for dots and DSR for dashes.
 
+## New versions
+
+Once a day EasyMorse asks GitHub for the number of its latest release (nothing
+about you is sent) and shows a banner when a newer one is out: download it,
+skip it or be reminded at the next start. The check can be turned off in the
+options.
+
 ## License
 
 EasyMorse is free software; you can redistribute it and/or modify
