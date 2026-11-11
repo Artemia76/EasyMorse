@@ -27,6 +27,7 @@ qt_add_library(easymorse_core STATIC
     net/remotekeyer.h
     net/securechannel.cpp net/securechannel.h
     net/signalingclient.cpp net/signalingclient.h
+    net/updatechecker.cpp net/updatechecker.h
 
     settings/settings.cpp settings/settings.h
 

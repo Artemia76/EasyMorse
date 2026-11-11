@@ -29,6 +29,7 @@ if(TARGET easymorse_core)
     easymorse_add_test(tst_jitterbuffer SOURCES tst_jitterbuffer.cpp LIBRARIES easymorse_core)
     easymorse_add_test(tst_peerlink SOURCES tst_peerlink.cpp LIBRARIES easymorse_core)
     easymorse_add_test(tst_peersession SOURCES tst_peersession.cpp LIBRARIES easymorse_core)
+    easymorse_add_test(tst_updatechecker SOURCES tst_updatechecker.cpp LIBRARIES easymorse_core)
 endif()
 
 if(TARGET easymorse)
