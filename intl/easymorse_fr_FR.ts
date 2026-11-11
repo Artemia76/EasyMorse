@@ -317,12 +317,12 @@
 <context>
     <name>KeyPad</name>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="87"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="89"/>
         <source>Listening…</source>
         <translation>Écoute…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="87"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="89"/>
         <source>Press</source>
         <translation>Appuyer</translation>
     </message>
@@ -350,32 +350,32 @@
         <translation>Mode %1 · %2 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="81"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="76"/>
         <source>One finger on each paddle; hold both to alternate.</source>
         <translation>Un doigt sur chaque palette ; tenez les deux pour alterner.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="82"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="77"/>
         <source>Press the key as long as the sign lasts.</source>
         <translation>Appuyez sur la touche le temps du signe.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="83"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="78"/>
         <source>%1: dots · %2: dashes · serial paddles</source>
         <translation>%1 : points · %2 : traits · palettes série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="85"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="80"/>
         <source>captured mouse: left and right buttons</source>
         <translation>souris capturée : boutons gauche et droit</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="86"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="81"/>
         <source>Space bar (key focused), %1 or serial key</source>
         <translation>Barre d&apos;espace (touche sélectionnée), %1 ou manipulateur série</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPage.qml" line="87"/>
+        <location filename="../src/app/qml/KeyPage.qml" line="82"/>
         <source>captured mouse: left button</source>
         <translation>souris capturée : bouton gauche</translation>
     </message>
@@ -626,12 +626,12 @@
 <context>
     <name>MouseCaptureButton</name>
     <message>
-        <location filename="../src/app/qml/MouseCaptureButton.qml" line="18"/>
+        <location filename="../src/app/qml/MouseCaptureButton.qml" line="16"/>
         <source>Capture the mouse</source>
         <translation>Capturer la souris</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/MouseCaptureButton.qml" line="30"/>
+        <location filename="../src/app/qml/MouseCaptureButton.qml" line="27"/>
         <source>For a mouse wired as a key: left button = key or dots, right button = dashes. %1 frees the mouse.</source>
         <translation>Pour une souris transformée en manipulateur : bouton gauche = pioche ou points, bouton droit = traits. %1 libère la souris.</translation>
     </message>
@@ -1078,22 +1078,22 @@
 <context>
     <name>PaddlePad</name>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="73"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="76"/>
         <source>Dashes</source>
         <translation>Traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="73"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="76"/>
         <source>Dots</source>
         <translation>Points</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="95"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="98"/>
         <source>Dash paddle</source>
         <translation>Palette des traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="95"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="98"/>
         <source>Dot paddle</source>
         <translation>Palette des points</translation>
     </message>
@@ -1189,67 +1189,67 @@
         <translation>Jouer le groupe comme modèle</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="131"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="127"/>
         <source>New group</source>
         <translation>Nouveau groupe</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="153"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="149"/>
         <source>New character: &lt;b&gt;%1&lt;/b&gt; %2</source>
         <translation>Nouveau caractère : &lt;b&gt;%1&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="208"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="204"/>
         <source>Your keying</source>
         <translation>Votre manipulation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="209"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="205"/>
         <source>Last group · %1</source>
         <translation>Groupe précédent · %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="210"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="206"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="224"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="220"/>
         <source>Key the group with the paddles: the spacing between the letters is judged.</source>
         <translation>Manipulez le groupe avec les palettes : l&apos;espacement entre les lettres est jugé.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="225"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="221"/>
         <source>Key the group: the ideal keying of each letter appears above yours.</source>
         <translation>Manipulez le groupe : la manipulation idéale de chaque lettre s&apos;affiche au-dessus de la vôtre.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="241"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="237"/>
         <source>%1/100</source>
         <translation>%1/100</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="247"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="243"/>
         <source>≈ %1 WPM</source>
         <translation>≈ %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="266"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="262"/>
         <source>right</source>
         <translation>juste</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="267"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="263"/>
         <source>20 to 40 % off</source>
         <translation>écart de 20 à 40 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="268"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="264"/>
         <source>more</source>
         <translation>au-delà</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="269"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="265"/>
         <source>next letter</source>
         <translation>lettre suivante</translation>
     </message>

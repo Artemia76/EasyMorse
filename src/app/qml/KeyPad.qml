@@ -34,8 +34,10 @@ Item {
 
     Item {
         id: dial
-        anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height) / 1.12
+        anchors.horizontalCenter: parent.horizontalCenter
+        // Centred in the room left above the capture button
+        y: (parent.height - capture.room - height) / 2
+        width: Math.min(parent.width, parent.height - capture.room) / 1.12
         height: width
 
         // Glow, stronger while any key is down: this pad, Alt, serial key
@@ -92,8 +94,19 @@ Item {
         }
     }
 
+    MouseCaptureButton {
+        id: capture
+        // Height kept free under the key
+        readonly property real room: visible ? height + 4 : 0
+        target: dial
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+    }
+
     PointHandler {
         id: pointer
+        // On the dial only: not on the capture button
+        parent: dial
         enabled: !Trainer.playing
         onActiveChanged: if (active) root.forceActiveFocus()
     }

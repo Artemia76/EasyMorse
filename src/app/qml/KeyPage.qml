@@ -38,9 +38,6 @@ Page {
                 Layout.fillWidth: true
             }
             Item { visible: !root.iambic; Layout.fillWidth: true }
-            MouseCaptureButton {
-                target: root.iambic ? paddlePad : keyPad
-            }
             Rectangle {
                 // Lit while the key sends
                 width: 14; height: 14; radius: 7
@@ -61,7 +58,6 @@ Page {
             Layout.preferredHeight: 60
         }
         KeyPad {
-            id: keyPad
             visible: !root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -70,7 +66,6 @@ Page {
             Layout.alignment: Qt.AlignHCenter
         }
         PaddlePad {
-            id: paddlePad
             visible: root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true

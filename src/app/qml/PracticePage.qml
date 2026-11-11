@@ -123,10 +123,6 @@ Page {
                     ToolTip.visible: hovered
                     ToolTip.text: qsTr("Play the group as a model")
                 }
-                MouseCaptureButton {
-                    target: root.iambic ? paddlePad : keyPad
-                    iconOnly: true
-                }
                 Button {
                     text: qsTr("New group")
                     flat: true
@@ -277,7 +273,6 @@ Page {
 
         // ---- Key
         KeyPad {
-            id: keyPad
             visible: !root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -286,7 +281,6 @@ Page {
             Layout.alignment: Qt.AlignHCenter
         }
         PaddlePad {
-            id: paddlePad
             visible: root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
