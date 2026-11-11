@@ -59,6 +59,7 @@ namespace Key
     constexpr const char* StraightKey = "keyer/StraightKey";
     constexpr const char* DotKey = "keyer/DotKey";
     constexpr const char* DashKey = "keyer/DashKey";
+    constexpr const char* ReleaseKey = "keyer/ReleaseKey";
     constexpr const char* Callsign = "network/Callsign";
     constexpr const char* StunServer = "network/StunServer";
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
@@ -117,6 +118,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_straightKey = m_store->value(Key::StraightKey, QString("%1:1").arg(int(Qt::Key_Alt))).toString();
     m_dotKey = m_store->value(Key::DotKey, QString("%1:1").arg(control)).toString();
     m_dashKey = m_store->value(Key::DashKey, QString("%1:1").arg(int(Qt::Key_Alt))).toString();
+    m_releaseKey = m_store->value(Key::ReleaseKey, QString("%1:0").arg(int(Qt::Key_Escape))).toString();
     m_callsign = m_store->value(Key::Callsign).toString();
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
@@ -352,6 +354,12 @@ void Settings::setDotKey(const QString& pKey)
 void Settings::setDashKey(const QString& pKey)
 {
     if (store(Key::DashKey, m_dashKey, pKey))
+        emit keyboardKeysChanged();
+}
+
+void Settings::setReleaseKey(const QString& pKey)
+{
+    if (store(Key::ReleaseKey, m_releaseKey, pKey))
         emit keyboardKeysChanged();
 }
 

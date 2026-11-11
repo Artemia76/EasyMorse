@@ -79,6 +79,8 @@ class Settings : public QObject
     Q_PROPERTY(QString straightKey READ straightKey WRITE setStraightKey NOTIFY keyboardKeysChanged)
     Q_PROPERTY(QString dotKey READ dotKey WRITE setDotKey NOTIFY keyboardKeysChanged)
     Q_PROPERTY(QString dashKey READ dashKey WRITE setDashKey NOTIFY keyboardKeysChanged)
+    // Key that ends the capture of the mouse
+    Q_PROPERTY(QString releaseKey READ releaseKey WRITE setReleaseKey NOTIFY keyboardKeysChanged)
     // Network
     Q_PROPERTY(QString callsign READ callsign WRITE setCallsign NOTIFY callsignChanged)
     Q_PROPERTY(QString stunServer READ stunServer WRITE setStunServer NOTIFY stunServerChanged)
@@ -172,6 +174,7 @@ public:
     QString straightKey() const { return m_straightKey; }
     QString dotKey() const { return m_dotKey; }
     QString dashKey() const { return m_dashKey; }
+    QString releaseKey() const { return m_releaseKey; }
     QString callsign() const { return m_callsign; }
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
@@ -215,6 +218,7 @@ public:
     void    setStraightKey(const QString& pKey);
     void    setDotKey(const QString& pKey);
     void    setDashKey(const QString& pKey);
+    void    setReleaseKey(const QString& pKey);
     void    setCallsign(const QString& pCallsign);
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
@@ -293,6 +297,7 @@ private:
     QString     m_straightKey;
     QString     m_dotKey;
     QString     m_dashKey;
+    QString     m_releaseKey;
     QString     m_callsign;
     QString     m_stunServer;
     int         m_jitterDelayMs;

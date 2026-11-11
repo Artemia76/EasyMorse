@@ -37,6 +37,8 @@ private slots:
         QCOMPARE(settings.jitterDelayMs(), 200);
         // Received Morse is not decoded by default: learn by ear
         QCOMPARE(settings.receiveDecodeMode(), 0);
+        // Escape ends the capture of the mouse
+        QCOMPARE(settings.releaseKey(), QString("%1:0").arg(int(Qt::Key_Escape)));
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 0.0);
@@ -84,12 +86,14 @@ private slots:
             settings.setAudioDevice("My card");
             settings.setSerialPort("ttyUSB0");
             settings.setDecoderEstimates(50.0, 150.0, 55.0);
+            settings.setReleaseKey(QString("%1:2").arg(int(Qt::Key_Alt)));
         }
         Settings settings(file("persist.ini"));
         QCOMPARE(settings.toneFrequency(), 700);
         QVERIFY(!settings.farnsworth());
         QCOMPARE(settings.audioDevice(), QString("My card"));
         QCOMPARE(settings.serialPort(), QString("ttyUSB0"));
+        QCOMPARE(settings.releaseKey(), QString("%1:2").arg(int(Qt::Key_Alt)));
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 50.0);
