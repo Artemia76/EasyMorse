@@ -313,7 +313,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.leftMargin: 24
                 Layout.rightMargin: 24
-                Layout.bottomMargin: 24
+                Layout.bottomMargin: Updates.supported ? 0 : 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -337,6 +337,62 @@ Page {
                         model: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
                         currentIndex: UiSettings.theme
                         onActivated: (index) => UiSettings.theme = index
+                    }
+                }
+            }
+
+            Card {
+                title: qsTr("Updates")
+                visible: Updates.supported
+                Layout.fillWidth: true
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                Layout.bottomMargin: 24
+
+                GridLayout {
+                    anchors.fill: parent
+                    columns: root.width < 560 ? 1 : 2
+                    columnSpacing: 12
+
+                    Label { text: qsTr("Look for new versions") }
+                    Switch {
+                        checked: MorseSettings.checkUpdates
+                        onToggled: MorseSettings.checkUpdates = checked
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Once a day, EasyMorse asks GitHub for the number of the latest version. Nothing about you is sent.")
+                    }
+
+                    Button {
+                        text: qsTr("Check now")
+                        enabled: Updates.state !== Updates.Checking
+                        onClicked: Updates.check()
+                    }
+                    RowLayout {
+                        spacing: 4
+                        Layout.fillWidth: true
+                        Label {
+                            text: {
+                                switch (Updates.state) {
+                                case Updates.Checking: return qsTr("Checking…")
+                                case Updates.UpToDate: return qsTr("EasyMorse %1 is up to date.").arg(Updates.currentVersion)
+                                case Updates.Available: return qsTr("EasyMorse %1 is available.").arg(Updates.latestVersion)
+                                case Updates.Failed: return qsTr("GitHub could not be reached.")
+                                }
+                                return MorseSettings.lastUpdateCheck.getTime() > 0
+                                    ? qsTr("Last check: %1").arg(MorseSettings.lastUpdateCheck.toLocaleString(Qt.locale(), Locale.ShortFormat))
+                                    : ""
+                            }
+                            color: Updates.state === Updates.Failed ? Theme.error
+                                 : Updates.state === Updates.Available ? Theme.okText : Theme.muted
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                        Button {
+                            visible: Updates.state === Updates.Available
+                            text: qsTr("Download")
+                            flat: true
+                            onClicked: Qt.openUrlExternally(Updates.releaseUrl)
+                        }
                     }
                 }
             }

@@ -166,6 +166,54 @@ ApplicationWindow {
         anchors.bottomMargin: window.wide ? 0 : -window.safeBottom
         spacing: 0
 
+        // ---- A newer version is published
+        Rectangle {
+            visible: Updates.notifying
+            color: Theme.okBackground
+            Layout.fillWidth: true
+            implicitHeight: updateRow.implicitHeight + 12
+
+            Rectangle {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+                color: Theme.line
+            }
+            RowLayout {
+                id: updateRow
+                anchors.fill: parent
+                anchors.leftMargin: 16 + window.safeLeft
+                anchors.rightMargin: 8 + window.safeRight
+                spacing: 4
+
+                Label {
+                    text: qsTr("EasyMorse %1 is available (you have %2).").arg(Updates.latestVersion).arg(Updates.currentVersion)
+                    color: Theme.okText
+                    font.weight: Font.DemiBold
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+                Button {
+                    text: qsTr("Download")
+                    flat: true
+                    onClicked: Qt.openUrlExternally(Updates.releaseUrl)
+                }
+                Button {
+                    text: qsTr("Skip this version")
+                    flat: true
+                    visible: window.width >= 560
+                    onClicked: Updates.skip()
+                }
+                ToolButton {
+                    text: "✕"
+                    onClicked: Updates.dismiss()
+                    Accessible.name: qsTr("Later")
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Remind me at the next start")
+                }
+            }
+        }
+
         RowLayout {
             spacing: 0
             Layout.fillWidth: true

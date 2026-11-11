@@ -41,6 +41,7 @@
 #include "mousekeyer.h"
 #include "net/lobby.h"
 #include "net/peersession.h"
+#include "net/updatechecker.h"
 #include "settings/settings.h"
 #include "trainer.h"
 
@@ -98,6 +99,14 @@ struct MouseKeyerForeign : ExistingInstance<MouseKeyer>
     Q_GADGET
     QML_FOREIGN(MouseKeyer)
     QML_NAMED_ELEMENT(Mouse)
+    QML_SINGLETON
+};
+
+struct UpdateCheckerForeign : ExistingInstance<UpdateChecker>
+{
+    Q_GADGET
+    QML_FOREIGN(UpdateChecker)
+    QML_NAMED_ELEMENT(Updates)
     QML_SINGLETON
 };
 

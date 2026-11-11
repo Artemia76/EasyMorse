@@ -42,6 +42,7 @@
 
 #include "keyboardkeyer.h"
 #include "logmodel.h"
+#include "net/updatechecker.h"
 #include "mousekeyer.h"
 #include "qmltypes.h"
 #include "tools/clogger.h"
@@ -167,6 +168,18 @@ int main(int argc, char *argv[])
     MouseKeyer mouseKeyer(trainer.manualKeyer(), &settings);
     MouseKeyerForeign::s_instance = &mouseKeyer;
     trainer.addPaddles(mouseKeyer.paddles());
+    // New versions; never during the self test (no network there)
+    UpdateChecker updates(&settings, VER_PRODUCTVERSION_STR);
+    UpdateCheckerForeign::s_instance = &updates;
+    // Another address to try the banner: EASYMORSE_UPDATE_URL=file:///tmp/release.json
+    if (const QString url = qEnvironmentVariable("EASYMORSE_UPDATE_URL"); !url.isEmpty())
+        updates.setUrl(QUrl(url));
+    QObject::connect(&updates, &UpdateChecker::newVersion, &updates, [](const QString& pVersion) {
+        CLogger::instance()->log(QCoreApplication::translate("main", "EasyMorse %1 is available").arg(pVersion),
+                                 Qt::darkGreen);
+    });
+    if (!selfTesting)
+        updates.startAutomatic();
 
     QQmlApplicationEngine engine;
     uiSettings.setEngine(&engine);
