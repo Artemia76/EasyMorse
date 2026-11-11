@@ -4,6 +4,8 @@
 
 find_package(LibJuice CONFIG QUIET)
 if(TARGET LibJuice::LibJuice)
+    # Global, so that a project including this one also sees EasyMorse::juice
+    set_target_properties(LibJuice::LibJuice PROPERTIES IMPORTED_GLOBAL TRUE)
     add_library(EasyMorse::juice ALIAS LibJuice::LibJuice)
 else()
     message(STATUS "libjuice not found on the system, building it from source")

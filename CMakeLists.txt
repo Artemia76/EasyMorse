@@ -121,6 +121,7 @@ endif()
 # =======================================================================
 # Packaging
 
-if(NOT EASYMORSE_MOBILE)
+# Not when built inside another project (integration tests)
+if(NOT EASYMORSE_MOBILE AND PROJECT_IS_TOP_LEVEL)
     include(cmake/Packaging.cmake)
 endif()
