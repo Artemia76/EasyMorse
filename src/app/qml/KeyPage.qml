@@ -38,6 +38,9 @@ Page {
                 Layout.fillWidth: true
             }
             Item { visible: !root.iambic; Layout.fillWidth: true }
+            MouseCaptureButton {
+                target: root.iambic ? paddlePad : keyPad
+            }
             Rectangle {
                 // Lit while the key sends
                 width: 14; height: 14; radius: 7
@@ -58,6 +61,7 @@ Page {
             Layout.preferredHeight: 60
         }
         KeyPad {
+            id: keyPad
             visible: !root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -66,6 +70,7 @@ Page {
             Layout.alignment: Qt.AlignHCenter
         }
         PaddlePad {
+            id: paddlePad
             visible: root.iambic
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -77,7 +82,9 @@ Page {
                                               : qsTr("Press the key as long as the sign lasts."))
                   : root.iambic ? qsTr("%1: dots · %2: dashes · serial paddles")
                                 .arg(Keyboard.keyName(MorseSettings.dotKey)).arg(Keyboard.keyName(MorseSettings.dashKey))
+                                + " · " + qsTr("captured mouse: left and right buttons")
                               : qsTr("Space bar (key focused), %1 or serial key").arg(Keyboard.keyName(MorseSettings.straightKey))
+                                + " · " + qsTr("captured mouse: left button")
             color: Theme.muted
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter

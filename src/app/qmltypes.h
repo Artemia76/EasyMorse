@@ -38,6 +38,7 @@
 #include "keyboardkeyer.h"
 #include "keyingpractice.h"
 #include "keyer/iambickeyer.h"
+#include "mousekeyer.h"
 #include "net/lobby.h"
 #include "net/peersession.h"
 #include "settings/settings.h"
@@ -89,6 +90,14 @@ struct KeyboardKeyerForeign : ExistingInstance<KeyboardKeyer>
     Q_GADGET
     QML_FOREIGN(KeyboardKeyer)
     QML_NAMED_ELEMENT(Keyboard)
+    QML_SINGLETON
+};
+
+struct MouseKeyerForeign : ExistingInstance<MouseKeyer>
+{
+    Q_GADGET
+    QML_FOREIGN(MouseKeyer)
+    QML_NAMED_ELEMENT(Mouse)
     QML_SINGLETON
 };
 

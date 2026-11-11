@@ -40,6 +40,7 @@ qt_add_qml_module(easymorse
         qml/NavButton.qml
         qml/Segmented.qml
         qml/PaddlePad.qml
+        qml/MouseCaptureButton.qml
         qml/SafeAreaProbe.qml
     RESOURCES
         icons/send.svg
@@ -54,10 +55,13 @@ qt_add_qml_module(easymorse
         icons/arrow.svg
         icons/play.svg
         icons/stop.svg
+        icons/mouse.svg
     SOURCES
         qmltypes.h
         glossarymodel.cpp glossarymodel.h
         keyboardkeyer.cpp keyboardkeyer.h
+        mousekeyer.cpp mousekeyer.h
+        pointerlock.cpp pointerlock.h
         logmodel.cpp logmodel.h
         uisettings.cpp uisettings.h
 )
@@ -74,6 +78,43 @@ target_link_libraries(easymorse PRIVATE
     Qt6::QuickControls2
     Qt6::Svg
 )
+
+# Pointer held still while the mouse is used as a Morse key (see pointerlock.h)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+    # Wayland: pointer-constraints protocol, generated from the copy in 3rdparty
+    find_package(PkgConfig QUIET)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(WAYLAND_CLIENT QUIET IMPORTED_TARGET wayland-client)
+    endif()
+    find_program(WAYLAND_SCANNER wayland-scanner)
+    # Only to reach the wl_surface of a window (qpa/qplatformnativeinterface.h)
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
+    find_package(Qt6 QUIET COMPONENTS GuiPrivate)
+    if(WAYLAND_CLIENT_FOUND AND WAYLAND_SCANNER AND TARGET Qt6::GuiPrivate)
+        set(_protocol "${PROJECT_SOURCE_DIR}/3rdparty/wayland/pointer-constraints-unstable-v1.xml")
+        set(_generated "${CMAKE_CURRENT_BINARY_DIR}/wayland")
+        file(MAKE_DIRECTORY "${_generated}")
+        add_custom_command(
+            OUTPUT "${_generated}/pointer-constraints-unstable-v1-client-protocol.h"
+                   "${_generated}/pointer-constraints-unstable-v1-protocol.c"
+            COMMAND "${WAYLAND_SCANNER}" client-header "${_protocol}"
+                    "${_generated}/pointer-constraints-unstable-v1-client-protocol.h"
+            COMMAND "${WAYLAND_SCANNER}" private-code "${_protocol}"
+                    "${_generated}/pointer-constraints-unstable-v1-protocol.c"
+            DEPENDS "${_protocol}"
+            VERBATIM)
+        target_sources(easymorse PRIVATE
+            "${_generated}/pointer-constraints-unstable-v1-client-protocol.h"
+            "${_generated}/pointer-constraints-unstable-v1-protocol.c")
+        target_include_directories(easymorse PRIVATE "${_generated}")
+        target_compile_definitions(easymorse PRIVATE EASYMORSE_WAYLAND_LOCK)
+        target_link_libraries(easymorse PRIVATE PkgConfig::WAYLAND_CLIENT Qt6::GuiPrivate)
+    else()
+        message(STATUS "wayland-client or wayland-scanner not found: the mouse cannot be held still under Wayland")
+    endif()
+elseif(APPLE AND NOT IOS)
+    target_link_libraries(easymorse PRIVATE "-framework ApplicationServices")
+endif()
 
 set_target_properties(easymorse PROPERTIES
     OUTPUT_NAME easymorse

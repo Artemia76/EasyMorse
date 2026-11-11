@@ -201,7 +201,8 @@ bool KeyboardKeyer::eventFilter(QObject* pWatched, QEvent* pEvent)
     {
         if (type == QEvent::KeyPress && !keyEvent->isAutoRepeat())
         {
-            if (key != Qt::Key_Escape)
+            // Escape cancels, but it is also the usual key to free the mouse
+            if (key != Qt::Key_Escape || m_capturing == u"release")
             {
                 const QString value = format(key, side);
                 if (m_capturing == u"straight")
@@ -210,6 +211,8 @@ bool KeyboardKeyer::eventFilter(QObject* pWatched, QEvent* pEvent)
                     m_settings->setDotKey(value);
                 else if (m_capturing == u"dash")
                     m_settings->setDashKey(value);
+                else if (m_capturing == u"release")
+                    m_settings->setReleaseKey(value);
             }
             cancelCapture();
         }

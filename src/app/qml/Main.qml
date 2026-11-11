@@ -305,4 +305,29 @@ ApplicationWindow {
             }
         }
     }
+
+    // Mouse wired as a key: how to get the pointer back
+    Rectangle {
+        parent: Overlay.overlay
+        visible: Mouse.captured
+        z: 100
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: window.header.height + 12
+        width: Math.min(parent.width - 32, captureLabel.implicitWidth + 32)
+        height: captureLabel.implicitHeight + 16
+        radius: height / 2
+        color: Theme.accent
+        Label {
+            id: captureLabel
+            anchors.centerIn: parent
+            width: parent.width - 32
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            color: Theme.accentInk
+            font.weight: Font.DemiBold
+            text: (MorseSettings.keyerMode === 1 ? qsTr("Mouse captured: left button dots, right button dashes")
+                                                 : qsTr("Mouse captured: the left button is the key"))
+                  + " · " + qsTr("%1 frees it").arg(Keyboard.keyName(MorseSettings.releaseKey))
+        }
+    }
 }

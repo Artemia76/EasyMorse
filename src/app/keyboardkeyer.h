@@ -53,8 +53,9 @@ public:
     Paddles* paddles() { return &m_paddles; }
 
     ///
-    /// \brief the next key pressed becomes the key of pRole ("straight", "dot"
-    /// or "dash"); Escape cancels
+    /// \brief the next key pressed becomes the key of pRole ("straight", "dot",
+    /// "dash" or "release", which ends the capture of the mouse); Escape
+    /// cancels, except for "release" where it is a valid choice
     ///
     Q_INVOKABLE void capture(const QString& pRole);
     Q_INVOKABLE void cancelCapture();
@@ -70,13 +71,9 @@ public:
     Q_INVOKABLE void useLeftHandedKeys();
     Q_INVOKABLE void useAdapterKeys();
 
-signals:
-    void    capturingChanged();
-
-protected:
-    bool    eventFilter(QObject* pWatched, QEvent* pEvent) override;
-
-private:
+    ///
+    /// \brief key setting ("<key>:<side>") read back
+    ///
     struct Binding
     {
         int key = 0;
@@ -91,6 +88,14 @@ private:
     ///
     static void identify(const QKeyEvent* pEvent, int& pKey, int& pSide);
     static bool isModifier(int pKey);
+
+signals:
+    void    capturingChanged();
+
+protected:
+    bool    eventFilter(QObject* pWatched, QEvent* pEvent) override;
+
+private:
     void    loadBindings();
     void    releaseAll();
 

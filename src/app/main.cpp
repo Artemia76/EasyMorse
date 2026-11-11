@@ -42,6 +42,7 @@
 
 #include "keyboardkeyer.h"
 #include "logmodel.h"
+#include "mousekeyer.h"
 #include "qmltypes.h"
 #include "tools/clogger.h"
 #include "uisettings.h"
@@ -162,6 +163,10 @@ int main(int argc, char *argv[])
     KeyboardKeyer keyboardKeyer(trainer.manualKeyer(), &settings);
     KeyboardKeyerForeign::s_instance = &keyboardKeyer;
     trainer.addPaddles(keyboardKeyer.paddles());
+    // After the keyboard keys: its release key goes first
+    MouseKeyer mouseKeyer(trainer.manualKeyer(), &settings);
+    MouseKeyerForeign::s_instance = &mouseKeyer;
+    trainer.addPaddles(mouseKeyer.paddles());
 
     QQmlApplicationEngine engine;
     uiSettings.setEngine(&engine);

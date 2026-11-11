@@ -17,7 +17,9 @@ Page {
         readonly property bool waiting: Keyboard.capturing === role
         spacing: 8
         Label {
-            text: chooser.waiting ? qsTr("Press a key… (Escape to cancel)") : Keyboard.keyName(chooser.value)
+            // Escape is a choice for the key that frees the mouse
+            text: chooser.waiting ? (chooser.role === "release" ? qsTr("Press a key…") : qsTr("Press a key… (Escape to cancel)"))
+                                  : Keyboard.keyName(chooser.value)
             font.family: chooser.waiting ? Theme.uiFont : Theme.monoFont
             color: chooser.waiting ? Theme.accentText : Theme.text
             elide: Text.ElideRight
@@ -165,6 +167,9 @@ Page {
 
                     Label { text: qsTr("Dash paddle key"); enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
                     KeyChooser { role: "dash"; value: MorseSettings.dashKey; enabled: MorseSettings.keyerMode === 1; visible: !Theme.mobile }
+
+                    Label { text: qsTr("Key that frees the captured mouse"); visible: !Theme.mobile }
+                    KeyChooser { role: "release"; value: MorseSettings.releaseKey; visible: !Theme.mobile }
 
                     Label {
                         text: Theme.mobile ? qsTr("The keyer sends at the character speed.")
