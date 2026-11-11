@@ -172,11 +172,13 @@ double KeyingAnalyzer::measureUnit() const
         const double duration = static_cast<double>(element.up - element.down);
         (isDash(element, inChar++, m_fallbackUnit) ? dashes : dots).append(duration);
     }
-    if (dots.isEmpty() && dashes.isEmpty())
-        return m_fallbackUnit;
-    const double dotUnit = median(dots);
-    const double dashUnit = median(dashes) / 3.0;
-    return (dots.size() * dotUnit + dashes.size() * dashUnit) / static_cast<double>(dots.size() + dashes.size());
+    // The dot of the operator is the beat: a dash is judged against three of
+    // them. Groups without dots take the speed from the dashes.
+    if (!dots.isEmpty())
+        return median(dots);
+    if (!dashes.isEmpty())
+        return median(dashes) / 3.0;
+    return m_fallbackUnit;
 }
 
 void KeyingAnalyzer::evaluate()
@@ -251,16 +253,30 @@ void KeyingAnalyzer::evaluate()
     }
     else
     {
-        double timing = 0.0;
-        int rated = 0;
+        // Each kind of element or gap counts alike, and the worst one counts
+        // again: good gaps must not hide dashes always too short
+        double sums[4] = {};
+        int counts[4] = {};
         for (const Segment& segment : std::as_const(m_real))
         {
             if (!segment.rated)
                 continue;
-            timing += itemScore(segment.error);
-            ++rated;
+            sums[static_cast<int>(segment.kind)] += itemScore(segment.error);
+            ++counts[static_cast<int>(segment.kind)];
         }
-        timing = rated > 0 ? timing / rated : 1.0;
+        double mean = 0.0;
+        double worst = 1.0;
+        int kinds = 0;
+        for (int kind = 0; kind < 4; ++kind)
+        {
+            if (counts[kind] == 0)
+                continue;
+            const double kindScore = sums[kind] / counts[kind];
+            mean += kindScore;
+            worst = std::min(worst, kindScore);
+            ++kinds;
+        }
+        const double timing = kinds > 0 ? 0.5 * (mean / kinds) + 0.5 * worst : 1.0;
         const double accuracy = static_cast<double>(correctCount()) / static_cast<double>(m_chars.size());
         m_score = static_cast<int>(std::lround(100.0 * (0.4 * accuracy + 0.6 * timing)));
     }

@@ -25,9 +25,9 @@
 *
 * Compares a keyed group of characters with the ideal keying of the same
 * characters. The ideal uses the speed of the operator, measured on the
-* group itself: what is judged is the proportions (dash = 3 dots, gap
-* inside a character = 1 dot, gap between characters = 3 dots), not the
-* speed. The characters are cut where the KeyDecoder cut them.
+* group itself (the median of the dots): what is judged is the proportions
+* (dash = 3 dots, gap inside a character = 1 dot, gap between characters =
+* 3 dots), not the speed. The characters are cut where the KeyDecoder cut them.
 * **************************************************************************/
 
 #ifndef KEYINGANALYZER_H
@@ -98,8 +98,7 @@ public:
     /// \param pExpected characters to send
     /// \param pIambic the keyer makes the elements: only the gaps between
     /// characters and the characters themselves are judged
-    /// \param pFallbackUnitMs dot duration used until the group shows both
-    /// dots and dashes
+    /// \param pFallbackUnitMs dot duration used until a character is decoded
     ///
     void    start(const QString& pExpected, bool pIambic, double pFallbackUnitMs);
     void    keyEdge(bool pDown, qint64 pTimeMs);

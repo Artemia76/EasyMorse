@@ -115,6 +115,15 @@ private slots:
         QVERIFY(qAbs(analyzer.dashDotRatio() - 2.0) < 0.05);
         QCOMPARE(analyzer.advice().first().kind, KeyingAnalyzer::Advice::DashesShort);
         QVERIFY2(analyzer.score() < 85, qPrintable(QString::number(analyzer.score())));
+        // The dots set the beat: the dashes carry the error, shown off in the timeline
+        QVERIFY(qAbs(analyzer.unitMs() - 100.0) < 1.0);
+        for (const auto& segment : analyzer.realSegments())
+        {
+            if (segment.kind == KeyingAnalyzer::Kind::Dash)
+                QVERIFY(segment.error < -KeyingAnalyzer::GoodError);
+            if (segment.kind == KeyingAnalyzer::Kind::Dot)
+                QVERIFY(qAbs(segment.error) < 0.02);
+        }
     }
 
     void lettersTooClose()
