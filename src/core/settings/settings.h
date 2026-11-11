@@ -85,6 +85,8 @@ class Settings : public QObject
     Q_PROPERTY(int jitterDelayMs READ jitterDelayMs WRITE setJitterDelayMs NOTIFY jitterDelayMsChanged)
     // What is shown of the received Morse: 0 nothing (listen), 1 after the message, 2 live
     Q_PROPERTY(int receiveDecodeMode READ receiveDecodeMode WRITE setReceiveDecodeMode NOTIFY receiveDecodeModeChanged)
+    // Number of characters learnt in the keying practice (Koch method)
+    Q_PROPERTY(int kochLevel READ kochLevel WRITE setKochLevel NOTIFY kochLevelChanged)
     // Match-making server
     Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
 
@@ -114,6 +116,7 @@ public:
     static constexpr int MinSpeed = 5;
     static constexpr int MaxSpeed = 40;
     static constexpr int DefaultAudioPeriodMs = 10;
+    static constexpr int MinKochLevel = 2;
     // The project's match-making server, offered at the first start; its
     // STUN service also finds the public address of manual sessions
     static constexpr const char* DefaultServerUrl = "https://easymorse.f4ikz.ovh";
@@ -173,6 +176,7 @@ public:
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
     int     receiveDecodeMode() const { return m_receiveDecodeMode; }
+    int     kochLevel() const { return m_kochLevel; }
     QString serverUrl() const { return m_serverUrl; }
     ///
     /// \brief token of the last login, to reconnect without the password
@@ -215,6 +219,7 @@ public:
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
     void    setReceiveDecodeMode(int pMode);
+    void    setKochLevel(int pLevel);
     void    setServerUrl(const QString& pUrl);
     void    setServerToken(const QString& pToken);
 
@@ -246,6 +251,7 @@ signals:
     void    stunServerChanged();
     void    jitterDelayMsChanged();
     void    receiveDecodeModeChanged();
+    void    kochLevelChanged();
     void    serverUrlChanged();
 
 private:
@@ -291,6 +297,7 @@ private:
     QString     m_stunServer;
     int         m_jitterDelayMs;
     int         m_receiveDecodeMode;
+    int         m_kochLevel;
     QString     m_serverUrl;
     QString     m_serverToken;
 };

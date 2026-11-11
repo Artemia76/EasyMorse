@@ -13,6 +13,8 @@ qt_add_library(easymorse_core STATIC
     keyer/monotonicclock.h
 
     morse/keydecoder.cpp morse/keydecoder.h
+    morse/keyinganalyzer.cpp morse/keyinganalyzer.h
+    morse/kochcourse.cpp morse/kochcourse.h
     morse/morsecodec.cpp morse/morsecodec.h
     morse/contestgenerator.cpp morse/contestgenerator.h
     morse/sequencer.cpp morse/sequencer.h

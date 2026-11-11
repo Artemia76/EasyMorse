@@ -64,6 +64,7 @@ namespace Key
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
     constexpr const char* ReceiveDecodeMode = "network/ReceiveDecodeMode";
     constexpr const char* ServerUrl = "server/Url";
+    constexpr const char* KochLevel = "practice/KochLevel";
     constexpr const char* ServerToken = "server/Token";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
@@ -121,6 +122,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
     m_receiveDecodeMode = qBound(0, m_store->value(Key::ReceiveDecodeMode, 0).toInt(), 2);
     m_serverUrl = m_store->value(Key::ServerUrl, DefaultServerUrl).toString();
+    m_kochLevel = qMax(MinKochLevel, m_store->value(Key::KochLevel, MinKochLevel).toInt());
     m_serverToken = m_store->value(Key::ServerToken).toString();
 }
 
@@ -375,6 +377,12 @@ void Settings::setReceiveDecodeMode(int pMode)
 {
     if (store(Key::ReceiveDecodeMode, m_receiveDecodeMode, qBound(0, pMode, 2)))
         emit receiveDecodeModeChanged();
+}
+
+void Settings::setKochLevel(int pLevel)
+{
+    if (store(Key::KochLevel, m_kochLevel, qMax(MinKochLevel, pLevel)))
+        emit kochLevelChanged();
 }
 
 void Settings::setServerUrl(const QString& pUrl)
