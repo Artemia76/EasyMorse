@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QSignalSpy>
 #include <QTemporaryDir>
+#include <QTimeZone>
 
 #include "settings/settings.h"
 
@@ -39,6 +40,10 @@ private slots:
         QCOMPARE(settings.receiveDecodeMode(), 0);
         // Escape ends the capture of the mouse
         QCOMPARE(settings.releaseKey(), QString("%1:0").arg(int(Qt::Key_Escape)));
+        // New versions are looked for unless the user says no
+        QVERIFY(settings.checkUpdates());
+        QVERIFY(settings.skippedVersion().isEmpty());
+        QVERIFY(!settings.lastUpdateCheck().isValid());
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 0.0);
@@ -87,6 +92,9 @@ private slots:
             settings.setSerialPort("ttyUSB0");
             settings.setDecoderEstimates(50.0, 150.0, 55.0);
             settings.setReleaseKey(QString("%1:2").arg(int(Qt::Key_Alt)));
+            settings.setCheckUpdates(false);
+            settings.setSkippedVersion("2.3.0");
+            settings.setLastUpdateCheck(QDateTime(QDate(2026, 11, 11), QTime(10, 0), QTimeZone::UTC));
         }
         Settings settings(file("persist.ini"));
         QCOMPARE(settings.toneFrequency(), 700);
@@ -94,6 +102,9 @@ private slots:
         QCOMPARE(settings.audioDevice(), QString("My card"));
         QCOMPARE(settings.serialPort(), QString("ttyUSB0"));
         QCOMPARE(settings.releaseKey(), QString("%1:2").arg(int(Qt::Key_Alt)));
+        QVERIFY(!settings.checkUpdates());
+        QCOMPARE(settings.skippedVersion(), QString("2.3.0"));
+        QCOMPARE(settings.lastUpdateCheck(), QDateTime(QDate(2026, 11, 11), QTime(10, 0), QTimeZone::UTC));
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 50.0);

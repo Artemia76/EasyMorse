@@ -64,6 +64,9 @@ namespace Key
     constexpr const char* StunServer = "network/StunServer";
     constexpr const char* JitterDelayMs = "network/JitterDelayMs";
     constexpr const char* ReceiveDecodeMode = "network/ReceiveDecodeMode";
+    constexpr const char* CheckUpdates = "updates/Check";
+    constexpr const char* SkippedVersion = "updates/SkippedVersion";
+    constexpr const char* LastUpdateCheck = "updates/LastCheck";
     constexpr const char* ServerUrl = "server/Url";
     constexpr const char* KochLevel = "practice/KochLevel";
     constexpr const char* ServerToken = "server/Token";
@@ -123,6 +126,9 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_stunServer = m_store->value(Key::StunServer, DefaultStunServer).toString();
     m_jitterDelayMs = qBound(0, m_store->value(Key::JitterDelayMs, 200).toInt(), 2000);
     m_receiveDecodeMode = qBound(0, m_store->value(Key::ReceiveDecodeMode, 0).toInt(), 2);
+    m_checkUpdates = m_store->value(Key::CheckUpdates, true).toBool();
+    m_skippedVersion = m_store->value(Key::SkippedVersion).toString();
+    m_lastUpdateCheck = m_store->value(Key::LastUpdateCheck).toDateTime();
     m_serverUrl = m_store->value(Key::ServerUrl, DefaultServerUrl).toString();
     m_kochLevel = qMax(MinKochLevel, m_store->value(Key::KochLevel, MinKochLevel).toInt());
     m_serverToken = m_store->value(Key::ServerToken).toString();
@@ -361,6 +367,24 @@ void Settings::setReleaseKey(const QString& pKey)
 {
     if (store(Key::ReleaseKey, m_releaseKey, pKey))
         emit keyboardKeysChanged();
+}
+
+void Settings::setCheckUpdates(bool pCheck)
+{
+    if (store(Key::CheckUpdates, m_checkUpdates, pCheck))
+        emit updatesChanged();
+}
+
+void Settings::setSkippedVersion(const QString& pVersion)
+{
+    if (store(Key::SkippedVersion, m_skippedVersion, pVersion))
+        emit updatesChanged();
+}
+
+void Settings::setLastUpdateCheck(const QDateTime& pTime)
+{
+    if (store(Key::LastUpdateCheck, m_lastUpdateCheck, pTime))
+        emit updatesChanged();
 }
 
 void Settings::setCallsign(const QString& pCallsign)

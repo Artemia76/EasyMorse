@@ -31,6 +31,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QDateTime>
 #include <QObject>
 #include <QString>
 
@@ -87,6 +88,10 @@ class Settings : public QObject
     Q_PROPERTY(int jitterDelayMs READ jitterDelayMs WRITE setJitterDelayMs NOTIFY jitterDelayMsChanged)
     // What is shown of the received Morse: 0 nothing (listen), 1 after the message, 2 live
     Q_PROPERTY(int receiveDecodeMode READ receiveDecodeMode WRITE setReceiveDecodeMode NOTIFY receiveDecodeModeChanged)
+    // New versions: looked for once a day, a version can be skipped
+    Q_PROPERTY(bool checkUpdates READ checkUpdates WRITE setCheckUpdates NOTIFY updatesChanged)
+    Q_PROPERTY(QString skippedVersion READ skippedVersion WRITE setSkippedVersion NOTIFY updatesChanged)
+    Q_PROPERTY(QDateTime lastUpdateCheck READ lastUpdateCheck NOTIFY updatesChanged)
     // Number of characters learnt in the keying practice (Koch method)
     Q_PROPERTY(int kochLevel READ kochLevel WRITE setKochLevel NOTIFY kochLevelChanged)
     // Match-making server
@@ -179,6 +184,9 @@ public:
     QString stunServer() const { return m_stunServer; }
     int     jitterDelayMs() const { return m_jitterDelayMs; }
     int     receiveDecodeMode() const { return m_receiveDecodeMode; }
+    bool    checkUpdates() const { return m_checkUpdates; }
+    QString skippedVersion() const { return m_skippedVersion; }
+    QDateTime lastUpdateCheck() const { return m_lastUpdateCheck; }
     int     kochLevel() const { return m_kochLevel; }
     QString serverUrl() const { return m_serverUrl; }
     ///
@@ -223,6 +231,9 @@ public:
     void    setStunServer(const QString& pServer);
     void    setJitterDelayMs(int pMs);
     void    setReceiveDecodeMode(int pMode);
+    void    setCheckUpdates(bool pCheck);
+    void    setSkippedVersion(const QString& pVersion);
+    void    setLastUpdateCheck(const QDateTime& pTime);
     void    setKochLevel(int pLevel);
     void    setServerUrl(const QString& pUrl);
     void    setServerToken(const QString& pToken);
@@ -255,6 +266,7 @@ signals:
     void    stunServerChanged();
     void    jitterDelayMsChanged();
     void    receiveDecodeModeChanged();
+    void    updatesChanged();
     void    kochLevelChanged();
     void    serverUrlChanged();
 
@@ -302,6 +314,9 @@ private:
     QString     m_stunServer;
     int         m_jitterDelayMs;
     int         m_receiveDecodeMode;
+    bool        m_checkUpdates;
+    QString     m_skippedVersion;
+    QDateTime   m_lastUpdateCheck;
     int         m_kochLevel;
     QString     m_serverUrl;
     QString     m_serverToken;
