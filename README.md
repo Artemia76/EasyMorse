@@ -29,6 +29,10 @@ Choose the keying on the *Key* page or in the options:
   (right Ctrl and Alt), the USB paddle adapter one (left and right Ctrl) or any
   keys can be chosen in the options. On-screen paddles can be held together on
   a touch screen.
+- **Mouse wired as a key**: *Capture the mouse* (Key and Practice pages) hides
+  the pointer and holds it still, so the buttons key wherever the hand moves
+  the mouse: left button = straight key or dot paddle, right button = dash
+  paddle. Escape (or the key chosen in the options) frees the mouse.
 
 Serial port wiring, as usual for Morse software: DTR and RTS are kept active to
 feed the contacts. A straight key closes CTS or DSR; paddles close CTS or DCD
