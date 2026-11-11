@@ -603,22 +603,47 @@
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="285"/>
+        <location filename="../src/app/qml/Main.qml" line="190"/>
+        <source>EasyMorse %1 is available (you have %2).</source>
+        <translation>EasyMorse %1 est disponible (vous avez la %2).</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="197"/>
+        <source>Download</source>
+        <translation>Télécharger</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="202"/>
+        <source>Skip this version</source>
+        <translation>Ignorer cette version</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="210"/>
+        <source>Later</source>
+        <translation>Plus tard</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="212"/>
+        <source>Remind me at the next start</source>
+        <translation>Me le rappeler au prochain démarrage</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="333"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="328"/>
+        <location filename="../src/app/qml/Main.qml" line="376"/>
         <source>Mouse captured: left button dots, right button dashes</source>
         <translation>Souris capturée : bouton gauche = points, bouton droit = traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="329"/>
+        <location filename="../src/app/qml/Main.qml" line="377"/>
         <source>Mouse captured: the left button is the key</source>
         <translation>Souris capturée : le bouton gauche est la pioche</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="330"/>
+        <location filename="../src/app/qml/Main.qml" line="378"/>
         <source>%1 frees it</source>
         <translation>%1 pour la libérer</translation>
     </message>
@@ -1073,6 +1098,56 @@
         <location filename="../src/app/qml/OptionsPage.qml" line="337"/>
         <source>Dark</source>
         <translation>Sombre</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="345"/>
+        <source>Updates</source>
+        <translation>Mises à jour</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="357"/>
+        <source>Look for new versions</source>
+        <translation>Rechercher les nouvelles versions</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="362"/>
+        <source>Once a day, EasyMorse asks GitHub for the number of the latest version. Nothing about you is sent.</source>
+        <translation>Une fois par jour, EasyMorse demande à GitHub le numéro de la dernière version. Rien ne vous concernant n&apos;est envoyé.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="366"/>
+        <source>Check now</source>
+        <translation>Vérifier maintenant</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="376"/>
+        <source>Checking…</source>
+        <translation>Vérification…</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="377"/>
+        <source>EasyMorse %1 is up to date.</source>
+        <translation>EasyMorse %1 est à jour.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="378"/>
+        <source>EasyMorse %1 is available.</source>
+        <translation>EasyMorse %1 est disponible.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="379"/>
+        <source>GitHub could not be reached.</source>
+        <translation>GitHub n&apos;a pas pu être joint.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="382"/>
+        <source>Last check: %1</source>
+        <translation>Dernière vérification : %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="392"/>
+        <source>Download</source>
+        <translation>Télécharger</translation>
     </message>
 </context>
 <context>
@@ -1607,12 +1682,17 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="179"/>
+        <location filename="../src/app/main.cpp" line="178"/>
+        <source>EasyMorse %1 is available</source>
+        <translation>EasyMorse %1 est disponible</translation>
+    </message>
+    <message>
+        <location filename="../src/app/main.cpp" line="192"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="184"/>
+        <location filename="../src/app/main.cpp" line="197"/>
         <source>No TLS library: secure servers (https) cannot be reached</source>
         <translation>Pas de bibliothèque TLS : les serveurs sécurisés (https) sont injoignables</translation>
     </message>
