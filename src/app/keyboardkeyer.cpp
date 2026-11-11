@@ -153,6 +153,8 @@ QString KeyboardKeyer::keyName(const QString& pKey) const
 #endif
     else if (binding.key == Qt::Key_Space)
         name = tr("Space");
+    else if (binding.key == Qt::Key_Escape)
+        name = tr("Escape");
     else
         name = QKeySequence(binding.key).toString(QKeySequence::NativeText);
     if (binding.side == 1)
