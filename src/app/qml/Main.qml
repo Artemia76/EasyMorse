@@ -52,11 +52,11 @@ ApplicationWindow {
     readonly property int safeBottom: safeArea.item ? safeArea.item.marginBottom : 0
     readonly property int safeLeft: safeArea.item ? safeArea.item.marginLeft : 0
     readonly property int safeRight: safeArea.item ? safeArea.item.marginRight : 0
-    readonly property int pageCount: 6
-    readonly property int controlsPage: 6
+    readonly property int pageCount: 7
+    readonly property int controlsPage: 7
     property int currentPage: 0
     // Pages where Morse is heard show the sound and speed controls beside them
-    readonly property bool sidePanel: wide && (currentPage === 0 || currentPage === 1 || currentPage === 3)
+    readonly property bool sidePanel: wide && (currentPage === 0 || currentPage === 1 || currentPage === 2 || currentPage === 4)
 
     // Window size is kept between sessions
     Settings {
@@ -76,6 +76,7 @@ ApplicationWindow {
     readonly property var pages: [
         { title: qsTr("Send"), icon: "../icons/send.svg" },
         { title: qsTr("Key"), icon: "../icons/key.svg" },
+        { title: qsTr("Practice"), icon: "../icons/practice.svg" },
         { title: qsTr("Network"), icon: "../icons/network.svg" },
         { title: qsTr("Glossary"), icon: "../icons/glossary.svg" },
         { title: qsTr("Log"), icon: "../icons/log.svg" },
@@ -184,7 +185,7 @@ ApplicationWindow {
                     spacing: window.compact ? 2 : 4
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
-                    model: 6
+                    model: window.pageCount
                     delegate: NavButton {
                         required property int index
                         width: ListView.view.width
@@ -211,6 +212,7 @@ ApplicationWindow {
 
                 SendPage {}
                 KeyPage {}
+                PracticePage {}
                 NetworkPage {}
                 GlossaryPage {
                     onPlayRequested: (text) => {
@@ -266,7 +268,7 @@ ApplicationWindow {
                 spacing: 0
 
                 Repeater {
-                    model: 3
+                    model: 4
                     NavButton {
                         required property int index
                         vertical: true
@@ -282,15 +284,15 @@ ApplicationWindow {
                     vertical: true
                     text: qsTr("More")
                     icon.source: "../icons/more.svg"
-                    checked: window.currentPage >= 3
-                    onClicked: { checked = Qt.binding(() => window.currentPage >= 3); moreMenu.open() }
+                    checked: window.currentPage >= 4
+                    onClicked: { checked = Qt.binding(() => window.currentPage >= 4); moreMenu.open() }
                     Layout.fillWidth: true
 
                     Menu {
                         id: moreMenu
                         y: -height
                         Repeater {
-                            model: [3, 4, 5, 6]
+                            model: [4, 5, 6, 7]
                             MenuItem {
                                 required property int modelData
                                 text: window.pages[modelData].title

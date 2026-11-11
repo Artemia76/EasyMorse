@@ -157,6 +157,8 @@ int main(int argc, char *argv[])
     Trainer trainer(&settings);
     TrainerForeign::s_instance = &trainer;
     SettingsForeign::s_instance = &settings;
+    KeyingPractice practice(&trainer);
+    KeyingPracticeForeign::s_instance = &practice;
     KeyboardKeyer keyboardKeyer(trainer.manualKeyer(), &settings);
     KeyboardKeyerForeign::s_instance = &keyboardKeyer;
     trainer.addPaddles(keyboardKeyer.paddles());

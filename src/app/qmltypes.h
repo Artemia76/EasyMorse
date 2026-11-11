@@ -36,6 +36,7 @@
 
 #include "keyer/keyerinput.h"
 #include "keyboardkeyer.h"
+#include "keyingpractice.h"
 #include "keyer/iambickeyer.h"
 #include "net/lobby.h"
 #include "net/peersession.h"
@@ -72,6 +73,14 @@ struct SettingsForeign : ExistingInstance<Settings>
     Q_GADGET
     QML_FOREIGN(Settings)
     QML_NAMED_ELEMENT(MorseSettings)
+    QML_SINGLETON
+};
+
+struct KeyingPracticeForeign : ExistingInstance<KeyingPractice>
+{
+    Q_GADGET
+    QML_FOREIGN(KeyingPractice)
+    QML_NAMED_ELEMENT(Practice)
     QML_SINGLETON
 };
 

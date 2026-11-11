@@ -424,6 +424,67 @@
     </message>
 </context>
 <context>
+    <name>KeyingPractice</name>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="141"/>
+        <source>%1 was keyed %2 instead of %3.</source>
+        <translation>%1 a été manipulé %2 au lieu de %3.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="146"/>
+        <source>Dashes too short: %1 dots instead of 3. Hold the key longer.</source>
+        <translation>Traits trop courts : %1 points au lieu de 3. Tenez la clé plus longtemps.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="149"/>
+        <source>Dashes too long: %1 dots instead of 3.</source>
+        <translation>Traits trop longs : %1 points au lieu de 3.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="152"/>
+        <source>Pauses inside the letters too long (%1 dots instead of 1): the letters break up.</source>
+        <translation>Espaces trop longs dans les lettres (%1 points au lieu de 1) : les lettres se coupent.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="155"/>
+        <source>Pauses inside the letters too short (%1 dots instead of 1): the signs run together.</source>
+        <translation>Espaces trop courts dans les lettres (%1 points au lieu de 1) : les signes se collent.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="158"/>
+        <source>Letters too close together (%1 dots instead of 3): they merge.</source>
+        <translation>Lettres trop rapprochées (%1 points au lieu de 3) : elles se confondent.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="161"/>
+        <source>Letters too far apart (%1 dots): the group splits into words.</source>
+        <translation>Lettres trop espacées (%1 points) : le groupe se coupe en mots.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="164"/>
+        <source>Irregular rhythm: give every dot, and every dash, the same length.</source>
+        <translation>Rythme irrégulier : donnez la même durée à tous les points, et à tous les traits.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/keyingpractice.cpp" line="167"/>
+        <source>Regular rhythm and right proportions, well done.</source>
+        <translation>Rythme régulier et proportions justes, bravo.</translation>
+    </message>
+</context>
+<context>
+    <name>KeyingTimeline</name>
+    <message>
+        <location filename="../src/app/qml/KeyingTimeline.qml" line="64"/>
+        <source>Ideal</source>
+        <translation>Idéal</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/KeyingTimeline.qml" line="65"/>
+        <source>You</source>
+        <translation>Vous</translation>
+    </message>
+</context>
+<context>
     <name>LogPage</name>
     <message>
         <location filename="../src/app/qml/LogPage.qml" line="27"/>
@@ -464,7 +525,7 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="141"/>
+        <location filename="../src/app/qml/Main.qml" line="142"/>
         <source>No sound output</source>
         <translation>Pas de sortie son</translation>
     </message>
@@ -480,31 +541,36 @@
     </message>
     <message>
         <location filename="../src/app/qml/Main.qml" line="79"/>
+        <source>Practice</source>
+        <translation>Exercice</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="80"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="80"/>
+        <location filename="../src/app/qml/Main.qml" line="81"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="81"/>
+        <location filename="../src/app/qml/Main.qml" line="82"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="82"/>
+        <location filename="../src/app/qml/Main.qml" line="83"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="83"/>
+        <location filename="../src/app/qml/Main.qml" line="84"/>
         <source>Sound and speed</source>
         <translation>Son et vitesse</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/qml/Main.qml" line="147"/>
+        <location filename="../src/app/qml/Main.qml" line="148"/>
         <source>Room %1 · %n station(s)</source>
         <translation>
             <numerusform>Salon %1 · %n station</numerusform>
@@ -512,17 +578,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="156"/>
+        <location filename="../src/app/qml/Main.qml" line="157"/>
         <source>Decoder &lt;b&gt;%1&lt;/b&gt; WPM</source>
         <translation>Décodeur &lt;b&gt;%1&lt;/b&gt; mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="157"/>
+        <location filename="../src/app/qml/Main.qml" line="158"/>
         <source>locked</source>
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="283"/>
+        <location filename="../src/app/qml/Main.qml" line="285"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
@@ -1012,6 +1078,122 @@
     </message>
 </context>
 <context>
+    <name>PracticePage</name>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="42"/>
+        <source>Excellent</source>
+        <translation>Excellent</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="43"/>
+        <source>Good</source>
+        <translation>Bien</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="44"/>
+        <source>Keep practising</source>
+        <translation>À travailler</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="73"/>
+        <source>Koch</source>
+        <translation>Koch</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="84"/>
+        <source>One character less</source>
+        <translation>Un caractère de moins</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/qml/PracticePage.qml" line="99"/>
+        <source>%n character(s) learnt</source>
+        <translation>
+            <numerusform>%n caractère appris</numerusform>
+            <numerusform>%n caractères appris</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="106"/>
+        <source>One character more</source>
+        <translation>Un caractère de plus</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="116"/>
+        <source>Listen</source>
+        <translation>Écouter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="124"/>
+        <source>Play the group as a model</source>
+        <translation>Jouer le groupe comme modèle</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="127"/>
+        <source>New group</source>
+        <translation>Nouveau groupe</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="149"/>
+        <source>New character: &lt;b&gt;%1&lt;/b&gt; %2</source>
+        <translation>Nouveau caractère : &lt;b&gt;%1&lt;/b&gt; %2</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="204"/>
+        <source>Your keying</source>
+        <translation>Votre manipulation</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="205"/>
+        <source>Last group · %1</source>
+        <translation>Groupe précédent · %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="206"/>
+        <source>Timeline</source>
+        <translation>Chronogramme</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="220"/>
+        <source>Key the group with the paddles: the spacing between the letters is judged.</source>
+        <translation>Manipulez le groupe avec les palettes : l&apos;espacement entre les lettres est jugé.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="221"/>
+        <source>Key the group: the ideal keying of each letter appears above yours.</source>
+        <translation>Manipulez le groupe : la manipulation idéale de chaque lettre s&apos;affiche au-dessus de la vôtre.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="237"/>
+        <source>%1/100</source>
+        <translation>%1/100</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="243"/>
+        <source>≈ %1 WPM</source>
+        <translation>≈ %1 mots/min</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="262"/>
+        <source>right</source>
+        <translation>juste</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="263"/>
+        <source>20 to 40 % off</source>
+        <translation>écart de 20 à 40 %</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="264"/>
+        <source>more</source>
+        <translation>au-delà</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="265"/>
+        <source>next letter</source>
+        <translation>lettre suivante</translation>
+    </message>
+</context>
+<context>
     <name>SendPage</name>
     <message>
         <location filename="../src/app/qml/SendPage.qml" line="68"/>
@@ -1338,17 +1520,17 @@
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="435"/>
+        <location filename="../src/core/trainer.cpp" line="436"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="554"/>
+        <location filename="../src/core/trainer.cpp" line="555"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="567"/>
+        <location filename="../src/core/trainer.cpp" line="568"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>
@@ -1364,12 +1546,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="172"/>
+        <location filename="../src/app/main.cpp" line="174"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="177"/>
+        <location filename="../src/app/main.cpp" line="179"/>
         <source>No TLS library: secure servers (https) cannot be reached</source>
         <translation>Pas de bibliothèque TLS : les serveurs sécurisés (https) sont injoignables</translation>
     </message>

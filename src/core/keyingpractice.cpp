@@ -178,6 +178,11 @@ double KeyingPractice::elapsed() const
     return static_cast<double>(MonotonicClock::nowMs() - m_analyzer.origin());
 }
 
+QString KeyingPractice::pattern(const QString& pCharacter) const
+{
+    return pCharacter.isEmpty() ? QString() : MorseCodec::encode(pCharacter.at(0));
+}
+
 void KeyingPractice::newGroup()
 {
     m_group = m_course.nextGroup(GroupLength);

@@ -106,6 +106,10 @@ public:
     /// \brief elapsed ms since the first key press of the group analysed, -1 before it
     ///
     Q_INVOKABLE double elapsed() const;
+    ///
+    /// \brief pattern of a character, "." and "-"
+    ///
+    Q_INVOKABLE QString pattern(const QString& pCharacter) const;
     Q_INVOKABLE void newGroup();
     ///
     /// \brief restart keys the same group again

@@ -26,6 +26,8 @@ qt_add_qml_module(easymorse
         qml/KeyPad.qml
         qml/SendPage.qml
         qml/KeyPage.qml
+        qml/PracticePage.qml
+        qml/KeyingTimeline.qml
         qml/NetworkPage.qml
         qml/ServerPanel.qml
         qml/DecoderPanel.qml
@@ -42,6 +44,7 @@ qt_add_qml_module(easymorse
     RESOURCES
         icons/send.svg
         icons/key.svg
+        icons/practice.svg
         icons/network.svg
         icons/glossary.svg
         icons/log.svg
