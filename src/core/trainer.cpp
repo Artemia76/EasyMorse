@@ -372,6 +372,7 @@ void Trainer::setKeyDown(bool pDown, qint64 pTimeMs)
     m_decoder.keyEdge(pDown, pTimeMs);
     sendKey(pDown, pTimeMs);
     emit keyDownChanged();
+    emit localKeyEdge(pDown, pTimeMs);
 }
 
 void Trainer::sendKey(bool pDown, qint64 pTimeMs)

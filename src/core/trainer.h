@@ -144,6 +144,11 @@ signals:
     void            charSent(const QString& pText);
     void            audioRunningChanged();
     void            keyDownChanged();
+    ///
+    /// \brief the local key (straight key or iambic keyer) went down or up,
+    /// after the decoder saw it
+    ///
+    void            localKeyEdge(bool pDown, qint64 pTimeMs);
     void            paddlesChanged();
     void            charDecoded(const QString& pText, const QString& pPattern);
     void            wordGap();
