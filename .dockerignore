@@ -1,6 +1,0 @@
-# Docker build context: sources only
-out/
-build*/
-.git/
-.claude-work/
-*.user

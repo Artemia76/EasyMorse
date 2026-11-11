@@ -22,6 +22,9 @@
 
 /****************************************************************************
 * signaling.cpp is part of EasyMorse project
+*
+* Two identical copies: src/protocol/ in EasyMorse (the application) and
+* protocol/ in easymorse-server. Change both together.
 * **************************************************************************/
 
 #include "signaling.h"

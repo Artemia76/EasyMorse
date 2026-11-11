@@ -128,7 +128,7 @@ GitHub Actions workflow for every push.
 
 The *Network* tab connects EasyMorse directly over the Internet.
 
-**With an EasyMorse server** (see below): enter its address, log in or create
+**With an EasyMorse server** ([easymorse.f4ikz.ovh](https://easymorse.f4ikz.ovh) by default): enter its address, log in or create
 an account and join a room. You are connected by yourself with every operator
 in the room (up to 8): everyone hears everyone, as on a shared frequency, and
 the decoded text shows who is sending.
@@ -151,12 +151,10 @@ to end (X25519, XChaCha20-Poly1305): the server never sees the Morse.
 
 ## EasyMorse server
 
-`easymorse-server` (in `server/`) hosts accounts and rooms, serves a small web
-page and an administration page to moderate the accounts, and runs the
-STUN/TURN relay. It is built with the application
-when Qt 6.8+ HttpServer, WebSockets and Sql are installed, or alone with
-`-DEASYMORSE_BUILD_APP=OFF`. See [server/deploy/README.md](server/deploy/README.md)
-to run it on a VPS with Docker and HTTPS.
+The match-making server hosts accounts and rooms, serves a small web page and
+an administration page to moderate the accounts, and runs the STUN/TURN relay.
+It has its own repository, [easymorse-server](https://github.com/Artemia76/easymorse-server),
+with a Docker image to run it on a VPS.
 
 ## Source layout
 
@@ -164,8 +162,7 @@ to run it on a VPS with Docker and HTTPS.
 |------|---------|
 | `src/core/` | `easymorse_core` library, no user interface: audio engine (`audio/`), Morse codec, sequencer and streaming decoder (`morse/`), keys (`keyer/`), `Settings` and `Trainer`, the application logic used by the interfaces |
 | `src/app/` | Application: QML interface (`qml/`, desktop and phone layouts) and the models it uses |
-| `src/protocol/` | Messages shared by the application and the server |
-| `server/` | Match-making server, its web page and deployment files |
+| `src/protocol/` | Messages shared with the server: an identical copy of `protocol/` in easymorse-server, change both together |
 | `tests/` | Qt Test unit tests (`ctest`); audio tests use a silent device (`EASYMORSE_AUDIO_BACKEND=null`) |
 | `3rdparty/` | Bundled libraries (miniaudio, Monocypher) and fonts (Inter, JetBrains Mono, SIL Open Font License); libjuice is used from the system or downloaded |
 | `intl/`, `gfx/`, `fonts/` | Translations, icons, Morse font |

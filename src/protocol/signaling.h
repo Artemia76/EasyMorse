@@ -23,6 +23,9 @@
 /****************************************************************************
 * signaling.h is part of EasyMorse project
 *
+* Two identical copies: src/protocol/ in EasyMorse (the application) and
+* protocol/ in easymorse-server. Change both together.
+*
 * Messages between EasyMorse and the match-making server, shared by both.
 * JSON text frames on a WebSocket, after authentication with a token
 * obtained from the REST API (/api/v1/register or /api/v1/login).

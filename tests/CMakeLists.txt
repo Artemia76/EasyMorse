@@ -28,15 +28,6 @@ if(TARGET easymorse_core)
     easymorse_add_test(tst_peersession SOURCES tst_peersession.cpp LIBRARIES easymorse_core)
 endif()
 
-if(TARGET easymorse_server_lib)
-    easymorse_add_test(tst_server SOURCES tst_server.cpp LIBRARIES easymorse_server_lib)
-endif()
-
-# Application and server together
-if(TARGET easymorse_core AND TARGET easymorse_server_lib)
-    easymorse_add_test(tst_lobby SOURCES tst_lobby.cpp LIBRARIES easymorse_server_lib easymorse_core)
-endif()
-
 if(TARGET easymorse)
     # The QML interface loads every page at desktop and phone size without
     # QML warnings (silent audio, settings in the build tree)

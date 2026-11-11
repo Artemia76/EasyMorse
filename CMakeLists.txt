@@ -52,46 +52,25 @@ else()
     set(_deploy_qt_default OFF)
 endif()
 option(EASYMORSE_DEPLOY_QT "Bundle Qt libraries and plugins when installing" ${_deploy_qt_default})
-option(EASYMORSE_BUILD_APP "Build the EasyMorse application" ON)
 if(EASYMORSE_MOBILE)
     set(_desktop_only OFF)
 else()
     set(_desktop_only ON)
 endif()
 option(EASYMORSE_BUILD_TESTS "Build the unit tests" ${_desktop_only})
-option(EASYMORSE_BUILD_SERVER "Build the match-making server (needs Qt HttpServer, WebSockets, Sql)" ${_desktop_only})
 
 # =======================================================================
 # Dependencies
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core)
-if(EASYMORSE_BUILD_APP)
-    find_package(Qt6 REQUIRED COMPONENTS Gui Network WebSockets Qml Quick QuickControls2 Svg LinguistTools
-                        OPTIONAL_COMPONENTS SerialPort)
-    if(NOT TARGET Qt6::SerialPort)
-        message(STATUS "Qt Serial Port not found: serial port keys disabled")
-    endif()
-endif()
-if(EASYMORSE_BUILD_SERVER)
-    find_package(Qt6 OPTIONAL_COMPONENTS Network HttpServer WebSockets Sql)
-    if(NOT (TARGET Qt6::HttpServer AND TARGET Qt6::WebSockets AND TARGET Qt6::Sql))
-        message(STATUS "Qt HttpServer, WebSockets or Sql not found: server not built")
-        set(EASYMORSE_BUILD_SERVER OFF)
-    elseif(Qt6_VERSION VERSION_LESS 6.8)
-        # WebSocket upgrades in QHttpServer came with Qt 6.8
-        message(STATUS "The server needs Qt 6.8 or newer: server not built")
-        set(EASYMORSE_BUILD_SERVER OFF)
-    endif()
-endif()
-if(NOT EASYMORSE_BUILD_APP AND NOT EASYMORSE_BUILD_SERVER)
-    message(FATAL_ERROR "Nothing to build: enable EASYMORSE_BUILD_APP or EASYMORSE_BUILD_SERVER")
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Network WebSockets Qml Quick QuickControls2 Svg LinguistTools
+                    OPTIONAL_COMPONENTS SerialPort)
+if(NOT TARGET Qt6::SerialPort)
+    message(STATUS "Qt Serial Port not found: serial port keys disabled")
 endif()
 qt_standard_project_setup(REQUIRES 6.7 I18N_SOURCE_LANGUAGE en I18N_TRANSLATED_LANGUAGES fr_FR)
 set(CMAKE_AUTORCC ON)
 
-if(EASYMORSE_BUILD_APP)
-    add_subdirectory(3rdparty/miniaudio)
-endif()
+add_subdirectory(3rdparty/miniaudio)
 add_subdirectory(3rdparty/monocypher)
 include(cmake/LibJuice.cmake)
 
@@ -123,21 +102,16 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     )
 endif()
 
-if(EASYMORSE_BUILD_APP)
-    configure_file(src/app/version.h.in "${PROJECT_BINARY_DIR}/generated/version.h" @ONLY)
-endif()
+configure_file(src/app/version.h.in "${PROJECT_BINARY_DIR}/generated/version.h" @ONLY)
 
 # =======================================================================
 # Components
 
-add_subdirectory(src/protocol) # messages shared with the server
-if(EASYMORSE_BUILD_APP)
-    add_subdirectory(src/core)  # audio, Morse logic, settings: no user interface
-    add_subdirectory(src/app)   # QML application (desktop and mobile)
-endif()
-if(EASYMORSE_BUILD_SERVER)
-    add_subdirectory(server)    # match-making server
-endif()
+# Messages shared with the match-making server: keep src/protocol/ identical
+# to protocol/ in https://github.com/Artemia76/easymorse-server
+add_subdirectory(src/protocol)
+add_subdirectory(src/core)      # audio, Morse logic, settings: no user interface
+add_subdirectory(src/app)       # QML application (desktop and mobile)
 
 if(EASYMORSE_BUILD_TESTS)
     enable_testing()
@@ -147,6 +121,6 @@ endif()
 # =======================================================================
 # Packaging
 
-if(EASYMORSE_BUILD_APP AND NOT EASYMORSE_MOBILE)
+if(NOT EASYMORSE_MOBILE)
     include(cmake/Packaging.cmake)
 endif()

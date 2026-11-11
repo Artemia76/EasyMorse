@@ -1,5 +1,0 @@
-# HTTPS in front of easymorse-server; Caddy also upgrades WebSockets.
-{$EASYMORSE_DOMAIN} {
-	encode gzip
-	reverse_proxy 127.0.0.1:8080
-}
