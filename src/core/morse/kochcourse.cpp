@@ -44,7 +44,7 @@ void KochCourse::setLevel(int pLevel)
     m_results.clear();
 }
 
-QString KochCourse::nextGroup(int pLength)
+QString KochCourse::nextGroup(int pLength, bool pRepeats)
 {
     const QString learnt = characters();
     QString group;
@@ -52,14 +52,15 @@ QString KochCourse::nextGroup(int pLength)
     for (int i = 0; i < pLength; ++i)
     {
         QChar next;
-        // The same character twice in a row tells little about the keying
+        // The same character twice in a row tells little about the keying,
+        // but by ear any order must be possible
         do
         {
             if (m_random.uniform() < 1.0 / 3.0)
                 next = newest();
             else
                 next = learnt.at(static_cast<qsizetype>(m_random.uniform() * learnt.size()));
-        } while (next == previous && learnt.size() > 1);
+        } while (!pRepeats && next == previous && learnt.size() > 1);
         group += next;
         previous = next;
     }

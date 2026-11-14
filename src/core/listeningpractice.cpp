@@ -79,7 +79,7 @@ bool ListeningPractice::start()
 {
     QStringList groups;
     for (int i = 0; i < GroupCount; ++i)
-        groups.append(m_course.nextGroup(GroupLength));
+        groups.append(m_course.nextGroup(GroupLength, true));    // pure chance, repeats included
     const QString sent = groups.join(' ');
     if (!m_trainer->play(sent, true))
         return false;

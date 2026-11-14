@@ -58,6 +58,29 @@ private slots:
         QVERIFY2(share > 0.25 && share < 0.45, qPrintable(QString::number(share)));
     }
 
+    void copyGroupsMayRepeat()
+    {
+        // By ear, two characters must not simply alternate
+        KochCourse course(42);
+        course.setLevel(2);
+        int repeats = 0;
+        int pairs = 0;
+        for (int i = 0; i < 400; ++i)
+        {
+            const QString group = course.nextGroup(5, true);
+            QCOMPARE(group.size(), 5);
+            for (qsizetype j = 1; j < group.size(); ++j)
+            {
+                QVERIFY(course.characters().contains(group[j]));
+                repeats += group[j] == group[j - 1] ? 1 : 0;
+                ++pairs;
+            }
+        }
+        // Newest 2/3 of the time with two characters: repeats about 5/9
+        const double share = static_cast<double>(repeats) / pairs;
+        QVERIFY2(share > 0.45 && share < 0.65, qPrintable(QString::number(share)));
+    }
+
     void groupsAreReproducible()
     {
         KochCourse first(7);

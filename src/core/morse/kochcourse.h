@@ -64,8 +64,10 @@ public:
     ///
     /// \brief nextGroup draws a group from the characters learnt; the newest
     /// one comes about a third of the time
+    /// \param pRepeats a character may follow itself (copy practice: by ear,
+    /// a forced alternation would be guessed); never for keying
     ///
-    QString nextGroup(int pLength = 5);
+    QString nextGroup(int pLength = 5, bool pRepeats = false);
 
     ///
     /// \brief recordResult remembers how a group was sent

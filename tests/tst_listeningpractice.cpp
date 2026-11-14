@@ -25,7 +25,7 @@ QString firstSeries(int pLevel)
     course.setLevel(pLevel);
     QString text;
     for (int i = 0; i < ListeningPractice::GroupCount; ++i)
-        text += course.nextGroup(ListeningPractice::GroupLength);
+        text += course.nextGroup(ListeningPractice::GroupLength, true);
     return text;
 }
 
