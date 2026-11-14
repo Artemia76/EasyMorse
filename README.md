@@ -38,6 +38,16 @@ Serial port wiring, as usual for Morse software: DTR and RTS are kept active to
 feed the contacts. A straight key closes CTS or DSR; paddles close CTS or DCD
 for dots and DSR for dashes.
 
+## Learning by ear
+
+The *Listen* page teaches copying with the Koch method: 5 groups of 5
+characters, drawn from the characters learnt so far, are played at the speed of
+the sound and speed controls. Type what you hear as it comes, with the keyboard
+or the on-screen keypad of the characters learnt (shown by default on phones
+and tablets); Enter starts and finishes a series. The text sent appears at the
+end, under each mistake. With 90 % right, the next character joins the course.
+The *Practice* page does the same for keying, with its own level.
+
 ## New versions
 
 Once a day EasyMorse asks GitHub for the number of its latest release (nothing

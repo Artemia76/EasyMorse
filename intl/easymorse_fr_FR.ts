@@ -253,6 +253,14 @@
     </message>
 </context>
 <context>
+    <name>CopyPad</name>
+    <message>
+        <location filename="../src/app/qml/CopyPad.qml" line="76"/>
+        <source>Erase</source>
+        <translation>Effacer</translation>
+    </message>
+</context>
+<context>
     <name>DecoderPanel</name>
     <message>
         <location filename="../src/app/qml/DecoderPanel.qml" line="56"/>
@@ -500,6 +508,145 @@
     </message>
 </context>
 <context>
+    <name>ListeningPage</name>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="93"/>
+        <source>Koch</source>
+        <translation>Koch</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="105"/>
+        <source>One character less</source>
+        <translation>Un caractère de moins</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/qml/ListeningPage.qml" line="120"/>
+        <source>%n character(s) learnt</source>
+        <translation>
+            <numerusform>%n caractère appris</numerusform>
+            <numerusform>%n caractères appris</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="128"/>
+        <source>One character more</source>
+        <translation>Un caractère de plus</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="139"/>
+        <source>Listen again</source>
+        <translation>Réécouter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="148"/>
+        <source>Play the series again, with its text under your eyes</source>
+        <translation>Rejouer la série, avec son texte sous les yeux</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="152"/>
+        <source>Stop</source>
+        <translation>Arrêter</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="157"/>
+        <source>Give up this series</source>
+        <translation>Abandonner cette série</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="160"/>
+        <source>Finish</source>
+        <translation>Terminer</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="160"/>
+        <source>New series</source>
+        <translation>Nouvelle série</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="160"/>
+        <source>Start</source>
+        <translation>Démarrer</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="166"/>
+        <source>Enter key</source>
+        <translation>Touche Entrée</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="185"/>
+        <source>New character: &lt;b&gt;%1&lt;/b&gt; %2</source>
+        <translation>Nouveau caractère : &lt;b&gt;%1&lt;/b&gt; %2</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="193"/>
+        <source>Your copy</source>
+        <translation>Votre copie</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="194"/>
+        <source>Correction</source>
+        <translation>Correction</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="194"/>
+        <source>Copy by ear</source>
+        <translation>Copie à l&apos;oreille</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="205"/>
+        <source>The sound is over: type the last characters, the series ends a few seconds after the last one.</source>
+        <translation>Le son est fini : tapez les derniers caractères, la série se termine quelques secondes après le dernier.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="206"/>
+        <source>Type each character as soon as you hear it. A character you miss: leave it and go on.</source>
+        <translation>Tapez chaque caractère dès que vous l&apos;entendez. Un caractère manqué : laissez-le et continuez.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="207"/>
+        <source>%1 groups of %2 characters are played. Type what you hear as it comes; 90 % right brings a new character.</source>
+        <translation>%1 groupes de %2 caractères sont joués. Tapez ce que vous entendez au fil de l&apos;eau ; 90 % de justes ajoutent un nouveau caractère.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="287"/>
+        <source>Passed</source>
+        <translation>Réussi</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="287"/>
+        <source>Try again</source>
+        <translation>À refaire</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="293"/>
+        <source>%1/%2 · %3 %</source>
+        <translation>%1/%2 · %3 %</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/qml/ListeningPage.qml" line="300"/>
+        <source>%n extra character(s)</source>
+        <translation>
+            <numerusform>%n caractère en trop</numerusform>
+            <numerusform>%n caractères en trop</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="306"/>
+        <source>90 % needed. Well done: the course goes on.</source>
+        <translation>90 % demandés. Bravo : le cours continue.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="307"/>
+        <source>90 % needed. The characters in yellow are the ones sent: listen again to the series to fix them.</source>
+        <translation>90 % demandés. Les caractères en jaune sont ceux qui ont été émis : réécoutez la série pour les retenir.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ListeningPage.qml" line="317"/>
+        <source>On-screen keypad</source>
+        <translation>Pavé à l&apos;écran</translation>
+    </message>
+</context>
+<context>
     <name>LogPage</name>
     <message>
         <location filename="../src/app/qml/LogPage.qml" line="27"/>
@@ -540,52 +687,57 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="142"/>
+        <location filename="../src/app/qml/Main.qml" line="144"/>
         <source>No sound output</source>
         <translation>Pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="77"/>
+        <location filename="../src/app/qml/Main.qml" line="78"/>
         <source>Send</source>
         <translation>Émission</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="78"/>
+        <location filename="../src/app/qml/Main.qml" line="79"/>
         <source>Key</source>
         <translation>Manipulateur</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="79"/>
+        <location filename="../src/app/qml/Main.qml" line="80"/>
         <source>Practice</source>
         <translation>Exercice</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="80"/>
+        <location filename="../src/app/qml/Main.qml" line="81"/>
+        <source>Listen</source>
+        <translation>Écoute</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/Main.qml" line="82"/>
         <source>Network</source>
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="81"/>
+        <location filename="../src/app/qml/Main.qml" line="83"/>
         <source>Glossary</source>
         <translation>Glossaire</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="82"/>
+        <location filename="../src/app/qml/Main.qml" line="84"/>
         <source>Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="83"/>
+        <location filename="../src/app/qml/Main.qml" line="85"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="84"/>
+        <location filename="../src/app/qml/Main.qml" line="86"/>
         <source>Sound and speed</source>
         <translation>Son et vitesse</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/qml/Main.qml" line="148"/>
+        <location filename="../src/app/qml/Main.qml" line="150"/>
         <source>Room %1 · %n station(s)</source>
         <translation>
             <numerusform>Salon %1 · %n station</numerusform>
@@ -593,57 +745,57 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="157"/>
+        <location filename="../src/app/qml/Main.qml" line="159"/>
         <source>Decoder &lt;b&gt;%1&lt;/b&gt; WPM</source>
         <translation>Décodeur &lt;b&gt;%1&lt;/b&gt; mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="158"/>
+        <location filename="../src/app/qml/Main.qml" line="160"/>
         <source>locked</source>
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="190"/>
+        <location filename="../src/app/qml/Main.qml" line="192"/>
         <source>EasyMorse %1 is available (you have %2).</source>
         <translation>EasyMorse %1 est disponible (vous avez la %2).</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="197"/>
+        <location filename="../src/app/qml/Main.qml" line="199"/>
         <source>Download</source>
         <translation>Télécharger</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="202"/>
+        <location filename="../src/app/qml/Main.qml" line="204"/>
         <source>Skip this version</source>
         <translation>Ignorer cette version</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="210"/>
+        <location filename="../src/app/qml/Main.qml" line="212"/>
         <source>Later</source>
         <translation>Plus tard</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="212"/>
+        <location filename="../src/app/qml/Main.qml" line="214"/>
         <source>Remind me at the next start</source>
         <translation>Me le rappeler au prochain démarrage</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="333"/>
+        <location filename="../src/app/qml/Main.qml" line="336"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="376"/>
+        <location filename="../src/app/qml/Main.qml" line="379"/>
         <source>Mouse captured: left button dots, right button dashes</source>
         <translation>Souris capturée : bouton gauche = points, bouton droit = traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="377"/>
+        <location filename="../src/app/qml/Main.qml" line="380"/>
         <source>Mouse captured: the left button is the key</source>
         <translation>Souris capturée : le bouton gauche est la pioche</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="378"/>
+        <location filename="../src/app/qml/Main.qml" line="381"/>
         <source>%1 frees it</source>
         <translation>%1 pour la libérer</translation>
     </message>
@@ -1656,17 +1808,17 @@
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="436"/>
+        <location filename="../src/core/trainer.cpp" line="439"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="555"/>
+        <location filename="../src/core/trainer.cpp" line="558"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="568"/>
+        <location filename="../src/core/trainer.cpp" line="571"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>
@@ -1682,17 +1834,17 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="178"/>
+        <location filename="../src/app/main.cpp" line="184"/>
         <source>EasyMorse %1 is available</source>
         <translation>EasyMorse %1 est disponible</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="192"/>
+        <location filename="../src/app/main.cpp" line="198"/>
         <source>Welcome to EasyMorse %1</source>
         <translation>Bienvenue dans EasyMorse %1</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="197"/>
+        <location filename="../src/app/main.cpp" line="203"/>
         <source>No TLS library: secure servers (https) cannot be reached</source>
         <translation>Pas de bibliothèque TLS : les serveurs sécurisés (https) sont injoignables</translation>
     </message>
