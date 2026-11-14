@@ -69,6 +69,7 @@ namespace Key
     constexpr const char* LastUpdateCheck = "updates/LastCheck";
     constexpr const char* ServerUrl = "server/Url";
     constexpr const char* KochLevel = "practice/KochLevel";
+    constexpr const char* ListeningKochLevel = "listening/KochLevel";
     constexpr const char* ServerToken = "server/Token";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
@@ -131,6 +132,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_lastUpdateCheck = m_store->value(Key::LastUpdateCheck).toDateTime();
     m_serverUrl = m_store->value(Key::ServerUrl, DefaultServerUrl).toString();
     m_kochLevel = qMax(MinKochLevel, m_store->value(Key::KochLevel, MinKochLevel).toInt());
+    m_listeningKochLevel = qMax(MinKochLevel, m_store->value(Key::ListeningKochLevel, MinKochLevel).toInt());
     m_serverToken = m_store->value(Key::ServerToken).toString();
 }
 
@@ -415,6 +417,12 @@ void Settings::setKochLevel(int pLevel)
 {
     if (store(Key::KochLevel, m_kochLevel, qMax(MinKochLevel, pLevel)))
         emit kochLevelChanged();
+}
+
+void Settings::setListeningKochLevel(int pLevel)
+{
+    if (store(Key::ListeningKochLevel, m_listeningKochLevel, qMax(MinKochLevel, pLevel)))
+        emit listeningKochLevelChanged();
 }
 
 void Settings::setServerUrl(const QString& pUrl)

@@ -219,6 +219,17 @@ private slots:
         QVERIFY(!bob.isRemoteKeyDown());
         // The keys were not decoded locally
         QVERIFY(alice.decoderPattern().isEmpty());
+
+        // A private text (copy practice) is neither shown nor sent
+        sent.clear();
+        decoded.clear();
+        QVERIFY(alice.play("tm", true));
+        QVERIFY(alice.isPlaying());
+        QTRY_VERIFY_WITH_TIMEOUT(!alice.isPlaying(), 10000);
+        QTest::qWait(500);
+        QCOMPARE(sent.count(), 0);
+        QCOMPARE(decoded.count(), 0);
+        QVERIFY(!bob.isRemoteKeyDown());
     }
 
     void iambicPaddlesKeyAtTheSpeed()

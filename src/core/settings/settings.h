@@ -94,6 +94,8 @@ class Settings : public QObject
     Q_PROPERTY(QDateTime lastUpdateCheck READ lastUpdateCheck NOTIFY updatesChanged)
     // Number of characters learnt in the keying practice (Koch method)
     Q_PROPERTY(int kochLevel READ kochLevel WRITE setKochLevel NOTIFY kochLevelChanged)
+    // Number of characters learnt in the copy practice (Koch method)
+    Q_PROPERTY(int listeningKochLevel READ listeningKochLevel WRITE setListeningKochLevel NOTIFY listeningKochLevelChanged)
     // Match-making server
     Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
 
@@ -188,6 +190,7 @@ public:
     QString skippedVersion() const { return m_skippedVersion; }
     QDateTime lastUpdateCheck() const { return m_lastUpdateCheck; }
     int     kochLevel() const { return m_kochLevel; }
+    int     listeningKochLevel() const { return m_listeningKochLevel; }
     QString serverUrl() const { return m_serverUrl; }
     ///
     /// \brief token of the last login, to reconnect without the password
@@ -235,6 +238,7 @@ public:
     void    setSkippedVersion(const QString& pVersion);
     void    setLastUpdateCheck(const QDateTime& pTime);
     void    setKochLevel(int pLevel);
+    void    setListeningKochLevel(int pLevel);
     void    setServerUrl(const QString& pUrl);
     void    setServerToken(const QString& pToken);
 
@@ -268,6 +272,7 @@ signals:
     void    receiveDecodeModeChanged();
     void    updatesChanged();
     void    kochLevelChanged();
+    void    listeningKochLevelChanged();
     void    serverUrlChanged();
 
 private:
@@ -318,6 +323,7 @@ private:
     QString     m_skippedVersion;
     QDateTime   m_lastUpdateCheck;
     int         m_kochLevel;
+    int         m_listeningKochLevel;
     QString     m_serverUrl;
     QString     m_serverToken;
 };

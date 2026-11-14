@@ -44,6 +44,9 @@ private slots:
         QVERIFY(settings.checkUpdates());
         QVERIFY(settings.skippedVersion().isEmpty());
         QVERIFY(!settings.lastUpdateCheck().isValid());
+        // Koch: keying and copy practice each start with two characters
+        QCOMPARE(settings.kochLevel(), Settings::MinKochLevel);
+        QCOMPARE(settings.listeningKochLevel(), Settings::MinKochLevel);
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 0.0);
@@ -80,6 +83,8 @@ private slots:
         QCOMPARE(settings.charSpeed(), Settings::MaxSpeed);
         settings.setDecoderReactivity(7);
         QCOMPARE(settings.decoderReactivity(), 2);
+        settings.setListeningKochLevel(0);
+        QCOMPARE(settings.listeningKochLevel(), Settings::MinKochLevel);
     }
 
     void persists()
@@ -95,6 +100,8 @@ private slots:
             settings.setCheckUpdates(false);
             settings.setSkippedVersion("2.3.0");
             settings.setLastUpdateCheck(QDateTime(QDate(2026, 11, 11), QTime(10, 0), QTimeZone::UTC));
+            settings.setKochLevel(4);
+            settings.setListeningKochLevel(7);
         }
         Settings settings(file("persist.ini"));
         QCOMPARE(settings.toneFrequency(), 700);
@@ -105,6 +112,9 @@ private slots:
         QVERIFY(!settings.checkUpdates());
         QCOMPARE(settings.skippedVersion(), QString("2.3.0"));
         QCOMPARE(settings.lastUpdateCheck(), QDateTime(QDate(2026, 11, 11), QTime(10, 0), QTimeZone::UTC));
+        // The two Koch levels are separate
+        QCOMPARE(settings.kochLevel(), 4);
+        QCOMPARE(settings.listeningKochLevel(), 7);
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 50.0);

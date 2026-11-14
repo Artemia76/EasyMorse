@@ -296,7 +296,7 @@ QStringList Trainer::serialPorts() const
 #endif
 }
 
-bool Trainer::play(const QString& pText)
+bool Trainer::play(const QString& pText, bool pPrivate)
 {
     const MorseTiming timing = MorseTiming::fromSpeed(m_settings->wordSpeed(),
                                                       m_settings->charSpeed(),
@@ -309,14 +309,17 @@ bool Trainer::play(const QString& pText)
     // The keys are muted while a text is played
     if (m_keyDown)
         setKeyDown(false, MonotonicClock::nowMs());
-    // The correspondents hear the text too
+    // The correspondents hear the text too, unless it is private
     endPlayedKeys();
-    m_playText = pText;
+    m_playText = pPrivate ? QString() : pText;  // nothing to show
     m_playShown = -1;
-    for (const TimelineEvent& event : MorseSequencer::buildTimeline(pText, timing))
+    if (!pPrivate)
     {
-        if (event.kind == TimelineEvent::Kind::KeyDown || event.kind == TimelineEvent::Kind::KeyUp)
-            m_playEdges.append(event);
+        for (const TimelineEvent& event : MorseSequencer::buildTimeline(pText, timing))
+        {
+            if (event.kind == TimelineEvent::Kind::KeyDown || event.kind == TimelineEvent::Kind::KeyUp)
+                m_playEdges.append(event);
+        }
     }
     m_playStartMs = MonotonicClock::nowMs();
     sendPlayedKeys();
