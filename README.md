@@ -87,6 +87,7 @@ and the `LICENSE.GPLv3` file.
 
     sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-declarative-dev \
         qt6-serialport-dev qt6-tools-dev qt6-l10n-tools qt6-websockets-dev qt6-svg-dev \
+        qt6-svg-plugins \
         qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
         qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript \
         qml6-module-qtcore qml6-module-qtquick-effects
