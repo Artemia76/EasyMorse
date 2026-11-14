@@ -27,6 +27,8 @@ qt_add_qml_module(easymorse
         qml/SendPage.qml
         qml/KeyPage.qml
         qml/PracticePage.qml
+        qml/ListeningPage.qml
+        qml/CopyPad.qml
         qml/KeyingTimeline.qml
         qml/NetworkPage.qml
         qml/ServerPanel.qml
@@ -46,6 +48,7 @@ qt_add_qml_module(easymorse
         icons/send.svg
         icons/key.svg
         icons/practice.svg
+        icons/listen.svg
         icons/network.svg
         icons/glossary.svg
         icons/log.svg

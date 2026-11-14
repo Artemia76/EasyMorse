@@ -37,6 +37,7 @@
 #include "keyer/keyerinput.h"
 #include "keyboardkeyer.h"
 #include "keyingpractice.h"
+#include "listeningpractice.h"
 #include "keyer/iambickeyer.h"
 #include "mousekeyer.h"
 #include "net/lobby.h"
@@ -83,6 +84,14 @@ struct KeyingPracticeForeign : ExistingInstance<KeyingPractice>
     Q_GADGET
     QML_FOREIGN(KeyingPractice)
     QML_NAMED_ELEMENT(Practice)
+    QML_SINGLETON
+};
+
+struct ListeningPracticeForeign : ExistingInstance<ListeningPractice>
+{
+    Q_GADGET
+    QML_FOREIGN(ListeningPractice)
+    QML_NAMED_ELEMENT(Listening)
     QML_SINGLETON
 };
 

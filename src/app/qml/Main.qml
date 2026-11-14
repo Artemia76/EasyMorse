@@ -52,11 +52,12 @@ ApplicationWindow {
     readonly property int safeBottom: safeArea.item ? safeArea.item.marginBottom : 0
     readonly property int safeLeft: safeArea.item ? safeArea.item.marginLeft : 0
     readonly property int safeRight: safeArea.item ? safeArea.item.marginRight : 0
-    readonly property int pageCount: 7
-    readonly property int controlsPage: 7
+    readonly property int pageCount: 8
+    readonly property int controlsPage: 8
     property int currentPage: 0
     // Pages where Morse is heard show the sound and speed controls beside them
-    readonly property bool sidePanel: wide && (currentPage === 0 || currentPage === 1 || currentPage === 2 || currentPage === 4)
+    readonly property bool sidePanel: wide && (currentPage === 0 || currentPage === 1 || currentPage === 2 || currentPage === 3
+                                           || currentPage === 5)
 
     // Window size is kept between sessions
     Settings {
@@ -77,6 +78,7 @@ ApplicationWindow {
         { title: qsTr("Send"), icon: "../icons/send.svg" },
         { title: qsTr("Key"), icon: "../icons/key.svg" },
         { title: qsTr("Practice"), icon: "../icons/practice.svg" },
+        { title: qsTr("Listen"), icon: "../icons/listen.svg" },
         { title: qsTr("Network"), icon: "../icons/network.svg" },
         { title: qsTr("Glossary"), icon: "../icons/glossary.svg" },
         { title: qsTr("Log"), icon: "../icons/log.svg" },
@@ -261,6 +263,7 @@ ApplicationWindow {
                 SendPage {}
                 KeyPage {}
                 PracticePage {}
+                ListeningPage {}
                 NetworkPage {}
                 GlossaryPage {
                     onPlayRequested: (text) => {
@@ -340,7 +343,7 @@ ApplicationWindow {
                         id: moreMenu
                         y: -height
                         Repeater {
-                            model: [4, 5, 6, 7]
+                            model: [4, 5, 6, 7, 8]
                             MenuItem {
                                 required property int modelData
                                 text: window.pages[modelData].title

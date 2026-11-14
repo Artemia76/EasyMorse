@@ -35,6 +35,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQuickWindow>
+#include <QRandomGenerator>
 #include <QSettings>
 #include <QTimer>
 
@@ -161,6 +162,11 @@ int main(int argc, char *argv[])
     SettingsForeign::s_instance = &settings;
     KeyingPractice practice(&trainer);
     KeyingPracticeForeign::s_instance = &practice;
+    // A fixed series for the test tools: EASYMORSE_LISTENING_SEED=<number>
+    bool fixedSeed = false;
+    const std::uint64_t listeningSeed = qEnvironmentVariable("EASYMORSE_LISTENING_SEED").toULongLong(&fixedSeed);
+    ListeningPractice listening(&trainer, fixedSeed ? listeningSeed : QRandomGenerator::global()->generate64());
+    ListeningPracticeForeign::s_instance = &listening;
     KeyboardKeyer keyboardKeyer(trainer.manualKeyer(), &settings);
     KeyboardKeyerForeign::s_instance = &keyboardKeyer;
     trainer.addPaddles(keyboardKeyer.paddles());
