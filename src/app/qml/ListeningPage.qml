@@ -30,7 +30,7 @@ Page {
 
     Settings {
         id: options
-        category: "Listening"
+        category: "listening"
         // The keypad is shown by default where there is no keyboard
         property bool keypad: Theme.mobile
     }
