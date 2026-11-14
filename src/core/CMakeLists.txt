@@ -17,6 +17,7 @@ qt_add_library(easymorse_core STATIC
     morse/kochcourse.cpp morse/kochcourse.h
     morse/morsecodec.cpp morse/morsecodec.h
     morse/contestgenerator.cpp morse/contestgenerator.h
+    morse/copyscorer.cpp morse/copyscorer.h
     morse/sequencer.cpp morse/sequencer.h
 
     net/jitterbuffer.cpp net/jitterbuffer.h
