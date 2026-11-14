@@ -22,6 +22,11 @@ jobs:
             os: ubuntu-24.04
             preset: release
             configure: -DEASYMORSE_DEPLOY_QT=ON
+          - name: Linux arm64
+            # Raspberry Pi 4/5 and other 64-bit ARM boards
+            os: ubuntu-24.04-arm
+            preset: release
+            configure: -DEASYMORSE_DEPLOY_QT=ON
           - name: Windows
             os: windows-2022
             preset: windows-release
@@ -102,7 +107,7 @@ jobs:
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: easymorse-${{ runner.os }}
+          name: easymorse-${{ runner.os }}-${{ runner.arch }}
           path: |
             out/build/${{ matrix.preset }}/*.tar.gz
             out/build/${{ matrix.preset }}/*.deb
