@@ -53,53 +53,50 @@ CopyScorer CopyScorer::score(const QString& pSent, const QString& pCopied)
     const qsizetype rows = sent.size();
     const qsizetype columns = copied.size();
 
-    // cost[i][j]: edits to turn the first i characters sent into the first j copied
+    // cost[i][j]: edits to turn the characters sent from i into the ones copied from j
     std::vector<int> cost(static_cast<size_t>((rows + 1) * (columns + 1)));
     auto at = [&](qsizetype i, qsizetype j) -> int& {
         return cost[static_cast<size_t>(i * (columns + 1) + j)];
     };
     for (qsizetype i = 0; i <= rows; ++i)
-        at(i, 0) = static_cast<int>(i);
+        at(i, columns) = static_cast<int>(rows - i);
     for (qsizetype j = 0; j <= columns; ++j)
-        at(0, j) = static_cast<int>(j);
-    for (qsizetype i = 1; i <= rows; ++i)
+        at(rows, j) = static_cast<int>(columns - j);
+    for (qsizetype i = rows - 1; i >= 0; --i)
     {
-        for (qsizetype j = 1; j <= columns; ++j)
+        for (qsizetype j = columns - 1; j >= 0; --j)
         {
-            const int diagonal = at(i - 1, j - 1) + (sent[i - 1] == copied[j - 1] ? 0 : 1);
-            at(i, j) = std::min({diagonal, at(i - 1, j) + 1, at(i, j - 1) + 1});
+            const int diagonal = at(i + 1, j + 1) + (sent[i] == copied[j] ? 0 : 1);
+            at(i, j) = std::min({diagonal, at(i + 1, j) + 1, at(i, j + 1) + 1});
         }
     }
 
-    // Back from the end; a character copied in place of the one sent is
-    // preferred to a missed one followed by an extra one
+    // Forward from the start: the copy is matched with the beginning of the
+    // series (a copy stopped early misses the end), and a character copied in
+    // place of the one sent is preferred to a missed one followed by an extra one
     CopyScorer result;
-    QList<Item> reversed;
-    qsizetype i = rows;
-    qsizetype j = columns;
-    while (i > 0 || j > 0)
+    qsizetype i = 0;
+    qsizetype j = 0;
+    while (i < rows || j < columns)
     {
-        if (i > 0 && j > 0
-            && at(i, j) == at(i - 1, j - 1) + (sent[i - 1] == copied[j - 1] ? 0 : 1))
+        if (i < rows && j < columns && at(i, j) == at(i + 1, j + 1) + (sent[i] == copied[j] ? 0 : 1))
         {
-            const bool right = sent[i - 1] == copied[j - 1];
-            reversed.append({sent[i - 1], copied[j - 1], right ? Status::Correct : Status::Wrong});
+            const bool right = sent[i] == copied[j];
+            result.m_items.append({sent[i], copied[j], right ? Status::Correct : Status::Wrong});
             result.m_correct += right ? 1 : 0;
-            --i;
-            --j;
+            ++i;
+            ++j;
         }
-        else if (i > 0 && at(i, j) == at(i - 1, j) + 1)
+        else if (i < rows && at(i, j) == at(i + 1, j) + 1)
         {
-            reversed.append({sent[i - 1], QChar(), Status::Missed});
-            --i;
+            result.m_items.append({sent[i], QChar(), Status::Missed});
+            ++i;
         }
         else
         {
             ++result.m_extra;
-            --j;
+            ++j;
         }
     }
-    std::reverse(reversed.begin(), reversed.end());
-    result.m_items = reversed;
     return result;
 }

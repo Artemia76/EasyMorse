@@ -51,6 +51,15 @@ private slots:
         QCOMPARE(score.extra(), 0);
     }
 
+    void copyStoppedEarly()
+    {
+        // The copy belongs to the beginning of the series, the end was missed
+        const CopyScorer score = CopyScorer::score("KMKMK MKMKM", "KMKMKM");
+        QCOMPARE(statuses(score), QString("======----"));
+        const CopyScorer partial = CopyScorer::score("KMKMK MKMKM", "KMXMK");
+        QCOMPARE(statuses(partial), QString("==x==-----"));
+    }
+
     void extraCharacter()
     {
         const CopyScorer score = CopyScorer::score("KMRUE", "KMMRUE");
