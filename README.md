@@ -13,7 +13,8 @@ the Internet (see below). Runs on Linux, Windows, macOS and Android.
 
 Installers and packages are on the
 [releases page](https://github.com/Artemia76/EasyMorse/releases): AppImage,
-`.deb` and `.tar.gz` for Linux, installer and `.zip` for Windows, `.dmg` for
+`.deb` and `.tar.gz` for Linux (x86_64, and arm64 for the Raspberry Pi 4/5
+and other 64-bit ARM boards), installer and `.zip` for Windows, `.dmg` for
 macOS, `.apk` for Android (arm64, Android 9 or later). `SHA256SUMS` lists the
 checksum of each file.
 
@@ -94,13 +95,24 @@ the CI checks the versions with `packaging/licenses/check.py`.
 
     sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-declarative-dev \
         qt6-serialport-dev qt6-tools-dev qt6-l10n-tools qt6-websockets-dev qt6-svg-dev \
+        qt6-svg-plugins \
         qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
         qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript \
-        qml6-module-qtcore qml6-module-qtquick-effects
+        qml6-module-qtcore qml6-module-qtquick-effects qml6-module-qt-labs-folderlistmodel
 
 Older distributions ship a Qt that is too old: install Qt 6.7+ with the
 [Qt online installer](https://www.qt.io/download-qt-installer-oss) or
 [aqtinstall](https://github.com/miurahr/aqtinstall).
+
+### Raspberry Pi
+
+Raspberry Pi OS 64-bit based on Debian 13 (Trixie) on a Pi 4 or 5: install the
+arm64 package from the releases page, or build with the Debian 13 packages
+above (about 12 minutes on a Pi 4 with `cmake --build ... -j4`). Tested on a
+Pi 4 (4 GB) under the default labwc (Wayland) desktop: OpenGL ES rendering on
+the V3D GPU, sound through PipeWire; the band simulator needs under 7 % of
+one core with the busiest conditions. Raspberry Pi OS 12 (Bookworm) ships Qt 6.4, too old
+to build EasyMorse.
 
 ### Fedora
 
