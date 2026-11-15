@@ -77,8 +77,8 @@ ApplicationWindow {
     readonly property var pages: [
         { title: qsTr("Send"), icon: "../icons/send.svg" },
         { title: qsTr("Key"), icon: "../icons/key.svg" },
-        { title: qsTr("Practice"), icon: "../icons/practice.svg" },
-        { title: qsTr("Listen"), icon: "../icons/listen.svg" },
+        { title: qsTr("Keying"), icon: "../icons/practice.svg" },
+        { title: qsTr("Copying"), icon: "../icons/listen.svg" },
         { title: qsTr("Network"), icon: "../icons/network.svg" },
         { title: qsTr("Glossary"), icon: "../icons/glossary.svg" },
         { title: qsTr("Log"), icon: "../icons/log.svg" },

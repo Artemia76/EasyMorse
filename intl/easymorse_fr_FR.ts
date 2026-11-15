@@ -325,12 +325,12 @@
 <context>
     <name>KeyPad</name>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="89"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="88"/>
         <source>Listening…</source>
         <translation>Écoute…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/KeyPad.qml" line="89"/>
+        <location filename="../src/app/qml/KeyPad.qml" line="88"/>
         <source>Press</source>
         <translation>Appuyer</translation>
     </message>
@@ -449,47 +449,47 @@
 <context>
     <name>KeyingPractice</name>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="141"/>
+        <location filename="../src/core/keyingpractice.cpp" line="148"/>
         <source>%1 was keyed %2 instead of %3.</source>
         <translation>%1 a été manipulé %2 au lieu de %3.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="146"/>
+        <location filename="../src/core/keyingpractice.cpp" line="153"/>
         <source>Dashes too short: %1 dots instead of 3. Hold the key longer.</source>
         <translation>Traits trop courts : %1 points au lieu de 3. Tenez la clé plus longtemps.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="149"/>
+        <location filename="../src/core/keyingpractice.cpp" line="156"/>
         <source>Dashes too long: %1 dots instead of 3.</source>
         <translation>Traits trop longs : %1 points au lieu de 3.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="152"/>
+        <location filename="../src/core/keyingpractice.cpp" line="159"/>
         <source>Pauses inside the letters too long (%1 dots instead of 1): the letters break up.</source>
         <translation>Espaces trop longs dans les lettres (%1 points au lieu de 1) : les lettres se coupent.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="155"/>
+        <location filename="../src/core/keyingpractice.cpp" line="162"/>
         <source>Pauses inside the letters too short (%1 dots instead of 1): the signs run together.</source>
         <translation>Espaces trop courts dans les lettres (%1 points au lieu de 1) : les signes se collent.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="158"/>
+        <location filename="../src/core/keyingpractice.cpp" line="165"/>
         <source>Letters too close together (%1 dots instead of 3): they merge.</source>
         <translation>Lettres trop rapprochées (%1 points au lieu de 3) : elles se confondent.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="161"/>
+        <location filename="../src/core/keyingpractice.cpp" line="168"/>
         <source>Letters too far apart (%1 dots): the group splits into words.</source>
         <translation>Lettres trop espacées (%1 points) : le groupe se coupe en mots.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="164"/>
+        <location filename="../src/core/keyingpractice.cpp" line="171"/>
         <source>Irregular rhythm: give every dot, and every dash, the same length.</source>
         <translation>Rythme irrégulier : donnez la même durée à tous les points, et à tous les traits.</translation>
     </message>
     <message>
-        <location filename="../src/core/keyingpractice.cpp" line="167"/>
+        <location filename="../src/core/keyingpractice.cpp" line="174"/>
         <source>Regular rhythm and right proportions, well done.</source>
         <translation>Rythme régulier et proportions justes, bravo.</translation>
     </message>
@@ -746,13 +746,13 @@
     </message>
     <message>
         <location filename="../src/app/qml/Main.qml" line="80"/>
-        <source>Practice</source>
-        <translation>Exercice</translation>
+        <source>Keying</source>
+        <translation>Manipulation</translation>
     </message>
     <message>
         <location filename="../src/app/qml/Main.qml" line="81"/>
-        <source>Listen</source>
-        <translation>Écoute</translation>
+        <source>Copying</source>
+        <translation>Lecture au son</translation>
     </message>
     <message>
         <location filename="../src/app/qml/Main.qml" line="82"/>
@@ -798,47 +798,47 @@
         <translation>verrouillé</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="192"/>
+        <location filename="../src/app/qml/Main.qml" line="198"/>
         <source>EasyMorse %1 is available (you have %2).</source>
         <translation>EasyMorse %1 est disponible (vous avez la %2).</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="199"/>
+        <location filename="../src/app/qml/Main.qml" line="205"/>
         <source>Download</source>
         <translation>Télécharger</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="204"/>
+        <location filename="../src/app/qml/Main.qml" line="210"/>
         <source>Skip this version</source>
         <translation>Ignorer cette version</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="212"/>
+        <location filename="../src/app/qml/Main.qml" line="218"/>
         <source>Later</source>
         <translation>Plus tard</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="214"/>
+        <location filename="../src/app/qml/Main.qml" line="220"/>
         <source>Remind me at the next start</source>
         <translation>Me le rappeler au prochain démarrage</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="336"/>
+        <location filename="../src/app/qml/Main.qml" line="343"/>
         <source>More</source>
         <translation>Plus</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="379"/>
+        <location filename="../src/app/qml/Main.qml" line="386"/>
         <source>Mouse captured: left button dots, right button dashes</source>
         <translation>Souris capturée : bouton gauche = points, bouton droit = traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="380"/>
+        <location filename="../src/app/qml/Main.qml" line="387"/>
         <source>Mouse captured: the left button is the key</source>
         <translation>Souris capturée : le bouton gauche est la pioche</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/Main.qml" line="381"/>
+        <location filename="../src/app/qml/Main.qml" line="388"/>
         <source>%1 frees it</source>
         <translation>%1 pour la libérer</translation>
     </message>
@@ -846,12 +846,12 @@
 <context>
     <name>MouseCaptureButton</name>
     <message>
-        <location filename="../src/app/qml/MouseCaptureButton.qml" line="16"/>
+        <location filename="../src/app/qml/MouseCaptureButton.qml" line="18"/>
         <source>Capture the mouse</source>
         <translation>Capturer la souris</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/MouseCaptureButton.qml" line="27"/>
+        <location filename="../src/app/qml/MouseCaptureButton.qml" line="30"/>
         <source>For a mouse wired as a key: left button = key or dots, right button = dashes. %1 frees the mouse.</source>
         <translation>Pour une souris transformée en manipulateur : bouton gauche = pioche ou points, bouton droit = traits. %1 libère la souris.</translation>
     </message>
@@ -1373,22 +1373,22 @@
 <context>
     <name>PaddlePad</name>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="76"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="75"/>
         <source>Dashes</source>
         <translation>Traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="76"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="75"/>
         <source>Dots</source>
         <translation>Points</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="98"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="97"/>
         <source>Dash paddle</source>
         <translation>Palette des traits</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PaddlePad.qml" line="98"/>
+        <location filename="../src/app/qml/PaddlePad.qml" line="97"/>
         <source>Dot paddle</source>
         <translation>Palette des points</translation>
     </message>
@@ -1474,77 +1474,92 @@
         <translation>Un caractère de plus</translation>
     </message>
     <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="114"/>
+        <source>To work on: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>À travailler : &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
         <location filename="../src/app/qml/PracticePage.qml" line="116"/>
+        <source>To work on: %1</source>
+        <translation>À travailler : %1</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="120"/>
+        <source>The character you key worst comes more often, until you key it well.</source>
+        <translation>Le caractère que vous manipulez le moins bien revient plus souvent, jusqu&apos;à ce que vous le manipuliez bien.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/PracticePage.qml" line="128"/>
         <source>Listen</source>
         <translation>Écouter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="124"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="136"/>
         <source>Play the group as a model</source>
         <translation>Jouer le groupe comme modèle</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="127"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="139"/>
         <source>New group</source>
         <translation>Nouveau groupe</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="149"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="161"/>
         <source>New character: &lt;b&gt;%1&lt;/b&gt; %2</source>
         <translation>Nouveau caractère : &lt;b&gt;%1&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="204"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="216"/>
         <source>Your keying</source>
         <translation>Votre manipulation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="205"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="217"/>
         <source>Last group · %1</source>
         <translation>Groupe précédent · %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="206"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="218"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="220"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="232"/>
         <source>Key the group with the paddles: the spacing between the letters is judged.</source>
         <translation>Manipulez le groupe avec les palettes : l&apos;espacement entre les lettres est jugé.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="221"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="233"/>
         <source>Key the group: the ideal keying of each letter appears above yours.</source>
         <translation>Manipulez le groupe : la manipulation idéale de chaque lettre s&apos;affiche au-dessus de la vôtre.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="237"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="249"/>
         <source>%1/100</source>
         <translation>%1/100</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="243"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="255"/>
         <source>≈ %1 WPM</source>
         <translation>≈ %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="262"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="274"/>
         <source>right</source>
         <translation>juste</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="263"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="275"/>
         <source>20 to 40 % off</source>
         <translation>écart de 20 à 40 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="264"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="276"/>
         <source>more</source>
         <translation>au-delà</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="265"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="277"/>
         <source>next letter</source>
         <translation>lettre suivante</translation>
     </message>

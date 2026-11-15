@@ -56,8 +56,14 @@ AbstractButton {
             text: control.text
             Layout.fillWidth: !control.vertical
             Layout.alignment: control.vertical ? Qt.AlignHCenter : Qt.AlignVCenter
+            // Phones: long names go on two lines rather than overlap
+            Layout.maximumWidth: control.vertical ? control.width - 4 : -1
+            wrapMode: control.vertical ? Text.WordWrap : Text.NoWrap
+            maximumLineCount: control.vertical ? 2 : 1
+            horizontalAlignment: control.vertical ? Text.AlignHCenter : Text.AlignLeft
+            lineHeight: control.vertical ? 0.9 : 1.0
             elide: Text.ElideRight
-            font.pixelSize: control.vertical ? 12 : 14
+            font.pixelSize: control.vertical ? 11 : 14
             font.weight: control.checked ? Font.DemiBold : Font.Normal
             color: !control.vertical && control.checked ? Theme.accentInk
                    : control.checked ? Theme.accentText : Theme.textSoft

@@ -41,13 +41,14 @@ for dots and DSR for dashes.
 
 ## Learning by ear
 
-The *Listen* page teaches copying with the Koch method: 5 groups of 5
+The *Copying* page teaches copying with the Koch method: 5 groups of 5
 characters, drawn from the characters learnt so far, are played at the speed of
 the sound and speed controls. Type what you hear as it comes, with the keyboard
 or the on-screen keypad of the characters learnt (shown by default on phones
 and tablets); Enter starts and finishes a series. The text sent appears at the
 end, under each mistake. With 90 % right, the next character joins the course.
-The *Practice* page does the same for keying, with its own level.
+The *Keying* page does the same for keying, with its own level; the character
+keyed worst comes more often until it is keyed well.
 
 ## New versions
 
