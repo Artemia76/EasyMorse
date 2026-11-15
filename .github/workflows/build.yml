@@ -11,6 +11,14 @@ env:
   QT_VERSION: '6.8.3'
 
 jobs:
+  notices:
+    name: Third-party notices
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the notices against the versions used
+        run: python3 packaging/licenses/check.py "$QT_VERSION"
+
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -234,7 +242,7 @@ jobs:
   release:
     name: Publish the release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build, android]
+    needs: [notices, build, android]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -252,5 +260,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          cat > notes.md <<EOF
+          EasyMorse is free software under the GNU GPL version 3 or later. Its source code is the
+          \`$GITHUB_REF_NAME\` tag of this repository (archives below).
+
+          The packages also contain unmodified third-party software, listed with its licenses in
+          [THIRD-PARTY-NOTICES.txt](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/THIRD-PARTY-NOTICES.txt)
+          (also installed with each package and shown in Options > About > Licenses). Its source code:
+          [Qt $QT_VERSION](https://download.qt.io/archive/qt/${QT_VERSION%.*}/$QT_VERSION/submodules/),
+          [libjuice](https://github.com/paullouisageneau/libjuice) at the commit named in \`cmake/LibJuice.cmake\`,
+          [OpenSSL](https://github.com/openssl/openssl/releases) (Android) at the version named in \`packaging/android/make-openssl.sh\`.
+          EOF
           gh release create "$GITHUB_REF_NAME" assets/* --repo "$GITHUB_REPOSITORY" \
-            --verify-tag --generate-notes --title "EasyMorse ${GITHUB_REF_NAME#v}"
+            --verify-tag --generate-notes --notes-file notes.md --title "EasyMorse ${GITHUB_REF_NAME#v}"

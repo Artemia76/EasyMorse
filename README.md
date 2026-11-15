@@ -68,6 +68,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details: [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
 and the `LICENSE.GPLv3` file.
 
+The packages also contain third-party software (Qt, libjuice, Monocypher, miniaudio,
+OpenSSL on Android, the Inter and JetBrains Mono fonts...), used unmodified, each under
+its own license: see [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt), installed with
+the packages and shown in the application (Options > About > Licenses). After a change
+of Qt or of a bundled library, run `packaging/licenses/generate.py` (see its header);
+the CI checks the versions with `packaging/licenses/check.py`.
+
 ## Dependencies
 
 - CMake >= 3.21 (3.27+ to build the Windows Inno Setup installer) and Ninja

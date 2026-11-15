@@ -1,0 +1,110 @@
+{
+    "qt": {
+        "version": "6.8.3",
+        "modules": ["qtbase", "qtdeclarative", "qtsvg", "qtwebsockets", "qtserialport", "qtwayland"],
+        "skip": ["Test", "TestInternalsPrivate", "Bootstrap", "Platform", "QSQLiteDriverPlugin"]
+    },
+    "components": [
+        {
+            "group": "EasyMorse",
+            "name": "EasyMorse",
+            "license": "GPL-3.0-or-later",
+            "copyright": "Copyright (C) 2019-2026 Gianni Peschiutta (F4IKZ)",
+            "url": "https://github.com/Artemia76/EasyMorse",
+            "usage": "This application. The source code of each version is published under the tag of the same name."
+        },
+        {
+            "group": "Libraries",
+            "name": "Qt",
+            "version": "6.8.3",
+            "license": "LGPL-3.0-only OR GPL-3.0-only",
+            "copyright": "Copyright (C) The Qt Company Ltd. and other contributors.",
+            "url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/",
+            "usage": "Qt Core, Gui, Network, WebSockets, Qml, Quick, Quick Controls, Svg, Serial Port and, on Linux, Wayland. Used unmodified, under the GNU GPL version 3. Packages made by a Linux distribution use the Qt of that distribution."
+        },
+        {
+            "group": "Libraries",
+            "name": "libjuice",
+            "version": "1.7.4 (b89c792e3612faf2f12cf35bcc56857313a06be3)",
+            "license": "MPL-2.0",
+            "copyright": "Copyright (c) 2020-2022 Paul-Louis Ageneau",
+            "url": "https://github.com/paullouisageneau/libjuice",
+            "usage": "Peer to peer connections (ICE) of the network sessions. Used unmodified."
+        },
+        {
+            "group": "Libraries",
+            "name": "Monocypher",
+            "version": "4.0.3",
+            "license": "CC0-1.0 OR BSD-2-Clause",
+            "copyright": "Copyright (c) 2017-2023, Loup Vaillant\nCopyright (c) 2017-2019, Michael Savage\nCopyright (c) 2017-2023, Fabio Scotoni",
+            "url": "https://monocypher.org",
+            "usage": "Encryption of the peer to peer sessions."
+        },
+        {
+            "group": "Libraries",
+            "name": "miniaudio",
+            "version": "0.11.26",
+            "license": "Unlicense OR MIT-0",
+            "copyright": "Copyright 2025 David Reid",
+            "url": "https://miniaud.io",
+            "usage": "Sound output."
+        },
+        {
+            "group": "Libraries",
+            "name": "OpenSSL",
+            "version": "3.5.9",
+            "license": "Apache-2.0",
+            "copyright": "Copyright 1999-2025 The OpenSSL Project Authors. All Rights Reserved.",
+            "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.9",
+            "usage": "Encrypted connections (https, wss) of the Android application, built unmodified by packaging/android/make-openssl.sh.",
+            "platforms": "Android"
+        },
+        {
+            "group": "Libraries",
+            "name": "ICU",
+            "version": "73.2",
+            "license": "Unicode-DFS-2016 AND ICU",
+            "copyright": "Copyright (c) 1991-2023 Unicode, Inc.\nCopyright (c) 1995-2016 International Business Machines Corporation and others",
+            "url": "https://github.com/unicode-org/icu/releases/tag/release-73-2",
+            "usage": "Unicode support of Qt, shipped with Qt in the Linux packages that bundle it.",
+            "platforms": "Linux"
+        },
+        {
+            "group": "Libraries",
+            "name": "Wayland pointer constraints protocol",
+            "version": "unstable v1",
+            "license": "MIT",
+            "copyright": "Copyright (c) 2014 Jonas Ådahl\nCopyright (c) 2015 Red Hat Inc.",
+            "url": "https://gitlab.freedesktop.org/wayland/wayland-protocols",
+            "usage": "Holds the pointer still while the mouse is used as a key under Wayland.",
+            "platforms": "Linux"
+        },
+        {
+            "group": "Libraries",
+            "name": "Microsoft Visual C++ runtime",
+            "license": "",
+            "copyright": "Copyright (c) Microsoft Corporation",
+            "url": "https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist",
+            "usage": "Shipped next to the executable as a system library of Windows, under the terms of Microsoft.",
+            "platforms": "Windows"
+        },
+        {
+            "group": "Fonts",
+            "name": "Inter",
+            "version": "4.001",
+            "license": "OFL-1.1",
+            "copyright": "Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)",
+            "url": "https://github.com/rsms/inter",
+            "usage": "Interface font."
+        },
+        {
+            "group": "Fonts",
+            "name": "JetBrains Mono",
+            "version": "2.304",
+            "license": "OFL-1.1",
+            "copyright": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)",
+            "url": "https://github.com/JetBrains/JetBrainsMono",
+            "usage": "Font of the Morse text and of the figures."
+        }
+    ]
+}
