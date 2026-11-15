@@ -119,8 +119,7 @@ public:
         // Stray carrier, drifting by +-15 Hz over 40 s
         m_drift += 2.0 * std::numbers::pi / (40.0 * m_sampleRate);
         const double frequency = m_carrierOffset + 15.0 * std::sin(m_drift);
-        m_carrierPhase = std::fmod(m_carrierPhase + 2.0 * std::numbers::pi * frequency / m_sampleRate,
-                                   2.0 * std::numbers::pi);
+        m_carrierPhase = wrapPhase(m_carrierPhase + 2.0 * std::numbers::pi * frequency / m_sampleRate);
         out += std::polar(0.25 * m_level, m_carrierPhase);
         return out;
     }

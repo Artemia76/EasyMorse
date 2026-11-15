@@ -43,6 +43,18 @@ namespace band
 using Complex = std::complex<double>;
 
 ///
+/// \brief Brings an oscillator phase back into [0, 2 pi)
+///
+/// floor() rather than fmod(): glibc 2.38 gave fmod a new symbol version, which
+/// stopped the packages built on Ubuntu 24.04 from starting on older systems.
+///
+inline double wrapPhase(double phase)
+{
+    constexpr double turn = 2.0 * std::numbers::pi;
+    return phase - turn * std::floor(phase / turn);
+}
+
+///
 /// \brief Random numbers (xorshift64*): fast and reproducible
 ///
 class Random
@@ -151,7 +163,7 @@ public:
         {
             m_from = m_to;
             for (Path& path : m_paths)
-                path.phase = std::fmod(path.phase + path.step, 2.0 * std::numbers::pi);
+                path.phase = wrapPhase(path.phase + path.step);
             m_to = compute();
             m_count = 0;
         }

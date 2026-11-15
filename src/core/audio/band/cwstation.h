@@ -116,8 +116,7 @@ public:
             m_chirp = m_chirpHz;
         m_chirp *= m_chirpDecay;
 
-        m_phase = std::fmod(m_phase + 2.0 * std::numbers::pi * (m_offset + m_chirp) / m_sampleRate,
-                            2.0 * std::numbers::pi);
+        m_phase = wrapPhase(m_phase + 2.0 * std::numbers::pi * (m_offset + m_chirp) / m_sampleRate);
         const Complex qsb = m_lastQsb = m_qsb.next();
         const Complex flutter = m_flutter.next();
         if (m_position == 0.0)

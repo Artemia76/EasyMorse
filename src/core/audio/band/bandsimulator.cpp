@@ -147,7 +147,7 @@ float BandSimulator::next()
     // Receiver: filter, AGC, then up to the tone frequency
     const Complex filtered = m_filter.process(antenna);
     const double agc = m_agc.gain(std::abs(filtered));
-    m_phase = std::fmod(m_phase + 2.0 * std::numbers::pi * m_frequency / m_sampleRate, 2.0 * std::numbers::pi);
+    m_phase = wrapPhase(m_phase + 2.0 * std::numbers::pi * m_frequency / m_sampleRate);
     const double received = (m_agcOn ? agc : 1.0) * (filtered * std::polar(1.0, m_phase)).real();
 
     // Keying switches the transceiver to transmit: the receiver is muted
