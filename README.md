@@ -112,7 +112,8 @@ above (about 12 minutes on a Pi 4 with `cmake --build ... -j4`). Tested on a
 Pi 4 (4 GB) under the default labwc (Wayland) desktop: OpenGL ES rendering on
 the V3D GPU, sound through PipeWire; the band simulator needs under 7 % of
 one core with the busiest conditions. Raspberry Pi OS 12 (Bookworm) ships Qt 6.4, too old
-to build EasyMorse.
+to build EasyMorse, and its glibc 2.36 is older than the 2.38 the arm64
+packages need.
 
 ### Fedora
 

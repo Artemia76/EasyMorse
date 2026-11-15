@@ -98,6 +98,13 @@ jobs:
         if: runner.os == 'Linux'
         working-directory: out/build/${{ matrix.preset }}
         run: |
+          # No bundled file may need a newer glibc than the package declares
+          declared=$(dpkg-deb -f easymorse_*.deb Depends | grep -oP 'libc6 \(>= \K[0-9.]+')
+          needed=$(dpkg-deb -x easymorse_*.deb contents && find contents -type f \( -name '*.so*' -o -name easymorse \) \
+            -exec objdump -T {} + 2>/dev/null | grep -oP 'GLIBC_\K[0-9.]+' | sort -uV | tail -1)
+          echo "glibc declared $declared, needed $needed"
+          test "$(printf '%s\n' "$needed" "$declared" | sort -V | tail -1)" = "$declared"
+          rm -rf contents
           sudo apt-get install -y xvfb "./$(ls easymorse_*.deb)"
           # Without the variables of the Qt used to build: only the bundled one counts
           clean_env="env -i PATH=$PATH HOME=$HOME LANG=C.UTF-8 QT_QUICK_BACKEND=software"

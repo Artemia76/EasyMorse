@@ -46,8 +46,15 @@ else()
         # Qt is inside the packages: only what it needs from the system is
         # declared, with the names of both Debian's and Ubuntu's libraries
         set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/cmake/CPackLinuxBundle.cmake")
+        # Oldest glibc the bundled files need (checked by the CI): the Qt for
+        # arm64 Linux is built against glibc 2.38, the x86_64 one against 2.34
+        if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+            set(EASYMORSE_MIN_GLIBC 2.38)
+        else()
+            set(EASYMORSE_MIN_GLIBC 2.34)
+        endif()
         set(CPACK_DEBIAN_PACKAGE_DEPENDS
-            "libc6 (>= 2.34), libstdc++6 (>= 13.1), libgcc-s1, libgl1, libopengl0, libegl1, libglx0, libfontconfig1, libfreetype6, libdbus-1-3, libglib2.0-0t64 | libglib2.0-0, libx11-6, libx11-xcb1, libxcb1, libxkbcommon0, libxkbcommon-x11-0, libxcb-cursor0, libxcb-glx0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render0, libxcb-render-util0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-util1, libxcb-xfixes0, libxcb-xkb1")
+            "libc6 (>= ${EASYMORSE_MIN_GLIBC}), libstdc++6 (>= 13.1), libgcc-s1, libgl1, libopengl0, libegl1, libglx0, libfontconfig1, libfreetype6, libdbus-1-3, libglib2.0-0t64 | libglib2.0-0, libx11-6, libx11-xcb1, libxcb1, libxkbcommon0, libxkbcommon-x11-0, libxcb-cursor0, libxcb-glx0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render0, libxcb-render-util0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-util1, libxcb-xfixes0, libxcb-xkb1")
         set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "libssl3t64 | libssl3, libasound2t64 | libasound2")
         set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
             "${CMAKE_SOURCE_DIR}/packaging/linux/deb/postinst;${CMAKE_SOURCE_DIR}/packaging/linux/deb/prerm")
