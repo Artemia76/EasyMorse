@@ -9,4 +9,8 @@ if [ "$1" = "configure" ]; then
     if command -v update-desktop-database > /dev/null; then
         update-desktop-database -q /usr/share/applications || true
     fi
+    # Menus look icons up in the theme cache: without this the menu entry has none
+    if command -v gtk-update-icon-cache > /dev/null; then
+        gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+    fi
 fi

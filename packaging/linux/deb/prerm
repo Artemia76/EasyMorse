@@ -4,4 +4,7 @@ if [ "$1" = "remove" ]; then
     rm -f /usr/bin/easymorse \
         /usr/share/applications/easymorse.desktop \
         /usr/share/icons/hicolor/256x256/apps/easymorse.png
+    if command -v gtk-update-icon-cache > /dev/null; then
+        gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+    fi
 fi
