@@ -112,7 +112,7 @@ MorseSequencer::MorseSequencer(AudioEngine* pAudio, QObject* parent)
     connect(m_audio, &AudioEngine::markerReached, this, &MorseSequencer::onMarker);
 }
 
-bool MorseSequencer::play(const QString& pText, const MorseTiming& pTiming)
+bool MorseSequencer::play(const QString& pText, const MorseTiming& pTiming, double pLeadIn)
 {
     stop();
     if (!m_audio->isRunning())
@@ -121,7 +121,8 @@ bool MorseSequencer::play(const QString& pText, const MorseTiming& pTiming)
     if (m_timeline.isEmpty())
         return false;
     m_generation = m_audio->cancelScheduled();
-    m_startFrame = m_audio->framesRendered() + m_audio->latencyFrames();
+    m_startFrame = m_audio->framesRendered() + m_audio->latencyFrames()
+                   + std::llround(qMax(0.0, pLeadIn) * AudioEngine::SampleRate);
     m_next = 0;
     m_playing = true;
     feed();

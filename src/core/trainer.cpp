@@ -296,12 +296,12 @@ QStringList Trainer::serialPorts() const
 #endif
 }
 
-bool Trainer::play(const QString& pText, bool pPrivate)
+bool Trainer::play(const QString& pText, bool pPrivate, int pLeadInMs)
 {
     const MorseTiming timing = MorseTiming::fromSpeed(m_settings->wordSpeed(),
                                                       m_settings->charSpeed(),
                                                       m_settings->farnsworth());
-    if (!m_sequencer.play(pText, timing))
+    if (!m_sequencer.play(pText, timing, pLeadInMs / 1000.0))
     {
         CLogger::instance()->log(tr("Nothing to play, or no sound output"), Qt::darkMagenta);
         return false;
@@ -321,7 +321,7 @@ bool Trainer::play(const QString& pText, bool pPrivate)
                 m_playEdges.append(event);
         }
     }
-    m_playStartMs = MonotonicClock::nowMs();
+    m_playStartMs = MonotonicClock::nowMs() + qMax(0, pLeadInMs);
     sendPlayedKeys();
     m_playing = true;
     emit playingChanged();

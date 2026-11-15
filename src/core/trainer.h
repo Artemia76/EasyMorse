@@ -116,8 +116,9 @@ public:
     /// \brief play sends a text on the sound output
     /// \param pPrivate the text is not shown (charSent) nor sent to the
     /// correspondents: copy practice, where the operator must find it by ear
+    /// \param pLeadInMs silence before the first sign
     ///
-    Q_INVOKABLE bool play(const QString& pText, bool pPrivate = false);
+    Q_INVOKABLE bool play(const QString& pText, bool pPrivate = false, int pLeadInMs = 0);
     Q_INVOKABLE void stop();
     ///
     /// \brief speed learnt by the decoder of a remote station, in WPM

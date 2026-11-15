@@ -45,6 +45,23 @@ private slots:
         QVERIFY(!sequencer.isPlaying());
     }
 
+    void leadInDelaysTheFirstSign()
+    {
+        AudioEngine audio;
+        QVERIFY(audio.start());
+        MorseSequencer sequencer(&audio);
+        QSignalSpy chars(&sequencer, &MorseSequencer::charPlayed);
+        QSignalSpy finished(&sequencer, &MorseSequencer::finished);
+        const MorseTiming timing = MorseTiming::fromSpeed(60, 60, false);
+        QElapsedTimer clock;
+        clock.start();
+        QVERIFY(sequencer.play("EE", timing, 0.5));
+        QVERIFY(chars.wait(3000));
+        QVERIFY2(clock.elapsed() >= 450, qPrintable(QString("first sign too early: %1 ms").arg(clock.elapsed())));
+        QVERIFY(finished.wait(3000));
+        QVERIFY(clock.elapsed() >= 650);
+    }
+
     void stopCancelsAtOnce()
     {
         AudioEngine audio;

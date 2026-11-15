@@ -230,6 +230,32 @@ private slots:
         practice.stop();
     }
 
+    void newSeriesDuringReplay()
+    {
+        Settings settings(newSettingsFile());
+        settings.setCharSpeed(Settings::MaxSpeed);
+        settings.setWordSpeed(Settings::MaxSpeed);
+        Trainer trainer(&settings);
+        trainer.start();
+        ListeningPractice practice(&trainer, Seed);
+        practice.setActive(true);
+        QVERIFY(practice.start());
+        practice.finish();
+        practice.replay();
+        QVERIFY(trainer.isPlaying());
+        // "New series" while the replay is still heard
+        QVERIFY(practice.start());
+        QCOMPARE(practice.state(), ListeningPractice::Playing);
+        QVERIFY(trainer.isPlaying());
+        QVERIFY(practice.sent().isEmpty());
+        // Its end is not taken for the end of the new series
+        QTest::qWait(ListeningPractice::BreakMs / 2);
+        QCOMPARE(practice.state(), ListeningPractice::Playing);
+        // The new series is played to its end, then left for the last characters
+        QTRY_COMPARE_WITH_TIMEOUT(practice.state(), ListeningPractice::Finishing, 30000);
+        practice.stop();
+    }
+
     void noSoundNoSeries()
     {
         Settings settings(newSettingsFile());

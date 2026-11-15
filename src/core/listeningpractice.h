@@ -86,6 +86,8 @@ public:
     static constexpr int PassPercent = 90;
     // Copy time left after the sound, restarted by each character typed
     static constexpr int FinishDelayMs = 5000;
+    // Silence between a replay cut short and the next series
+    static constexpr int BreakMs = 1200;
 
     ListeningPractice(Trainer* pTrainer, std::uint64_t pSeed, QObject* parent = nullptr);
 

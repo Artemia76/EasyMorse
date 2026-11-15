@@ -79,9 +79,10 @@ public:
 
     ///
     /// \brief play a text, replacing any playback in progress
+    /// \param pLeadIn seconds of silence before the first sign
     /// \return false if there is nothing to play or no sound output
     ///
-    bool    play(const QString& pText, const MorseTiming& pTiming);
+    bool    play(const QString& pText, const MorseTiming& pTiming, double pLeadIn = 0.0);
     void    stop();
     bool    isPlaying() const;
 

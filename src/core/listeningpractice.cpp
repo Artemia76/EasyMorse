@@ -81,7 +81,12 @@ bool ListeningPractice::start()
     for (int i = 0; i < GroupCount; ++i)
         groups.append(m_course.nextGroup(GroupLength, true));    // pure chance, repeats included
     const QString sent = groups.join(' ');
-    if (!m_trainer->play(sent, true))
+    // A replay still heard is cut, and a silence keeps it apart from the new
+    // series: heard straight after it, the new series sounded like its end
+    const bool cut = m_state == Done && m_trainer->isPlaying();
+    if (cut)
+        m_trainer->stop();
+    if (!m_trainer->play(sent, true, cut ? BreakMs : 0))
         return false;
     m_sent = sent;
     m_finishTimer.stop();
