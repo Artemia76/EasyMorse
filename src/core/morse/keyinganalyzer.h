@@ -132,6 +132,11 @@ public:
     const QList<Character>& characters() const { return m_chars; }
     int                     correctCount() const;
     ///
+    /// \brief characterError from 0 (well keyed) to 1 (wrong or not decoded):
+    /// how far the elements and gaps of a character are from the ideal
+    ///
+    double                  characterError(qsizetype pIndex) const;
+    ///
     /// \brief score from 0 to 100: characters right and keying proportions
     ///
     int                     score() const { return m_score; }

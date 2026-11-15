@@ -144,6 +144,23 @@ int KeyingAnalyzer::correctCount() const
                                           [](const Character& pChar) { return pChar.correct; }));
 }
 
+double KeyingAnalyzer::characterError(qsizetype pIndex) const
+{
+    if (pIndex < 0 || pIndex >= m_chars.size() || !m_chars.at(pIndex).correct)
+        return 1.0;
+    // Elements and gaps inside the character (none rated with the iambic keyer)
+    double sum = 0.0;
+    int count = 0;
+    for (const Segment& segment : m_real)
+    {
+        if (segment.charIndex != pIndex || !segment.rated || segment.kind == Kind::CharGap)
+            continue;
+        sum += 1.0 - itemScore(segment.error);
+        ++count;
+    }
+    return count > 0 ? sum / count : 0.0;
+}
+
 bool KeyingAnalyzer::isDash(const Element& pElement, qsizetype pIndexInChar, double pUnit) const
 {
     // As the decoder classified it once the character is decoded

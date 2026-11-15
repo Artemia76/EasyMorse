@@ -70,6 +70,7 @@ namespace Key
     constexpr const char* ServerUrl = "server/Url";
     constexpr const char* KochLevel = "practice/KochLevel";
     constexpr const char* ListeningKochLevel = "listening/KochLevel";
+    constexpr const char* KeyingWeakness = "practice/Weakness";
     constexpr const char* ServerToken = "server/Token";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
@@ -133,6 +134,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_serverUrl = m_store->value(Key::ServerUrl, DefaultServerUrl).toString();
     m_kochLevel = qMax(MinKochLevel, m_store->value(Key::KochLevel, MinKochLevel).toInt());
     m_listeningKochLevel = qMax(MinKochLevel, m_store->value(Key::ListeningKochLevel, MinKochLevel).toInt());
+    m_keyingWeakness = m_store->value(Key::KeyingWeakness).toString();
     m_serverToken = m_store->value(Key::ServerToken).toString();
 }
 
@@ -423,6 +425,11 @@ void Settings::setListeningKochLevel(int pLevel)
 {
     if (store(Key::ListeningKochLevel, m_listeningKochLevel, qMax(MinKochLevel, pLevel)))
         emit listeningKochLevelChanged();
+}
+
+void Settings::setKeyingWeakness(const QString& pWeakness)
+{
+    store(Key::KeyingWeakness, m_keyingWeakness, pWeakness);
 }
 
 void Settings::setServerUrl(const QString& pUrl)

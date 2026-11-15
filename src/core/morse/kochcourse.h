@@ -66,8 +66,11 @@ public:
     /// one comes about a third of the time
     /// \param pRepeats a character may follow itself (copy practice: by ear,
     /// a forced alternation would be guessed); never for keying
+    /// \param pFocus a character to work on (the worst keyed): it takes
+    /// FocusShare of the draws that are not the newest character
     ///
-    QString nextGroup(int pLength = 5, bool pRepeats = false);
+    QString nextGroup(int pLength = 5, bool pRepeats = false, QChar pFocus = QChar());
+    static constexpr double FocusShare = 0.25;
 
     ///
     /// \brief recordResult remembers how a group was sent

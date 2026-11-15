@@ -81,6 +81,39 @@ private slots:
         QVERIFY2(share > 0.45 && share < 0.65, qPrintable(QString::number(share)));
     }
 
+    void focusComesMoreOften()
+    {
+        KochCourse course(42);
+        course.setLevel(10);
+        const QChar focus = u'U';
+        auto share = [&course](QChar pFocus, bool pRepeats) {
+            int hits = 0;
+            int total = 0;
+            for (int i = 0; i < 2000; ++i)
+            {
+                const QString group = course.nextGroup(5, pRepeats, pFocus);
+                for (qsizetype j = 0; j < group.size(); ++j)
+                {
+                    if (!pRepeats && j > 0 && group[j] == group[j - 1])
+                        return -1.0;
+                    hits += group[j] == u'U' ? 1 : 0;
+                    ++total;
+                }
+            }
+            return static_cast<double>(hits) / total;
+        };
+        // 2/3 x (1/4 + 3/4 x 1/10) = 0.217, against 2/3 x 1/10 = 0.067 without focus
+        const double focused = share(focus, true);
+        QVERIFY2(focused > 0.19 && focused < 0.245, qPrintable(QString::number(focused)));
+        const double plain = share(QChar(), true);
+        QVERIFY2(plain > 0.05 && plain < 0.085, qPrintable(QString::number(plain)));
+        // Never twice in a row for keying
+        QVERIFY(share(focus, false) > 2 * plain);
+        // A character not learnt is ignored
+        for (int i = 0; i < 100; ++i)
+            QVERIFY(!course.nextGroup(5, false, u'X').contains(u'X'));
+    }
+
     void groupsAreReproducible()
     {
         KochCourse first(7);

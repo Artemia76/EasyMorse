@@ -191,6 +191,11 @@ public:
     QDateTime lastUpdateCheck() const { return m_lastUpdateCheck; }
     int     kochLevel() const { return m_kochLevel; }
     int     listeningKochLevel() const { return m_listeningKochLevel; }
+    ///
+    /// \brief keyingWeakness: keying error of each character in the keying
+    /// practice, "K:0.42 M:0.10" (see KeyingPractice)
+    ///
+    QString keyingWeakness() const { return m_keyingWeakness; }
     QString serverUrl() const { return m_serverUrl; }
     ///
     /// \brief token of the last login, to reconnect without the password
@@ -239,6 +244,7 @@ public:
     void    setLastUpdateCheck(const QDateTime& pTime);
     void    setKochLevel(int pLevel);
     void    setListeningKochLevel(int pLevel);
+    void    setKeyingWeakness(const QString& pWeakness);
     void    setServerUrl(const QString& pUrl);
     void    setServerToken(const QString& pToken);
 
@@ -324,6 +330,7 @@ private:
     QDateTime   m_lastUpdateCheck;
     int         m_kochLevel;
     int         m_listeningKochLevel;
+    QString     m_keyingWeakness;
     QString     m_serverUrl;
     QString     m_serverToken;
 };

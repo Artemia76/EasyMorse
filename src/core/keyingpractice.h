@@ -31,6 +31,7 @@
 #ifndef KEYINGPRACTICE_H
 #define KEYINGPRACTICE_H
 
+#include <QHash>
 #include <QObject>
 #include <QStringList>
 #include <QVariantList>
@@ -52,6 +53,8 @@ class KeyingPractice : public QObject
     Q_PROPERTY(int kochLevel READ kochLevel WRITE setKochLevel NOTIFY kochChanged)
     Q_PROPERTY(QString kochCharacters READ kochCharacters NOTIFY kochChanged)
     Q_PROPERTY(int kochMaxLevel READ kochMaxLevel CONSTANT)
+    // Worst keyed character, drawn more often; empty if none stands out
+    Q_PROPERTY(QString focusCharacter READ focusCharacter NOTIFY groupChanged)
     // Analysis of the group being keyed (live) or of the last one keyed
     Q_PROPERTY(bool live READ isLive NOTIFY analysisChanged)
     Q_PROPERTY(QString analysisGroup READ analysisGroup NOTIFY analysisChanged)
@@ -78,6 +81,10 @@ public:
     static constexpr int GroupLength = 5;
     static constexpr int ExcellentScore = 85;
     static constexpr int GoodScore = 65;
+    // Keying error of a character: share of the past kept at each group
+    static constexpr double WeaknessKeep = 0.7;
+    // Error from which the worst character is worked on
+    static constexpr double FocusThreshold = 0.25;
 
     explicit KeyingPractice(Trainer* pTrainer, QObject* parent = nullptr);
 
@@ -89,6 +96,11 @@ public:
     void        setKochLevel(int pLevel);
     QString     kochCharacters() const { return m_course.characters(); }
     int         kochMaxLevel() const { return KochCourse::maxLevel(); }
+    QString     focusCharacter() const;
+    ///
+    /// \brief weakness: keying error of a character, from 0 to 1
+    ///
+    double      weakness(QChar pCharacter) const { return m_weakness.value(pCharacter, 0.0); }
 
     bool        isLive() const { return m_live; }
     QString     analysisGroup() const { return m_analyzer.expected(); }
@@ -136,6 +148,8 @@ private:
     void        refresh();
     void        finish();
     double      fallbackUnit() const;
+    void        learnWeakness();
+    QString     drawGroup();
 
     Trainer*        m_trainer;
     Settings*       m_settings;
@@ -150,6 +164,7 @@ private:
     QVariantList    m_characters;
     QVariantList    m_realSegments;
     QVariantList    m_idealSegments;
+    QHash<QChar, double> m_weakness;
 };
 
 #endif // KEYINGPRACTICE_H

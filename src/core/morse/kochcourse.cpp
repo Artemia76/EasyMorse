@@ -44,9 +44,10 @@ void KochCourse::setLevel(int pLevel)
     m_results.clear();
 }
 
-QString KochCourse::nextGroup(int pLength, bool pRepeats)
+QString KochCourse::nextGroup(int pLength, bool pRepeats, QChar pFocus)
 {
     const QString learnt = characters();
+    const bool focus = !pFocus.isNull() && learnt.contains(pFocus);
     QString group;
     QChar previous;
     for (int i = 0; i < pLength; ++i)
@@ -58,6 +59,8 @@ QString KochCourse::nextGroup(int pLength, bool pRepeats)
         {
             if (m_random.uniform() < 1.0 / 3.0)
                 next = newest();
+            else if (focus && m_random.uniform() < FocusShare)
+                next = pFocus;
             else
                 next = learnt.at(static_cast<qsizetype>(m_random.uniform() * learnt.size()));
         } while (!pRepeats && next == previous && learnt.size() > 1);

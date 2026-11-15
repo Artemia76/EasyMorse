@@ -90,6 +90,13 @@ KeyingPractice::KeyingPractice(Trainer* pTrainer, QObject* parent)
     , m_course(QRandomGenerator::global()->generate64())
 {
     m_course.setLevel(m_settings->kochLevel());
+    for (const QString& item : m_settings->keyingWeakness().split(u' ', Qt::SkipEmptyParts))
+    {
+        bool ok = false;
+        const double value = item.mid(2).toDouble(&ok);
+        if (item.size() > 2 && item.at(1) == u':' && ok)
+            m_weakness.insert(item.at(0), std::clamp(value, 0.0, 1.0));
+    }
     connect(m_settings, &Settings::kochLevelChanged, this, [this] {
         if (m_settings->kochLevel() == m_course.level())
             return;
@@ -183,9 +190,53 @@ QString KeyingPractice::pattern(const QString& pCharacter) const
     return pCharacter.isEmpty() ? QString() : MorseCodec::encode(pCharacter.at(0));
 }
 
+QString KeyingPractice::focusCharacter() const
+{
+    // Among the characters learnt only: the level may have gone down
+    const QString learnt = m_course.characters();
+    QChar worst;
+    double error = FocusThreshold;
+    for (QChar character : learnt)
+    {
+        if (m_weakness.value(character, 0.0) >= error)
+        {
+            worst = character;
+            error = m_weakness.value(character);
+        }
+    }
+    return worst.isNull() ? QString() : QString(worst);
+}
+
+QString KeyingPractice::drawGroup()
+{
+    const QString focus = focusCharacter();
+    return m_course.nextGroup(GroupLength, false, focus.isEmpty() ? QChar() : focus.at(0));
+}
+
+void KeyingPractice::learnWeakness()
+{
+    const QList<KeyingAnalyzer::Character>& characters = m_analyzer.characters();
+    for (qsizetype i = 0; i < characters.size(); ++i)
+    {
+        const QChar character = characters.at(i).expected;
+        const double error = m_analyzer.characterError(i);
+        // A character never keyed before starts from its first result
+        m_weakness[character] = m_weakness.contains(character)
+                                    ? WeaknessKeep * m_weakness.value(character) + (1.0 - WeaknessKeep) * error
+                                    : error;
+    }
+    QStringList items;
+    for (QChar character : KochCourse::order())
+    {
+        if (m_weakness.contains(character))
+            items.append(QString(character) + u':' + QString::number(m_weakness.value(character), 'f', 3));
+    }
+    m_settings->setKeyingWeakness(items.join(u' '));
+}
+
 void KeyingPractice::newGroup()
 {
-    m_group = m_course.nextGroup(GroupLength);
+    m_group = drawGroup();
     restart();
 }
 
@@ -278,6 +329,7 @@ void KeyingPractice::finish()
     m_live = false;
     m_scored = true;
     refresh();
+    learnWeakness();
     if (m_course.recordResult(m_analyzer.correctCount(), static_cast<int>(m_analyzer.expected().size()), score()))
     {
         m_settings->setKochLevel(m_course.level());
@@ -285,7 +337,7 @@ void KeyingPractice::finish()
         emit levelUp(QString(m_course.newest()));
     }
     // The next group is shown at once; the result stays until it is keyed
-    m_group = m_course.nextGroup(GroupLength);
+    m_group = drawGroup();
     m_position = 0;
     emit groupChanged();
 }

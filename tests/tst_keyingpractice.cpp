@@ -158,6 +158,48 @@ private slots:
         QCOMPARE(settings.kochLevel(), 3);
     }
 
+    void worstCharacterIsWorkedOn()
+    {
+        const QString file = newSettingsFile();
+        {
+            Settings settings(file);
+            settings.setKochLevel(5);
+            Trainer trainer(&settings);
+            KeyingPractice practice(&trainer);
+            practice.setActive(true);
+            QVERIFY(practice.focusCharacter().isEmpty());
+            qint64 time = 1000;
+            // U is always keyed D, the others well
+            for (int i = 0; i < 12; ++i)
+            {
+                keyText(trainer, practice.group().replace(u'U', u'D'), time);
+                time += 2000;
+            }
+            QCOMPARE(practice.focusCharacter(), QString("U"));
+            QVERIFY(practice.weakness(u'U') > 0.5);
+            QVERIFY(practice.weakness(u'K') < 0.05);
+            QVERIFY(settings.keyingWeakness().contains("U:"));
+        }
+        // Remembered from one session to the next
+        Settings settings(file);
+        Trainer trainer(&settings);
+        KeyingPractice practice(&trainer);
+        QCOMPARE(practice.focusCharacter(), QString("U"));
+        // Keyed well again, it is no longer singled out
+        practice.setActive(true);
+        qint64 time = 1000;
+        for (int i = 0; i < 20 && !practice.focusCharacter().isEmpty(); ++i)
+        {
+            keyText(trainer, practice.group(), time);
+            time += 2000;
+        }
+        QVERIFY(practice.focusCharacter().isEmpty());
+        // A character no longer learnt is not singled out
+        settings.setKeyingWeakness("X:0.900");
+        KeyingPractice other(&trainer);
+        QVERIFY(other.focusCharacter().isEmpty());
+    }
+
     void trainerReportsLocalEdges()
     {
         Settings settings(newSettingsFile());

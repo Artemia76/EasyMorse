@@ -107,6 +107,18 @@ Page {
                     ToolTip.visible: hovered
                     ToolTip.text: Accessible.name
                 }
+                Chip {
+                    // The worst keyed character comes more often
+                    visible: Practice.focusCharacter.length > 0
+                    textFormat: Text.StyledText
+                    text: qsTr("To work on: <b>%1</b>").arg(Practice.focusCharacter)
+                    foreground: Theme.accentText
+                    Accessible.name: qsTr("To work on: %1").arg(Practice.focusCharacter)
+                    HoverHandler { id: focusHover }
+                    ToolTip.visible: focusHover.hovered
+                    ToolTip.delay: 600
+                    ToolTip.text: qsTr("The character you key worst comes more often, until you key it well.")
+                }
             }
             RowLayout {
                 spacing: 8

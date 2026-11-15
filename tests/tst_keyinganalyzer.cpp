@@ -169,6 +169,37 @@ private slots:
         QVERIFY(analyzer.score() < 100);
     }
 
+    void characterErrors()
+    {
+        KeyingAnalyzer perfect;
+        perfect.start("KMURE", false, 100.0);
+        keyGroup(perfect, "KMURE", {});
+        for (qsizetype i = 0; i < 5; ++i)
+            QVERIFY(perfect.characterError(i) < 0.01);
+        QCOMPARE(perfect.characterError(5), 1.0);       // not keyed
+
+        // Short dashes: the characters made of dashes are the worst, E is fine
+        KeyingAnalyzer dashes;
+        dashes.start("KMURE", false, 100.0);
+        keyGroup(dashes, "KMURE", {.dash = 2.0});
+        QVERIFY(dashes.characterError(1) > 0.5);         // M --
+        QVERIFY(dashes.characterError(0) > 0.2);         // K -.-
+        QVERIFY(dashes.characterError(1) > dashes.characterError(0));
+        QVERIFY(dashes.characterError(4) < 0.01);        // E .
+
+        KeyingAnalyzer wrong;
+        wrong.start("KMURE", false, 100.0);
+        keyGroup(wrong, "KDURE", {}, "KDURE");
+        QCOMPARE(wrong.characterError(1), 1.0);
+        QVERIFY(wrong.characterError(0) < 0.01);
+
+        // Iambic: only right or wrong
+        KeyingAnalyzer iambic;
+        iambic.start("KMURE", true, 100.0);
+        keyGroup(iambic, "KMURE", {.dash = 2.0});
+        QCOMPARE(iambic.characterError(1), 0.0);
+    }
+
     void iambicJudgesTheSpacing()
     {
         // The keyer makes the elements: short dashes are not the operator's
