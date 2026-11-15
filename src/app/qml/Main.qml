@@ -159,6 +159,12 @@ ApplicationWindow {
                 text: qsTr("Decoder <b>%1</b> WPM").arg(Math.round(Trainer.decoderSpeed))
                       + (MorseSettings.decoderAutoAdapt ? "" : " · " + qsTr("locked"))
             }
+            // A mouse wired as a key works on every page: the pointer is held
+            // in the middle of the pages
+            MouseCaptureButton {
+                target: pageStack
+                compact: !window.wide
+            }
         }
     }
 
@@ -256,6 +262,7 @@ ApplicationWindow {
             }
 
             StackLayout {
+                id: pageStack
                 currentIndex: window.currentPage
                 Layout.fillWidth: true
                 Layout.fillHeight: true

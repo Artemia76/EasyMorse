@@ -5,18 +5,21 @@ import QtQuick.Controls
 import EasyMorse
 
 // Takes the mouse for a mouse wired as a Morse key: its buttons then key
-// wherever the pointer is, and the pointer is held over the key
+// wherever the pointer is, and the pointer is held still over the target
 Button {
     id: control
 
-    // Key or paddles the pointer is held over
+    // Item the pointer is held over
     required property Item target
+    // Icon only, the text in the tooltip
+    property bool compact: false
 
     visible: !Theme.mobile
     text: qsTr("Capture the mouse")
     icon.source: "../icons/mouse.svg"
     icon.width: 18
     icon.height: 18
+    display: compact ? AbstractButton.IconOnly : AbstractButton.TextBesideIcon
     Accessible.name: text
     flat: true
     enabled: !Mouse.captured
@@ -24,6 +27,6 @@ Button {
     // Hover is not updated while the mouse is captured
     ToolTip.visible: hovered && !Mouse.captured
     ToolTip.delay: 600
-    ToolTip.text: qsTr("For a mouse wired as a key: left button = key or dots, right button = dashes. %1 frees the mouse.")
+    ToolTip.text: (compact ? text + ". " : "") + qsTr("For a mouse wired as a key: left button = key or dots, right button = dashes. %1 frees the mouse.")
                   .arg(Keyboard.keyName(MorseSettings.releaseKey))
 }

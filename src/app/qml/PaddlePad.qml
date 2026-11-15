@@ -19,10 +19,9 @@ Item {
     RowLayout {
         id: paddles
         anchors.horizontalCenter: parent.horizontalCenter
-        // Centred in the room left above the capture button
-        y: (parent.height - capture.room - height) / 2
+        anchors.verticalCenter: parent.verticalCenter
         width: Math.min(parent.width, 520)
-        height: Math.min(parent.height - capture.room, 260)
+        height: Math.min(parent.height, 260)
         spacing: 16
 
         Repeater {
@@ -98,14 +97,5 @@ Item {
                 Accessible.name: paddle.dash ? qsTr("Dash paddle") : qsTr("Dot paddle")
             }
         }
-    }
-
-    MouseCaptureButton {
-        id: capture
-        // Height kept free under the paddles
-        readonly property real room: visible ? height + 4 : 0
-        target: paddles
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
     }
 }
