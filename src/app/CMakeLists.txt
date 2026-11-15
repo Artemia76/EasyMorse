@@ -219,6 +219,26 @@ endif()
 install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/THIRD-PARTY-NOTICES.txt" "${PROJECT_SOURCE_DIR}/README.md"
     DESTINATION "${_doc_destination}")
 
+if(EASYMORSE_DEPLOY_QT AND UNIX AND NOT APPLE AND NOT ANDROID)
+    # Qt deploys only its default platform plugin (xcb): add the Wayland one, so
+    # that the bundled Qt runs natively on Wayland desktops (Raspberry Pi OS,
+    # GNOME, KDE) instead of through XWayland, where the mouse lock cannot work
+    find_package(Qt6 QUIET COMPONENTS WaylandClient)
+    if(TARGET Qt6::QWaylandIntegrationPlugin AND TARGET Qt6::QWaylandXdgShellIntegrationPlugin)
+        # Linked so that the deployment also takes the plugins of this module
+        # (xdg-shell, EGL client buffers, decorations)
+        target_link_libraries(easymorse PRIVATE Qt6::WaylandClient)
+        qt_import_plugins(easymorse INCLUDE
+            Qt6::QWaylandIntegrationPlugin
+            Qt6::QWaylandEglPlatformIntegrationPlugin
+            Qt6::QWaylandXdgShellIntegrationPlugin
+            Qt6::QWaylandEglClientBufferPlugin
+            Qt6::QWaylandBradientDecorationPlugin)
+    else()
+        message(WARNING "Qt Wayland plugins not found: the bundled Qt will need XWayland")
+    endif()
+endif()
+
 if(EASYMORSE_DEPLOY_QT)
     # Also deploys the QML modules used by the interface
     qt_generate_deploy_qml_app_script(
