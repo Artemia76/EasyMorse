@@ -508,6 +508,49 @@
     </message>
 </context>
 <context>
+    <name>LicensesDialog</name>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="31"/>
+        <source>Libraries</source>
+        <translation>Bibliothèques</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="32"/>
+        <source>Fonts</source>
+        <translation>Polices</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="33"/>
+        <source>Code carried by Qt</source>
+        <translation>Code inclus dans Qt</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="53"/>
+        <source>Licenses</source>
+        <translation>Licences</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="60"/>
+        <source>Close</source>
+        <translation>Fermer</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="67"/>
+        <source>EasyMorse is free software under the GNU General Public License version 3 or later. It ships the software below, each under its own license. Open a line to read its license.</source>
+        <translation>EasyMorse est un logiciel libre sous licence publique générale GNU version 3 ou ultérieure. Il est livré avec les logiciels ci-dessous, chacun sous sa propre licence. Ouvrez une ligne pour lire sa licence.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="129"/>
+        <source>Terms of its publisher</source>
+        <translation>Conditions de son éditeur</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/LicensesDialog.qml" line="130"/>
+        <source>only on %1</source>
+        <translation>seulement sous %1</translation>
+    </message>
+</context>
+<context>
     <name>ListeningPage</name>
     <message>
         <location filename="../src/app/qml/ListeningPage.qml" line="93"/>
@@ -1227,79 +1270,104 @@
         <translation>Interface</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="324"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="323"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="334"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="333"/>
         <source>Theme</source>
         <translation>Thème</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="337"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="336"/>
         <source>System</source>
         <translation>Système</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="337"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="336"/>
         <source>Light</source>
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="337"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="336"/>
         <source>Dark</source>
         <translation>Sombre</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="345"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="344"/>
         <source>Updates</source>
         <translation>Mises à jour</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="357"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="355"/>
         <source>Look for new versions</source>
         <translation>Rechercher les nouvelles versions</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="362"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="360"/>
         <source>Once a day, EasyMorse asks GitHub for the number of the latest version. Nothing about you is sent.</source>
         <translation>Une fois par jour, EasyMorse demande à GitHub le numéro de la dernière version. Rien ne vous concernant n&apos;est envoyé.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="366"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="364"/>
         <source>Check now</source>
         <translation>Vérifier maintenant</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="376"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="374"/>
         <source>Checking…</source>
         <translation>Vérification…</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="377"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="375"/>
         <source>EasyMorse %1 is up to date.</source>
         <translation>EasyMorse %1 est à jour.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="378"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="376"/>
         <source>EasyMorse %1 is available.</source>
         <translation>EasyMorse %1 est disponible.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="379"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="377"/>
         <source>GitHub could not be reached.</source>
         <translation>GitHub n&apos;a pas pu être joint.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="382"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="380"/>
         <source>Last check: %1</source>
         <translation>Dernière vérification : %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/OptionsPage.qml" line="392"/>
+        <location filename="../src/app/qml/OptionsPage.qml" line="390"/>
         <source>Download</source>
         <translation>Télécharger</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="399"/>
+        <source>About</source>
+        <translation>À propos</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="420"/>
+        <source>EasyMorse is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3 or (at your option) any later version. It comes with ABSOLUTELY NO WARRANTY.</source>
+        <translation>EasyMorse est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la licence publique générale GNU, version 3 ou (à votre choix) toute version ultérieure. Il est fourni SANS AUCUNE GARANTIE.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="428"/>
+        <source>Made with Qt %1 and other free software.</source>
+        <translation>Réalisé avec Qt %1 et d&apos;autres logiciels libres.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="438"/>
+        <source>Licenses</source>
+        <translation>Licences</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/OptionsPage.qml" line="442"/>
+        <source>Source code</source>
+        <translation>Code source</translation>
     </message>
 </context>
 <context>

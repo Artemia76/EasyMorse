@@ -35,6 +35,13 @@ if(TARGET easymorse_core)
 endif()
 
 if(TARGET easymorse)
+    # Notices embedded for the About page of the options
+    easymorse_add_test(tst_licenses SOURCES tst_licenses.cpp "${PROJECT_SOURCE_DIR}/src/app/licenses.cpp"
+        LIBRARIES Qt6::Qml)
+    target_include_directories(tst_licenses PRIVATE "${PROJECT_SOURCE_DIR}/src/app")
+    qt_add_resources(tst_licenses notices PREFIX /licenses BASE "${PROJECT_SOURCE_DIR}/packaging/licenses"
+        FILES "${PROJECT_SOURCE_DIR}/packaging/licenses/licenses.json")
+
     # The QML interface loads every page at desktop and phone size without
     # QML warnings (silent audio, settings in the build tree)
     add_test(NAME qml_self_test COMMAND easymorse --self-test)

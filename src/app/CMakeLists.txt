@@ -44,6 +44,7 @@ qt_add_qml_module(easymorse
         qml/PaddlePad.qml
         qml/MouseCaptureButton.qml
         qml/SafeAreaProbe.qml
+        qml/LicensesDialog.qml
     RESOURCES
         icons/send.svg
         icons/key.svg
@@ -65,6 +66,7 @@ qt_add_qml_module(easymorse
         keyboardkeyer.cpp keyboardkeyer.h
         mousekeyer.cpp mousekeyer.h
         pointerlock.cpp pointerlock.h
+        licenses.cpp licenses.h
         logmodel.cpp logmodel.h
         uisettings.cpp uisettings.h
 )
@@ -214,7 +216,8 @@ if(APPLE)
 else()
     set(_doc_destination "${CMAKE_INSTALL_DOCDIR}")
 endif()
-install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/README.md" DESTINATION "${_doc_destination}")
+install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.GPLv3" "${PROJECT_SOURCE_DIR}/THIRD-PARTY-NOTICES.txt" "${PROJECT_SOURCE_DIR}/README.md"
+    DESTINATION "${_doc_destination}")
 
 if(EASYMORSE_DEPLOY_QT)
     # Also deploys the QML modules used by the interface

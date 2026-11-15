@@ -313,7 +313,6 @@ Page {
                 Layout.fillWidth: true
                 Layout.leftMargin: 24
                 Layout.rightMargin: 24
-                Layout.bottomMargin: Updates.supported ? 0 : 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -347,7 +346,6 @@ Page {
                 Layout.fillWidth: true
                 Layout.leftMargin: 24
                 Layout.rightMargin: 24
-                Layout.bottomMargin: 24
 
                 GridLayout {
                     anchors.fill: parent
@@ -396,6 +394,62 @@ Page {
                     }
                 }
             }
+
+            Card {
+                title: qsTr("About")
+                Layout.fillWidth: true
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                Layout.bottomMargin: 24
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 8
+
+                    Label {
+                        text: "EasyMorse " + Qt.application.version
+                        font.pixelSize: 16
+                        font.weight: Font.DemiBold
+                    }
+                    Label {
+                        text: "Copyright © 2019-2026 Gianni Peschiutta (F4IKZ)"
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: qsTr("EasyMorse is free software: you can redistribute it and/or modify it under the terms "
+                                   + "of the GNU General Public License, version 3 or (at your option) any later version. "
+                                   + "It comes with ABSOLUTELY NO WARRANTY.")
+                        color: Theme.muted
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: qsTr("Made with Qt %1 and other free software.").arg(Licenses.qtVersion)
+                        color: Theme.muted
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    Flow {
+                        spacing: 8
+                        Layout.fillWidth: true
+
+                        Button {
+                            text: qsTr("Licenses")
+                            onClicked: licenses.open()
+                        }
+                        Button {
+                            text: qsTr("Source code")
+                            flat: true
+                            onClicked: Qt.openUrlExternally("https://github.com/Artemia76/EasyMorse")
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    LicensesDialog {
+        id: licenses
     }
 }
