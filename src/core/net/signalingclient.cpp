@@ -33,6 +33,8 @@
 #include <QNetworkRequest>
 #include <QWebSocket>
 
+#include <utility>
+
 #include "protocol/signaling.h"
 
 namespace
@@ -57,7 +59,10 @@ SignalingClient::SignalingClient(QObject* parent)
         setState(retry ? State::Connecting : State::Offline);
         m_room.clear();
         m_members.clear();
+        m_copy.clear();
         emit roomChanged();
+        if (std::exchange(m_liveAvailable, false))
+            emit liveChanged();
         if (!retry)
             return;
         // Lost: try again later with the same token
@@ -66,6 +71,9 @@ SignalingClient::SignalingClient(QObject* parent)
     });
     m_reconnectTimer.setSingleShot(true);
     connect(&m_reconnectTimer, &QTimer::timeout, this, &SignalingClient::openSocket);
+    m_copyTimer.setSingleShot(true);
+    m_copyTimer.setInterval(CopyIntervalMs);
+    connect(&m_copyTimer, &QTimer::timeout, this, &SignalingClient::flushCopy);
 }
 
 SignalingClient::~SignalingClient()
@@ -210,6 +218,44 @@ void SignalingClient::sendSignal(const QString& pTo, const QString& pKind, const
     send(Signaling::message(Signaling::Type::Signal, message));
 }
 
+void SignalingClient::setPublishLive(bool pPublish)
+{
+    if (pPublish == m_publishLive)
+        return;
+    m_publishLive = pPublish;
+    m_copy.clear();
+    if (m_state == State::Online && m_liveAvailable)
+        send(Signaling::message(Signaling::Type::Live, {{"on", m_publishLive}}));
+    emit liveChanged();
+}
+
+bool SignalingClient::canPublish() const
+{
+    return m_publishLive && m_liveAvailable && m_state == State::Online && !m_room.isEmpty();
+}
+
+void SignalingClient::sendCopy(const QString& pText)
+{
+    if (pText.isEmpty() || !canPublish())
+        return;
+    m_copy.append(pText);
+    if (m_copy.size() >= Signaling::MaxCopyChars)
+        flushCopy();
+    else if (!m_copyTimer.isActive())
+        m_copyTimer.start();
+}
+
+void SignalingClient::flushCopy()
+{
+    m_copyTimer.stop();
+    if (canPublish())
+    {
+        for (qsizetype i = 0; i < m_copy.size(); i += Signaling::MaxCopyChars)
+            send(Signaling::message(Signaling::Type::Copy, {{"text", m_copy.mid(i, Signaling::MaxCopyChars)}}));
+    }
+    m_copy.clear();
+}
+
 void SignalingClient::send(const QJsonObject& pMessage)
 {
     if (m_socket->state() == QAbstractSocket::ConnectedState)
@@ -225,6 +271,11 @@ void SignalingClient::onMessage(const QString& pText)
         m_callsign = message.value("callsign").toString();
         m_ice = message.value("ice").toObject();
         m_reconnectDelayMs = 0;
+        m_liveAvailable = message.value("live").toBool();
+        // Older servers do not know these messages
+        if (m_liveAvailable)
+            send(Signaling::message(Signaling::Type::Live, {{"on", m_publishLive}}));
+        emit liveChanged();
         setState(State::Online);
         if (!m_wantedRoom.isEmpty())
             joinRoom(m_wantedRoom);

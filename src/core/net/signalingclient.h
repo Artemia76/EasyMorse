@@ -26,6 +26,10 @@
 * Connection to the match-making server: account (REST), then a WebSocket
 * for presence, rooms, room chat and the signals used to open peer to peer
 * sessions. Reconnects by itself while logged in.
+*
+* Live page: when the user agrees (publishLive) and the server offers it
+* (liveAvailable), the text decoded from our own keying is sent to the
+* server in small batches (sendCopy) while in a room.
 * **************************************************************************/
 
 #ifndef SIGNALINGCLIENT_H
@@ -50,6 +54,8 @@ class SignalingClient : public QObject
     Q_PROPERTY(QStringList members READ members NOTIFY roomChanged)
     Q_PROPERTY(QVariantList rooms READ rooms NOTIFY roomsChanged)
     Q_PROPERTY(QString lastError READ lastError NOTIFY errorOccurred)
+    Q_PROPERTY(bool liveAvailable READ liveAvailable NOTIFY liveChanged)
+    Q_PROPERTY(bool publishLive READ publishLive WRITE setPublishLive NOTIFY liveChanged)
 
 public:
     enum class State
@@ -60,6 +66,9 @@ public:
         Online
     };
     Q_ENUM(State)
+
+    // Batches of keyed text sent to the live page
+    static constexpr int CopyIntervalMs = 300;
 
     explicit SignalingClient(QObject* parent = nullptr);
     ~SignalingClient() override;
@@ -79,6 +88,12 @@ public:
     QVariantList rooms() const { return m_rooms; }
     QString     lastError() const { return m_lastError; }
     ///
+    /// \brief the server has a live page (said in its welcome)
+    ///
+    bool        liveAvailable() const { return m_liveAvailable; }
+    bool        publishLive() const { return m_publishLive; }
+    void        setPublishLive(bool pPublish);
+    ///
     /// \brief STUN/TURN offered by the server in its welcome
     ///
     QJsonObject ice() const { return m_ice; }
@@ -96,6 +111,11 @@ public:
     Q_INVOKABLE void leaveRoom();
     Q_INVOKABLE void sendChat(const QString& pText);
     void    sendSignal(const QString& pTo, const QString& pKind, const QString& pData = QString());
+    ///
+    /// \brief characters decoded from our keying, for the live page; dropped
+    /// unless published, offered by the server and in a room
+    ///
+    void    sendCopy(const QString& pText);
 
 signals:
     void    stateChanged();
@@ -105,6 +125,7 @@ signals:
     void    chatReceived(const QString& pFrom, const QString& pText);
     void    signalReceived(const QString& pFrom, const QString& pKind, const QString& pData);
     void    errorOccurred(const QString& pMessage);
+    void    liveChanged();
 
 private:
     void    authenticate(const QString& pPath, const QString& pCallsign, const QString& pPassword);
@@ -115,6 +136,8 @@ private:
     void    dropSession();
     void    onMessage(const QString& pText);
     void    send(const QJsonObject& pMessage);
+    void    flushCopy();
+    bool    canPublish() const;
     void    setState(State pState);
     void    fail(const QString& pMessage);
     QUrl    apiUrl(const QString& pPath) const;
@@ -137,6 +160,10 @@ private:
     QVariantList            m_rooms;
     QString                 m_lastError;
     QJsonObject             m_ice;
+    bool                    m_liveAvailable = false;
+    bool                    m_publishLive = false;
+    QString                 m_copy;         // waiting for the next batch
+    QTimer                  m_copyTimer;
 };
 
 #endif // SIGNALINGCLIENT_H

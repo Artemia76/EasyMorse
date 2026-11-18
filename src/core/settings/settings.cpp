@@ -72,6 +72,7 @@ namespace Key
     constexpr const char* ListeningKochLevel = "listening/KochLevel";
     constexpr const char* KeyingWeakness = "practice/Weakness";
     constexpr const char* ServerToken = "server/Token";
+    constexpr const char* PublishLive = "server/PublishLive";
     constexpr const char* DecoderDotMs = "decoder/DotMs";
     constexpr const char* DecoderDashMs = "decoder/DashMs";
     constexpr const char* DecoderGapMs = "decoder/GapMs";
@@ -136,6 +137,7 @@ Settings::Settings(const QString& pIniFile, QObject* parent)
     m_listeningKochLevel = qMax(MinKochLevel, m_store->value(Key::ListeningKochLevel, MinKochLevel).toInt());
     m_keyingWeakness = m_store->value(Key::KeyingWeakness).toString();
     m_serverToken = m_store->value(Key::ServerToken).toString();
+    m_publishLive = m_store->value(Key::PublishLive, false).toBool();
 }
 
 Settings::~Settings() = default;
@@ -447,6 +449,12 @@ void Settings::setServerUrl(const QString& pUrl)
 void Settings::setServerToken(const QString& pToken)
 {
     store(Key::ServerToken, m_serverToken, pToken);
+}
+
+void Settings::setPublishLive(bool pPublish)
+{
+    if (store(Key::PublishLive, m_publishLive, pPublish))
+        emit publishLiveChanged();
 }
 
 void Settings::decoderEstimates(double& pDotMs, double& pDashMs, double& pGapMs) const

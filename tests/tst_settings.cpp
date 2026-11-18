@@ -35,6 +35,8 @@ private slots:
         QVERIFY(settings.callsign().isEmpty());
         QCOMPARE(settings.stunServer(), QString(Settings::DefaultStunServer));
         QCOMPARE(settings.serverUrl(), QString(Settings::DefaultServerUrl));
+        // Nothing shown on the server's live page unless asked
+        QVERIFY(!settings.publishLive());
         QCOMPARE(settings.jitterDelayMs(), 200);
         // Received Morse is not decoded by default: learn by ear
         QCOMPARE(settings.receiveDecodeMode(), 0);
@@ -102,6 +104,7 @@ private slots:
             settings.setLastUpdateCheck(QDateTime(QDate(2026, 11, 11), QTime(10, 0), QTimeZone::UTC));
             settings.setKochLevel(4);
             settings.setListeningKochLevel(7);
+            settings.setPublishLive(true);
         }
         Settings settings(file("persist.ini"));
         QCOMPARE(settings.toneFrequency(), 700);
@@ -115,6 +118,7 @@ private slots:
         // The two Koch levels are separate
         QCOMPARE(settings.kochLevel(), 4);
         QCOMPARE(settings.listeningKochLevel(), 7);
+        QVERIFY(settings.publishLive());
         double dot, dash, gap;
         settings.decoderEstimates(dot, dash, gap);
         QCOMPARE(dot, 50.0);

@@ -105,6 +105,13 @@ Trainer::Trainer(Settings* pSettings, QObject* parent)
         client->setServerUrl(QUrl(m_settings->serverUrl()));
     });
     connect(client, &SignalingClient::tokenChanged, m_settings, &Settings::setServerToken);
+    // Our keying on the server's live page, if agreed
+    client->setPublishLive(m_settings->publishLive());
+    connect(m_settings, &Settings::publishLiveChanged, this, [this, client] {
+        client->setPublishLive(m_settings->publishLive());
+    });
+    connect(this, &Trainer::charDecoded, client, [client](const QString& pText) { client->sendCopy(pText); });
+    connect(this, &Trainer::wordGap, client, [client] { client->sendCopy(QStringLiteral(" ")); });
     // Logged in: the account callsign is the station callsign
     connect(client, &SignalingClient::stateChanged, this, [this, client] {
         if (client->state() == SignalingClient::State::Online)

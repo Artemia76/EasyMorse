@@ -1474,92 +1474,92 @@
         <translation>Un caractère de plus</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="114"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="207"/>
         <source>To work on: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>À travailler : &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="116"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="209"/>
         <source>To work on: %1</source>
         <translation>À travailler : %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="120"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="213"/>
         <source>The character you key worst comes more often, until you key it well.</source>
         <translation>Le caractère que vous manipulez le moins bien revient plus souvent, jusqu&apos;à ce que vous le manipuliez bien.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="128"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="116"/>
         <source>Listen</source>
         <translation>Écouter</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="136"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="124"/>
         <source>Play the group as a model</source>
         <translation>Jouer le groupe comme modèle</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="139"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="127"/>
         <source>New group</source>
         <translation>Nouveau groupe</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="161"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="149"/>
         <source>New character: &lt;b&gt;%1&lt;/b&gt; %2</source>
         <translation>Nouveau caractère : &lt;b&gt;%1&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="216"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="218"/>
         <source>Your keying</source>
         <translation>Votre manipulation</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="217"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="219"/>
         <source>Last group · %1</source>
         <translation>Groupe précédent · %1</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="218"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="220"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="232"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="234"/>
         <source>Key the group with the paddles: the spacing between the letters is judged.</source>
         <translation>Manipulez le groupe avec les palettes : l&apos;espacement entre les lettres est jugé.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="233"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="235"/>
         <source>Key the group: the ideal keying of each letter appears above yours.</source>
         <translation>Manipulez le groupe : la manipulation idéale de chaque lettre s&apos;affiche au-dessus de la vôtre.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="249"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="251"/>
         <source>%1/100</source>
         <translation>%1/100</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="255"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="257"/>
         <source>≈ %1 WPM</source>
         <translation>≈ %1 mots/min</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="274"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="276"/>
         <source>right</source>
         <translation>juste</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="275"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="277"/>
         <source>20 to 40 % off</source>
         <translation>écart de 20 à 40 %</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="276"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="278"/>
         <source>more</source>
         <translation>au-delà</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/PracticePage.qml" line="277"/>
+        <location filename="../src/app/qml/PracticePage.qml" line="279"/>
         <source>next letter</source>
         <translation>lettre suivante</translation>
     </message>
@@ -1749,12 +1749,33 @@
         <translation>Tapez le nom d&apos;un salon ou choisissez-en un, puis rejoignez-le.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="353"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="243"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="250"/>
+        <source>Show my keying on the server&apos;s website</source>
+        <translation>Montrer ma manipulation sur le site du serveur</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="262"/>
+        <source>This server has no live page.</source>
+        <translation>Ce serveur n&apos;a pas de page en direct.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="263"/>
+        <source>Your callsign and room are shown on its live page while you are connected. With this on, the text you key and your room chat messages are shown too.</source>
+        <translation>Votre indicatif et votre salon figurent sur sa page en direct tant que vous êtes connecté. Si vous activez cette option, le texte que vous manipulez et vos messages dans le tchat du salon y apparaissent aussi.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="272"/>
+        <source>Live page</source>
+        <translation>Page en direct</translation>
+    </message>
+    <message>
+        <location filename="../src/app/qml/ServerPanel.qml" line="399"/>
         <source>Room messages</source>
         <translation>Messages du salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="373"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="419"/>
         <source>No message yet.</source>
         <translation>Pas encore de message.</translation>
     </message>
@@ -1774,17 +1795,17 @@
         <translation>Personne d&apos;autre dans ce salon pour l&apos;instant.</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="289"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="335"/>
         <source>(you)</source>
         <translation>(vous)</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="315"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="361"/>
         <source>Security code</source>
         <translation>Code de sécurité</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="327"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="373"/>
         <source>Security code: %1 sees the same one, unless someone is in the middle.</source>
         <translation>Code de sécurité : %1 voit le même, sauf si quelqu&apos;un s&apos;est glissé entre vous.</translation>
     </message>
@@ -1794,13 +1815,13 @@
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="380"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="426"/>
         <source>Message to the room</source>
         <translation>Message au salon</translation>
     </message>
     <message>
-        <location filename="../src/app/qml/ServerPanel.qml" line="389"/>
-        <location filename="../src/app/qml/ServerPanel.qml" line="391"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="435"/>
+        <location filename="../src/app/qml/ServerPanel.qml" line="437"/>
         <source>Send</source>
         <translation>Envoyer</translation>
     </message>
@@ -1808,77 +1829,77 @@
 <context>
     <name>SignalingClient</name>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="120"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="128"/>
         <source>Set the server address first</source>
         <translation>Indiquez d&apos;abord l&apos;adresse du serveur</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="135"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="143"/>
         <source>Server unreachable: %1</source>
         <translation>Serveur injoignable : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="284"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="335"/>
         <source>Invalid callsign: 2 to 16 letters, digits, &apos;/&apos; or &apos;-&apos;</source>
         <translation>Indicatif invalide : 2 à 16 lettres, chiffres, « / » ou « - »</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="286"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="337"/>
         <source>The password needs at least 8 characters</source>
         <translation>Le mot de passe doit faire au moins 8 caractères</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="288"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="339"/>
         <source>This callsign is already registered</source>
         <translation>Cet indicatif est déjà enregistré</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="290"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="341"/>
         <source>Wrong callsign or password</source>
         <translation>Indicatif ou mot de passe incorrect</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="292"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="343"/>
         <source>Too many attempts, try again later</source>
         <translation>Trop de tentatives, réessayez plus tard</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="294"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="345"/>
         <source>Session expired, log in again</source>
         <translation>Session expirée, reconnectez-vous</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="296"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="347"/>
         <source>Logged in from somewhere else</source>
         <translation>Connecté depuis un autre poste</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="298"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="349"/>
         <source>This account is suspended</source>
         <translation>Ce compte est suspendu</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="299"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="350"/>
         <source>This account is suspended: %1</source>
         <translation>Ce compte est suspendu : %1</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="301"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="352"/>
         <source>Disconnected by a moderator</source>
         <translation>Déconnecté par un modérateur</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="303"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="354"/>
         <source>This room is full</source>
         <translation>Ce salon est complet</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="305"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="356"/>
         <source>This operator is no longer in the room</source>
         <translation>Cet opérateur n&apos;est plus dans le salon</translation>
     </message>
     <message>
-        <location filename="../src/core/net/signalingclient.cpp" line="306"/>
+        <location filename="../src/core/net/signalingclient.cpp" line="357"/>
         <source>Server error</source>
         <translation>Erreur du serveur</translation>
     </message>
@@ -1886,22 +1907,22 @@
 <context>
     <name>Trainer</name>
     <message>
-        <location filename="../src/core/trainer.cpp" line="306"/>
+        <location filename="../src/core/trainer.cpp" line="313"/>
         <source>Nothing to play, or no sound output</source>
         <translation>Rien à jouer, ou pas de sortie son</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="439"/>
+        <location filename="../src/core/trainer.cpp" line="446"/>
         <source>Correspondent</source>
         <translation>Correspondant</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="558"/>
+        <location filename="../src/core/trainer.cpp" line="565"/>
         <source>No sound output, check the audio options</source>
         <translation>Pas de sortie son, vérifiez les options audio</translation>
     </message>
     <message>
-        <location filename="../src/core/trainer.cpp" line="571"/>
+        <location filename="../src/core/trainer.cpp" line="578"/>
         <source>Serial key enabled but no port chosen</source>
         <translation>Manipulateur série activé mais aucun port choisi</translation>
     </message>

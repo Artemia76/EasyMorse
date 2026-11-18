@@ -98,6 +98,8 @@ class Settings : public QObject
     Q_PROPERTY(int listeningKochLevel READ listeningKochLevel WRITE setListeningKochLevel NOTIFY listeningKochLevelChanged)
     // Match-making server
     Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
+    // Keyed text and room chat shown on the server's live page (off by default)
+    Q_PROPERTY(bool publishLive READ publishLive WRITE setPublishLive NOTIFY publishLiveChanged)
 
 public:
     enum BandPreset
@@ -201,6 +203,7 @@ public:
     /// \brief token of the last login, to reconnect without the password
     ///
     QString serverToken() const { return m_serverToken; }
+    bool    publishLive() const { return m_publishLive; }
 
     void    setToneFrequency(int pHz);
     void    setVolume(int pPercent);
@@ -247,6 +250,7 @@ public:
     void    setKeyingWeakness(const QString& pWeakness);
     void    setServerUrl(const QString& pUrl);
     void    setServerToken(const QString& pToken);
+    void    setPublishLive(bool pPublish);
 
     ///
     /// \brief decoder estimates learnt in the previous session (0 when unknown)
@@ -280,6 +284,7 @@ signals:
     void    kochLevelChanged();
     void    listeningKochLevelChanged();
     void    serverUrlChanged();
+    void    publishLiveChanged();
 
 private:
     template <typename T>
@@ -333,6 +338,7 @@ private:
     QString     m_keyingWeakness;
     QString     m_serverUrl;
     QString     m_serverToken;
+    bool        m_publishLive;
 };
 
 #endif // SETTINGS_H

@@ -230,6 +230,52 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
+    // Live page of the server: presence is public, keying and chat only if agreed
+    RowLayout {
+        visible: root.online
+        spacing: 12
+        Layout.fillWidth: true
+        Switch {
+            id: liveSwitch
+            checked: MorseSettings.publishLive
+            enabled: root.client.liveAvailable
+            onToggled: MorseSettings.publishLive = checked
+            Accessible.name: qsTr("Show my keying on the server's website")
+            Layout.alignment: Qt.AlignTop
+        }
+        ColumnLayout {
+            spacing: 2
+            Layout.fillWidth: true
+            Label {
+                text: qsTr("Show my keying on the server's website")
+                color: liveSwitch.enabled ? Theme.text : Theme.muted
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.topMargin: 10
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: liveSwitch.enabled
+                    onClicked: MorseSettings.publishLive = !MorseSettings.publishLive
+                }
+            }
+            Label {
+                text: !root.client.liveAvailable ? qsTr("This server has no live page.")
+                      : qsTr("Your callsign and room are shown on its live page while you are connected. With this on, the text you key and your room chat messages are shown too.")
+                color: Theme.muted
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+        }
+        Button {
+            visible: root.client.liveAvailable
+            text: qsTr("Live page")
+            flat: true
+            onClicked: Qt.openUrlExternally(MorseSettings.serverUrl + "/live.html")
+            Layout.alignment: Qt.AlignTop
+        }
+    }
+
     GridLayout {
         visible: root.inRoom
         columns: root.twoColumns ? 2 : 1

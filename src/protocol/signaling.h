@@ -31,13 +31,21 @@
 * obtained from the REST API (/api/v1/register or /api/v1/login).
 *
 * client -> server                      server -> client
-*   auth   {token}                        welcome {callsign, ice}
+*   auth   {token}                        welcome {callsign, ice, rooms[], live}
 *   join   {room}                         room    {room, members[]}
 *   leave  {}                             joined  {room, callsign}
 *   chat   {text}                         left    {room, callsign}
 *   signal {to, kind, data}               chat    {room, from, text}
-*                                         signal  {from, kind, data}
-*                                         error   {code, message}
+*   live   {on}                           signal  {from, kind, data}
+*   copy   {text}                         error   {code, message}
+*
+* Live page of the server's web site: who is connected and in which room is
+* public. The text a station keys (decoded by the application itself, the
+* peer to peer link being encrypted) and its room chat are shown only when
+* the station agrees: "live" {on: true}. "copy" carries the characters it
+* decoded since the last one, sent at most a few times per second. A server
+* that offers this says so in "welcome" (live: true); older servers do not,
+* and the application then sends neither message.
 *
 * Signal kinds, relayed between two members of the same room:
 *   invitation (the PeerSession invitation code). Every member opens a
@@ -60,6 +68,8 @@ namespace Signaling
     // Larger frames are refused by the server
     constexpr int MaxMessageBytes = 8192;
     constexpr int MaxChatChars = 500;
+    // Characters per "copy" message
+    constexpr int MaxCopyChars = 64;
     constexpr int MaxRoomNameChars = 32;
     constexpr int MaxCallsignChars = 16;
     constexpr int MinPasswordChars = 8;
@@ -78,6 +88,8 @@ namespace Signaling
         inline const QString Chat = QStringLiteral("chat");
         inline const QString Signal = QStringLiteral("signal");
         inline const QString Error = QStringLiteral("error");
+        inline const QString Live = QStringLiteral("live");
+        inline const QString Copy = QStringLiteral("copy");
     }
 
     namespace Kind
